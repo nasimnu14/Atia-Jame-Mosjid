@@ -59,8 +59,9 @@ class RestoreService {
     try {
       db = sql.sqlite3.open(file.path, mode: sql.OpenMode.readOnly);
       final check = db.select('PRAGMA integrity_check').first.values.first;
-      if (check != 'ok')
+      if (check != 'ok') {
         throw RestoreException(RestoreProblem.damaged, '$check');
+      }
       final version =
           db.select('PRAGMA user_version').first.values.first as int;
       if (version > AppDatabase.currentSchemaVersion) {
@@ -107,8 +108,9 @@ class RestoreService {
 
     // 2. Keep the current data aside.
     final live = File(p.join(dataDir.path, dbFileName));
-    if (hasLiveData && live.existsSync())
+    if (hasLiveData && live.existsSync()) {
       backup.snapshotLiveFile('pre-restore');
+    }
 
     // 3. Replace.
     await closeDatabase();
@@ -143,8 +145,9 @@ class RestoreService {
       for (final w in wanted)
         if (!storage.exists(w.entryId, w.fileName)) w,
     ];
-    if (missing.isEmpty)
+    if (missing.isEmpty) {
       return const RestoreOutcome(photosRestored: 0, photosMissing: 0);
+    }
     final folder = await drive.folder(client, DriveFolders.photos);
     final inDrive = {for (final f in await client.list(folder)) f.name: f};
     var restored = 0, lost = 0;

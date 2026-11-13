@@ -91,8 +91,9 @@ class _ExcelUploadScreenState extends State<ExcelUploadScreen> {
     final l = context.l10n;
     final fmt = context.fmt;
     final today = dateOnly(context.services.now());
-    if (!_loaded)
+    if (!_loaded) {
       return PageScaffold(title: l.excelTitle, child: const SizedBox.shrink());
+    }
     final period = _choice.resolve(today);
     final connected = _account != null;
     final fileName = period == null

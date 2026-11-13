@@ -76,8 +76,9 @@ class _BackupScreenState extends State<BackupScreen> {
     final l = context.l10n;
     final fmt = context.fmt;
     final role = context.appWatch.user!.role;
-    if (!_loaded)
+    if (!_loaded) {
       return PageScaffold(title: l.backupTitle, child: const SizedBox.shrink());
+    }
     final connected = _account != null;
     final configured = context.services.drive.auth.isConfigured;
 

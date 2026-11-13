@@ -54,9 +54,10 @@ class DriveScheduler {
     if (_checking) return;
     _checking = true;
     try {
-      if (await drive.client() == null) return; // no Google account connected
-      if (!await backup.hasData())
-        return; // nothing to protect yet (first launch)
+      // No Google account connected, or nothing to protect yet (first launch).
+      if (await drive.client() == null || !await backup.hasData()) {
+        return;
+      }
       if (await backup.isDue() && _cooledDown(_backupFailedAt)) {
         final r = await backup.runBackup();
         _backupFailedAt = r.ok ? null : now();

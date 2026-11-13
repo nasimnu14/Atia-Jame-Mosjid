@@ -104,8 +104,9 @@ class BackupService {
     if (_running) return const BackupResult(BackupOutcome.alreadyRunning);
     _running = true;
     try {
-      if (!await hasData())
+      if (!await hasData()) {
         return const BackupResult(BackupOutcome.nothingToBackUp);
+      }
       final client = await drive.client();
       if (client == null) return const BackupResult(BackupOutcome.notConnected);
       return await _backup(client, reason);
