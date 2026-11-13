@@ -180,5 +180,413 @@
   "amountPositive": "The amount must be more than 0",
   "amountTooLarge": "This amount is too large",
   "unknownDonor": "Unknown",
-  "versionUnknown": "unknown"
+  "versionUnknown": "unknown",
+  "newIncome": "+ New income",
+  "newExpense": "+ New expense",
+  "addIncomeTitle": "Add a new income",
+  "addExpenseTitle": "Add a new expense",
+  "editIncomeTitle": "Edit income",
+  "editExpenseTitle": "Edit expense",
+  "incomeDetailsTitle": "Income details",
+  "expenseDetailsTitle": "Expense details",
+  "receiptNoIncome": "Receipt no.",
+  "receiptNoExpense": "Voucher no.",
+  "donorName": "Donor's name",
+  "donorNameOptional": "Donor's name (optional)",
+  "payeeNameForm": "Name (who was paid)",
+  "payeeName": "Name (payee)",
+  "purposeLabel": "Purpose (খরচ বাবদ)",
+  "approvedBy": "Approved by",
+  "addressLabel": "Address",
+  "addressOptional": "Address (optional)",
+  "amountTaka": "Amount",
+  "photosTitle": "Photos",
+  "donorNameHint": "Leave blank to save as “Unknown”",
+  "addressHint": "e.g. Ghorashal, Palash",
+  "suggestedNextReceipt": "Suggested next number: {n} — change it to match the receipt book",
+  "@suggestedNextReceipt": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestedNextVoucher": "Suggested next number: {n} — change it to match the voucher book",
+  "@suggestedNextVoucher": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateWarningReceipt": "This receipt no. is already used by another income ({date} · {name} · {amount}). Please check the number again.",
+  "@duplicateWarningReceipt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateWarningVoucher": "This voucher no. is already used by another expense ({date} · {name} · {amount}). Please check the number again.",
+  "@duplicateWarningVoucher": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptInvalid": "Enter the number as digits, 1 or more",
+  "approverSelect": "Choose who approved this",
+  "approverRequired": "Choose the approver",
+  "approverListEmpty": "The approver list is empty. An Admin must add names in Settings first.",
+  "approverNotInList": "Choose an approver from the list",
+  "photosHintIncome": "A photo of the receipt, or of the goods that were sold",
+  "photosHintExpense": "A photo of the voucher, or of the goods that were bought",
+  "photosOptionalMany": "Photos (optional, you can add several)",
+  "addPhoto": "+ Add photo",
+  "removePhoto": "Remove {label}",
+  "@removePhoto": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "photoLabelTitle": "Photo label",
+  "photoLabelHint": "e.g. Receipt. If left blank, the description and a number are used.",
+  "photoLimit": "An entry can have at most {max} photos",
+  "@photoLimit": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "photosCount": "Photos ({n})",
+  "@photosCount": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "photoReadError": "This file could not be read as a photo",
+  "photoMissing": "The photo file was not found on this computer",
+  "openPhoto": "View {label} full size",
+  "@openPhoto": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "photoOf": "Photo {i} of {n}",
+  "@photoOf": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      },
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "prevPhoto": "Previous photo",
+  "nextPhoto": "Next photo",
+  "closePhoto": "Close photo",
+  "takePhoto": "Take a photo with the camera",
+  "pickFromGallery": "Choose from the gallery",
+  "entrySaved": "Entry saved",
+  "entryUpdated": "Entry updated",
+  "periodToday": "Today",
+  "periodWeek": "This week",
+  "periodMonth": "This month",
+  "periodYear": "This year",
+  "periodSpecific": "A chosen day / week / month / year",
+  "periodRange": "Date range",
+  "periodLabel": "Period",
+  "unitDay": "Day",
+  "unitWeek": "Week",
+  "unitMonth": "Month",
+  "unitYear": "Year",
+  "pickAnyDate": "Pick any date in it",
+  "dateFrom": "From date",
+  "dateTo": "To date",
+  "rangeInvalid": "The start date must not be after the end date",
+  "periodDayName": "Day: {date}",
+  "@periodDayName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "periodWeekName": "Week: {from} – {to}",
+  "@periodWeekName": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "periodMonthName": "Month: {month}",
+  "@periodMonthName": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "periodYearName": "Year: {year}",
+  "@periodYearName": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "periodRangeName": "{from} – {to}",
+  "@periodRangeName": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "searchLabel": "Search",
+  "searchHintReceipt": "Receipt no. or part of a name (Enter opens a number)",
+  "searchHintVoucher": "Voucher no. or part of a name (Enter opens a number)",
+  "entriesCount": "{n} entries",
+  "@entriesCount": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "totalLabel": "Total",
+  "cancelledNotCounted": "Cancelled entries are not counted in the total",
+  "showingRange": "Showing {from}–{to} of {total}",
+  "@showingRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "prevPage": "Previous page",
+  "nextPage": "Next page",
+  "noEntries": "No entries for this selection",
+  "colReceiptNo": "Receipt no.",
+  "colVoucherNo": "Voucher no.",
+  "colDate": "Date",
+  "colDonor": "Donor",
+  "colAddress": "Address",
+  "colPhotos": "Photos",
+  "colAmount": "Amount",
+  "colPurpose": "Purpose",
+  "colApprover": "Approved by",
+  "statusCancelled": "Cancelled",
+  "statusDuplicate": "Duplicate",
+  "duplicatesBanner": "{n} entries from a phone have a number that already exists. An Admin should check them.",
+  "@duplicatesBanner": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "showDuplicatesOnly": "Show only duplicates",
+  "showAll": "Show all",
+  "entryNotFoundByNumber": "No entry with number {no}",
+  "@entryNotFoundByNumber": {
+    "placeholders": {
+      "no": {
+        "type": "String"
+      }
+    }
+  },
+  "crumbReceipt": "Receipt no. {n}",
+  "@crumbReceipt": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "crumbVoucher": "Voucher no. {n}",
+  "@crumbVoucher": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfExport": "Export PDF",
+  "editEntry": "Edit",
+  "cancelEntry": "Cancel entry",
+  "typeLabel": "Type",
+  "typeIncome": "Income",
+  "typeExpense": "Expense",
+  "addedBy": "Added by: {who} ({role}) · {device} · {when}",
+  "@addedBy": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      },
+      "device": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "fromPhone": "from a phone",
+  "fromComputer": "from the computer",
+  "syncedAtDesktop": "Synced to the computer: {when}",
+  "@syncedAtDesktop": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "editedByLine": "Edited by: {who} ({role}) · {when}",
+  "@editedByLine": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "notEdited": "Edited: no",
+  "cancelledBanner": "This entry was cancelled. It is not counted in any total or balance.",
+  "cancelledByLine": "Cancelled by: {who} ({role}) · {when}",
+  "@cancelledByLine": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelReasonLine": "Reason: {reason}",
+  "@cancelReasonLine": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "amountNotCounted": "{amount} (not counted)",
+  "@amountNotCounted": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateDetailBanner": "This entry came from a phone with a number that already exists. Please check it.",
+  "markReviewed": "Mark as checked",
+  "unknownUser": "Unknown user",
+  "approvalTitle": "An Admin's approval is needed",
+  "approvalBody": "You are signed in as a User. To edit or cancel this entry, an Admin or the Super Admin must enter their own username and password here.",
+  "adminUsername": "Admin's username",
+  "adminPassword": "Admin's password",
+  "approvalNote": "Who approved will be written in the entry's history.",
+  "approve": "Approve",
+  "cancelTitle": "Cancel this entry",
+  "cancelBody": "A cancelled entry is not deleted. It stays in the list marked “Cancelled”, but is not counted in any total, summary or balance.",
+  "cancelReasonLabel": "Reason for cancelling",
+  "cancelReasonRequired": "Write the reason for cancelling",
+  "cancellingAs": "Cancelling as: {who}",
+  "@cancellingAs": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "entryCancelled": "Entry cancelled",
+  "entryAlreadyCancelled": "This entry is already cancelled",
+  "entryNotFound": "This entry no longer exists",
+  "nothingToShow": "Nothing to show yet",
+  "entrySummaryIncome": "Income · Receipt no. {no} · {name} · {amount}",
+  "@entrySummaryIncome": {
+    "placeholders": {
+      "no": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "entrySummaryExpense": "Expense · Voucher no. {no} · {name} · {purpose} · {amount}",
+  "@entrySummaryExpense": {
+    "placeholders": {
+      "no": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "purpose": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "entriesCountPhotos": "{n}",
+  "@entriesCountPhotos": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  }
 }

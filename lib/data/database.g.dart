@@ -738,6 +738,17 @@ class $EntriesTable extends Entries with TableInfo<$EntriesTable, Entry> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _syncedAtMeta = const VerificationMeta(
+    'syncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
+    'synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isDuplicateMeta = const VerificationMeta(
     'isDuplicate',
   );
@@ -774,6 +785,7 @@ class $EntriesTable extends Entries with TableInfo<$EntriesTable, Entry> {
     cancelledAt,
     deviceId,
     synced,
+    syncedAt,
     isDuplicate,
   ];
   @override
@@ -913,6 +925,12 @@ class $EntriesTable extends Entries with TableInfo<$EntriesTable, Entry> {
         synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta),
       );
     }
+    if (data.containsKey('synced_at')) {
+      context.handle(
+        _syncedAtMeta,
+        syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta),
+      );
+    }
     if (data.containsKey('is_duplicate')) {
       context.handle(
         _isDuplicateMeta,
@@ -1011,6 +1029,10 @@ class $EntriesTable extends Entries with TableInfo<$EntriesTable, Entry> {
         DriftSqlType.bool,
         data['${effectivePrefix}synced'],
       )!,
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}synced_at'],
+      ),
       isDuplicate: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_duplicate'],
@@ -1060,6 +1082,10 @@ class Entry extends DataClass implements Insertable<Entry> {
   final String deviceId;
   final bool synced;
 
+  /// On the desktop: when a phone entry arrived (shown as "synced to the
+  /// computer at ..."). Null for entries made on this device.
+  final DateTime? syncedAt;
+
   /// Set when a synced phone entry arrived with a receipt number the desktop
   /// already had (SYN-8).
   final bool isDuplicate;
@@ -1083,6 +1109,7 @@ class Entry extends DataClass implements Insertable<Entry> {
     this.cancelledAt,
     required this.deviceId,
     required this.synced,
+    this.syncedAt,
     required this.isDuplicate,
   });
   @override
@@ -1129,6 +1156,9 @@ class Entry extends DataClass implements Insertable<Entry> {
     }
     map['device_id'] = Variable<String>(deviceId);
     map['synced'] = Variable<bool>(synced);
+    if (!nullToAbsent || syncedAt != null) {
+      map['synced_at'] = Variable<DateTime>(syncedAt);
+    }
     map['is_duplicate'] = Variable<bool>(isDuplicate);
     return map;
   }
@@ -1170,6 +1200,9 @@ class Entry extends DataClass implements Insertable<Entry> {
           : Value(cancelledAt),
       deviceId: Value(deviceId),
       synced: Value(synced),
+      syncedAt: syncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedAt),
       isDuplicate: Value(isDuplicate),
     );
   }
@@ -1203,6 +1236,7 @@ class Entry extends DataClass implements Insertable<Entry> {
       cancelledAt: serializer.fromJson<DateTime?>(json['cancelledAt']),
       deviceId: serializer.fromJson<String>(json['deviceId']),
       synced: serializer.fromJson<bool>(json['synced']),
+      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
       isDuplicate: serializer.fromJson<bool>(json['isDuplicate']),
     );
   }
@@ -1233,6 +1267,7 @@ class Entry extends DataClass implements Insertable<Entry> {
       'cancelledAt': serializer.toJson<DateTime?>(cancelledAt),
       'deviceId': serializer.toJson<String>(deviceId),
       'synced': serializer.toJson<bool>(synced),
+      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
       'isDuplicate': serializer.toJson<bool>(isDuplicate),
     };
   }
@@ -1257,6 +1292,7 @@ class Entry extends DataClass implements Insertable<Entry> {
     Value<DateTime?> cancelledAt = const Value.absent(),
     String? deviceId,
     bool? synced,
+    Value<DateTime?> syncedAt = const Value.absent(),
     bool? isDuplicate,
   }) => Entry(
     id: id ?? this.id,
@@ -1278,6 +1314,7 @@ class Entry extends DataClass implements Insertable<Entry> {
     cancelledAt: cancelledAt.present ? cancelledAt.value : this.cancelledAt,
     deviceId: deviceId ?? this.deviceId,
     synced: synced ?? this.synced,
+    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
     isDuplicate: isDuplicate ?? this.isDuplicate,
   );
   Entry copyWithCompanion(EntriesCompanion data) {
@@ -1309,6 +1346,7 @@ class Entry extends DataClass implements Insertable<Entry> {
           : this.cancelledAt,
       deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
       synced: data.synced.present ? data.synced.value : this.synced,
+      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
       isDuplicate: data.isDuplicate.present
           ? data.isDuplicate.value
           : this.isDuplicate,
@@ -1337,13 +1375,14 @@ class Entry extends DataClass implements Insertable<Entry> {
           ..write('cancelledAt: $cancelledAt, ')
           ..write('deviceId: $deviceId, ')
           ..write('synced: $synced, ')
+          ..write('syncedAt: $syncedAt, ')
           ..write('isDuplicate: $isDuplicate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     type,
     receiptNo,
@@ -1363,8 +1402,9 @@ class Entry extends DataClass implements Insertable<Entry> {
     cancelledAt,
     deviceId,
     synced,
+    syncedAt,
     isDuplicate,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1388,6 +1428,7 @@ class Entry extends DataClass implements Insertable<Entry> {
           other.cancelledAt == this.cancelledAt &&
           other.deviceId == this.deviceId &&
           other.synced == this.synced &&
+          other.syncedAt == this.syncedAt &&
           other.isDuplicate == this.isDuplicate);
 }
 
@@ -1411,6 +1452,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
   final Value<DateTime?> cancelledAt;
   final Value<String> deviceId;
   final Value<bool> synced;
+  final Value<DateTime?> syncedAt;
   final Value<bool> isDuplicate;
   final Value<int> rowid;
   const EntriesCompanion({
@@ -1433,6 +1475,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
     this.cancelledAt = const Value.absent(),
     this.deviceId = const Value.absent(),
     this.synced = const Value.absent(),
+    this.syncedAt = const Value.absent(),
     this.isDuplicate = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1456,6 +1499,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
     this.cancelledAt = const Value.absent(),
     required String deviceId,
     this.synced = const Value.absent(),
+    this.syncedAt = const Value.absent(),
     this.isDuplicate = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1486,6 +1530,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
     Expression<DateTime>? cancelledAt,
     Expression<String>? deviceId,
     Expression<bool>? synced,
+    Expression<DateTime>? syncedAt,
     Expression<bool>? isDuplicate,
     Expression<int>? rowid,
   }) {
@@ -1509,6 +1554,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
       if (cancelledAt != null) 'cancelled_at': cancelledAt,
       if (deviceId != null) 'device_id': deviceId,
       if (synced != null) 'synced': synced,
+      if (syncedAt != null) 'synced_at': syncedAt,
       if (isDuplicate != null) 'is_duplicate': isDuplicate,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1534,6 +1580,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
     Value<DateTime?>? cancelledAt,
     Value<String>? deviceId,
     Value<bool>? synced,
+    Value<DateTime?>? syncedAt,
     Value<bool>? isDuplicate,
     Value<int>? rowid,
   }) {
@@ -1557,6 +1604,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
       cancelledAt: cancelledAt ?? this.cancelledAt,
       deviceId: deviceId ?? this.deviceId,
       synced: synced ?? this.synced,
+      syncedAt: syncedAt ?? this.syncedAt,
       isDuplicate: isDuplicate ?? this.isDuplicate,
       rowid: rowid ?? this.rowid,
     );
@@ -1626,6 +1674,9 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
     if (synced.present) {
       map['synced'] = Variable<bool>(synced.value);
     }
+    if (syncedAt.present) {
+      map['synced_at'] = Variable<DateTime>(syncedAt.value);
+    }
     if (isDuplicate.present) {
       map['is_duplicate'] = Variable<bool>(isDuplicate.value);
     }
@@ -1657,6 +1708,7 @@ class EntriesCompanion extends UpdateCompanion<Entry> {
           ..write('cancelledAt: $cancelledAt, ')
           ..write('deviceId: $deviceId, ')
           ..write('synced: $synced, ')
+          ..write('syncedAt: $syncedAt, ')
           ..write('isDuplicate: $isDuplicate, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3218,6 +3270,7 @@ typedef $$EntriesTableCreateCompanionBuilder =
       Value<DateTime?> cancelledAt,
       required String deviceId,
       Value<bool> synced,
+      Value<DateTime?> syncedAt,
       Value<bool> isDuplicate,
       Value<int> rowid,
     });
@@ -3242,6 +3295,7 @@ typedef $$EntriesTableUpdateCompanionBuilder =
       Value<DateTime?> cancelledAt,
       Value<String> deviceId,
       Value<bool> synced,
+      Value<DateTime?> syncedAt,
       Value<bool> isDuplicate,
       Value<int> rowid,
     });
@@ -3373,6 +3427,11 @@ class $$EntriesTableFilterComposer
 
   ColumnFilters<bool> get synced => $composableBuilder(
     column: $table.synced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3511,6 +3570,11 @@ class $$EntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isDuplicate => $composableBuilder(
     column: $table.isDuplicate,
     builder: (column) => ColumnOrderings(column),
@@ -3591,6 +3655,9 @@ class $$EntriesTableAnnotationComposer
   GeneratedColumn<bool> get synced =>
       $composableBuilder(column: $table.synced, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get syncedAt =>
+      $composableBuilder(column: $table.syncedAt, builder: (column) => column);
+
   GeneratedColumn<bool> get isDuplicate => $composableBuilder(
     column: $table.isDuplicate,
     builder: (column) => column,
@@ -3669,6 +3736,7 @@ class $$EntriesTableTableManager
                 Value<DateTime?> cancelledAt = const Value.absent(),
                 Value<String> deviceId = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
+                Value<DateTime?> syncedAt = const Value.absent(),
                 Value<bool> isDuplicate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => EntriesCompanion(
@@ -3691,6 +3759,7 @@ class $$EntriesTableTableManager
                 cancelledAt: cancelledAt,
                 deviceId: deviceId,
                 synced: synced,
+                syncedAt: syncedAt,
                 isDuplicate: isDuplicate,
                 rowid: rowid,
               ),
@@ -3715,6 +3784,7 @@ class $$EntriesTableTableManager
                 Value<DateTime?> cancelledAt = const Value.absent(),
                 required String deviceId,
                 Value<bool> synced = const Value.absent(),
+                Value<DateTime?> syncedAt = const Value.absent(),
                 Value<bool> isDuplicate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => EntriesCompanion.insert(
@@ -3737,6 +3807,7 @@ class $$EntriesTableTableManager
                 cancelledAt: cancelledAt,
                 deviceId: deviceId,
                 synced: synced,
+                syncedAt: syncedAt,
                 isDuplicate: isDuplicate,
                 rowid: rowid,
               ),

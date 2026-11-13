@@ -5,7 +5,8 @@ drift apart (GEN-2). Usage from another script:
     from l10n_add import add
     add({"save": ("Save", "সংরক্ষণ করুন")})
 
-`{name}` in a text becomes a String placeholder.
+`{name}` in a text becomes a String placeholder; function arguments follow the
+order of first appearance in the English text.
 Then run: flutter gen-l10n
 """
 import json
@@ -38,10 +39,10 @@ def add(entries):
     for key, (en_text, bn_text) in entries.items():
         en[key] = en_text
         bn[key] = bn_text
-        names = sorted(set(re.findall(r"\{(\w+)\}", en_text)))
+        names = list(dict.fromkeys(re.findall(r"\{(\w+)\}", en_text)))  # order of appearance
         if names:
             en["@" + key] = {"placeholders": {n: {"type": "String"} for n in names}}
-        if sorted(set(re.findall(r"\{(\w+)\}", bn_text))) != names:
+        if sorted(set(re.findall(r"\{(\w+)\}", bn_text))) != sorted(names):
             sys.exit(f"placeholder mismatch in {key}")
     _save("app_en.arb", en)
     _save("app_bn.arb", bn)

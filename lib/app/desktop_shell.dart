@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/tables.dart';
+import '../features/entries/entry_list_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/users/users_screen.dart';
 import '../l10n/app_localizations.dart';
@@ -59,6 +60,8 @@ class _DesktopShellState extends State<DesktopShell> {
   Section _section = Section.dashboard;
 
   Widget _page(Section s) => switch (s) {
+        Section.income => const EntryListScreen(type: EntryType.income),
+        Section.expense => const EntryListScreen(type: EntryType.expense),
         Section.users => const UsersScreen(),
         Section.settings => const SettingsScreen(),
         _ => SectionPlaceholder(section: s),

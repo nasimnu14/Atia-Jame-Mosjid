@@ -26,7 +26,7 @@ void main() {
   });
 
   test('Bangla text is really Bangla, not copied English (except brand words)', () {
-    const sameOk = {'langEnglish', 'langBangla', 'switchLanguage'};
+    const sameOk = {'langEnglish', 'langBangla', 'switchLanguage', 'periodRangeName'};
     final bangla = RegExp('[ঀ-৿]');
     for (final k in keys(bn)) {
       if (sameOk.contains(k)) continue;

@@ -8,6 +8,8 @@ import '../data/db_opener.dart';
 import '../data/photo_storage.dart';
 import '../data/repositories/settings_repository.dart';
 import '../features/entries/entry_service.dart';
+import '../features/entries/photo_picker.dart';
+import '../features/entries/photo_shrinker.dart';
 import '../features/reports/balance_service.dart';
 import '../features/settings/settings_service.dart';
 import '../features/users/user_service.dart';
@@ -25,6 +27,9 @@ class AppServices {
     required this.balance,
     required this.photos,
     required this.deviceId,
+    required this.now,
+    required this.photoPicker,
+    required this.photoShrinker,
   });
 
   /// App-data folder (outside the install folder, plan rule 1).
@@ -38,6 +43,11 @@ class AppServices {
   final PhotoStorage photos;
   final String deviceId;
 
+  /// The clock; tests replace it.
+  final DateTime Function() now;
+  final PhotoPicker photoPicker;
+  final PhotoShrinker photoShrinker;
+
   /// Opens the database (copying it first if an upgrade is needed) and wires
   /// the services. [hasher] is only replaced in tests.
   static Future<AppServices> open(Directory dataDir,
@@ -47,7 +57,10 @@ class AppServices {
   }
 
   static Future<AppServices> fromDatabase(AppDatabase db, Directory dataDir,
-      {PasswordHasher hasher = const PasswordHasher()}) async {
+      {PasswordHasher hasher = const PasswordHasher(),
+      DateTime Function() now = DateTime.now,
+      PhotoPicker photoPicker = const PlatformPhotoPicker(),
+      PhotoShrinker photoShrinker = const PhotoShrinker()}) async {
     final repo = SettingsRepository(db);
     var deviceId = await repo.get(SettingKey.deviceId);
     if (deviceId == null) {
@@ -60,12 +73,15 @@ class AppServices {
       dataDir: dataDir,
       db: db,
       settingsRepo: repo,
-      users: UserService(db, hasher: hasher),
+      users: UserService(db, hasher: hasher, now: now),
       settings: settings,
-      entries: EntryService(db, photos, deviceId),
+      entries: EntryService(db, photos, deviceId, now: now),
       balance: BalanceService(db, settings),
       photos: photos,
       deviceId: deviceId,
+      now: now,
+      photoPicker: photoPicker,
+      photoShrinker: photoShrinker,
     );
   }
 

@@ -2,15 +2,15 @@
 
 ## RESUME HERE
 
-- **Last updated:** 2026-11-13 (Phase 1 finished)
-- **Current phase / step:** Phase 2, step 2.1: income/expense UI (forms, lists, details, photos, edit, cancel dialogs)
-- **Exact next action:** Build `lib/features/entries/` screens on top of the existing `EntryService` (already tested): entry list (income & expense, one screen with a type parameter), entry form, details, photo viewer, cancel dialog, admin-approval dialog. Wire them into `lib/app/desktop_shell.dart` (`Section.income` / `Section.expense` currently show `SectionPlaceholder`). Read designs first: Artifact boards IncomeList, IncomeForm, IncomeDetails, PhotoViewer, ExpenseList, ExpenseForm, ExpenseDetails, AdminApproval, CancelEntry (use the Artifact tool `read` with `paths`, never WebFetch).
+- **Last updated:** 2026-11-13 (Phase 2 UI finished)
+- **Current phase / step:** Phase 3, step 3.1: dashboard, summary screen, PDF reports (rasterised pages), entry PDF
+- **Exact next action:** Build Phase 3. (1) Dashboard screen replacing the `Section.dashboard` placeholder (design boards Main / MainEnglish): current balance via `BalanceService.currentBalance()`, today/month stat cards, recent entries, status cards. (2) Summary screen (board Summary) using `PeriodSelector` + `BalanceService.summary`. (3) PDF: render pages with Flutter's text engine into PNG and embed in a PDF (see test/proof/bangla_raster_pdf_proof_test.dart), report for income/expense/both with summary (PDF-1..6), single-entry PDF with photos (DET-2/3) replacing the stub `lib/features/reports/entry_pdf_button.dart`; save location via `file_selector` `getSaveLocation`. Read boards Main, Summary, PdfExport first.
 - **Half-done / broken:** nothing broken. `lib/app/section_placeholder.dart` and `lib/features/google_drive/restore_launcher.dart` are deliberate stubs to be replaced (Phase 2/3 and Phase 4). `UpdateCard` only shows the version (update check = Phase 5).
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
   - `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter gen-l10n`
   - `flutter analyze` (expect: No issues found)
-  - `flutter test` (expect: all pass; 106 at end of Phase 1)
+  - `flutter test` (expect: all pass; 127 at end of Phase 2)
   - run: `flutter run -d macos` / `flutter run -d emulator-5554`
   - Screenshots without screen-capture permission: `SHOT_DIR=<dir> flutter test test/widget/screens_shot_test.dart`, then view the PNGs.
 - **Working notes:** widget tests must use `testApp(...)` (test/helpers/app_harness.dart) and `tester.runAsync` for real async (Drift, bcrypt isolates). Add translations with `tool/l10n_add.py` (keeps both ARB files identical) then `flutter gen-l10n`; multi-placeholder args are generated in alphabetical order. Tests folder is un-ignored in `.gitignore` because the user's global gitignore ignores `test/`.
@@ -21,8 +21,8 @@
 |---|---|---|---|
 | 0 | Set-up and risk checks | done | 2026-11-13 |
 | 1 | Foundation: database, sign-in, language | done | 2026-11-13 |
-| 2 | Income and expense | in progress (services + tests done, UI to do) | |
-| 3 | Balance, summary, PDF | not started (BalanceService done) | |
+| 2 | Income and expense | done | 2026-11-13 |
+| 3 | Balance, summary, PDF | in progress (BalanceService done) | |
 | 4 | Google Drive: backup and Excel | not started | |
 | 5 | Updates and installers | not started | |
 | 6 | Android app and sync | not started | |
@@ -48,7 +48,7 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 | GEN-3 | done | lib/app/app_state.dart, lib/features/sign_in/language_switch.dart | test/widget/sign_in_flow_test.dart |
 | GEN-4 | partial | lib/shared/formatters.dart, bangla.dart | test/shared/shared_utils_test.dart, date_field_test.dart |
 | GEN-5 | done | lib/app/app_state.dart, lib/features/sign_in/language_switch.dart | test/widget/sign_in_flow_test.dart |
-| GEN-6 | partial | lib/features/entries/entry_service.dart (forms in Phase 2) | test/features/entry_service_test.dart |
+| GEN-6 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
 | GEN-7 | done | lib/shared/widgets/date_form_field.dart, lib/shared/date_parse.dart | test/shared/date_parse_test.dart, test/widget/date_field_test.dart |
 | GEN-8 | done | lib/shared/widgets/date_form_field.dart, lib/shared/date_parse.dart | test/shared/date_parse_test.dart, test/widget/date_field_test.dart |
 | USR-1 | partial | sign_in_screen.dart, user_service.dart (desktop done; phone in Phase 6) | test/widget/sign_in_flow_test.dart |
@@ -58,42 +58,42 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 | USR-5 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
 | USR-6 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
 | USR-7 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
-| USR-8 | partial | entry_service.dart (stored; shown in Phase 2 details) | test/features/entry_service_test.dart |
+| USR-8 | done | lib/features/entries/{approval_dialog,cancel_dialog,entry_details_screen}.dart | test/features/entry_service_test.dart, test/widget/entries_flow_test.dart |
 | USR-9 | done | lib/shared/password_hasher.dart (bcrypt) | test/features/user_service_test.dart |
-| INC-1 | todo |  |  |
-| INC-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| INC-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| INC-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| INC-5 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| INC-6 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| INC-7 | todo |  |  |
-| INC-8 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| INC-9 | todo |  |  |
-| INC-10 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EXP-1 | todo |  |  |
-| EXP-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EXP-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EXP-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EXP-5 | todo |  |  |
-| EXP-6 | partial | settings_service.dart + entry_service.dart validation (form in Phase 2) | test/features/entry_service_test.dart |
+| INC-1 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-2 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-3 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-4 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-5 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-6 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-7 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-8 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-9 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| INC-10 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| EXP-1 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| EXP-2 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| EXP-3 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| EXP-4 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| EXP-5 | partial | lists/details work for expenses; PDF/Excel pending | test/widget/entries_flow_test.dart |
+| EXP-6 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
 | EXP-7 | done | settings_service.dart, settings_screen.dart | test/features/balance_test.dart, test/widget/users_settings_test.dart |
-| EXP-8 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-1 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-5 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-6 | todo |  |  |
-| FND-7 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-8 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| FND-9 | todo |  |  |
-| DET-1 | todo |  |  |
+| EXP-8 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
+| FND-1 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-2 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-3 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-4 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-5 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-6 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-7 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-8 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| FND-9 | done | lib/features/entries/entry_list_screen.dart, lib/shared/widgets/period_selector.dart, lib/shared/period_choice.dart | test/widget/entries_flow_test.dart, test/shared/period_choice_test.dart |
+| DET-1 | partial | lib/features/entries/entry_details_screen.dart (PDF button in Phase 3) | test/widget/entries_flow_test.dart |
 | DET-2 | todo |  |  |
 | DET-3 | todo |  |  |
-| EDT-1 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EDT-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EDT-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
-| EDT-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EDT-1 | done | lib/features/entries/{approval_dialog,cancel_dialog,entry_details_screen}.dart | test/features/entry_service_test.dart, test/widget/entries_flow_test.dart |
+| EDT-2 | done | lib/features/entries/{approval_dialog,cancel_dialog,entry_details_screen}.dart | test/features/entry_service_test.dart, test/widget/entries_flow_test.dart |
+| EDT-3 | done | lib/features/entries/{approval_dialog,cancel_dialog,entry_details_screen}.dart | test/features/entry_service_test.dart, test/widget/entries_flow_test.dart |
+| EDT-4 | done | lib/features/entries/{approval_dialog,cancel_dialog,entry_details_screen}.dart | test/features/entry_service_test.dart, test/widget/entries_flow_test.dart |
 | BAL-1 | done | lib/features/settings/settings_service.dart, settings_screen.dart | test/features/balance_test.dart, test/widget/users_settings_test.dart |
 | BAL-2 | done | lib/features/settings/settings_service.dart, settings_screen.dart | test/features/balance_test.dart, test/widget/users_settings_test.dart |
 | BAL-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
@@ -139,7 +139,7 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 | SYN-5 | todo |  |  |
 | SYN-6 | todo |  |  |
 | SYN-7 | todo |  |  |
-| SYN-8 | todo |  |  |
+| SYN-8 | partial | duplicate flag + banner + filter + mark checked done; the flagging on import comes in Phase 6 | test/widget/entries_flow_test.dart |
 | SYN-9 | todo |  |  |
 | SYN-10 | todo |  |  |
 <!-- REQ-TABLE-END -->
@@ -150,26 +150,26 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 
 | Screen | Platform | Phase | Status |
 |---|---|---|---|
-| Setup (first launch: create Super Admin or restore) | Desktop | 1 | todo |
-| Sign in | Desktop | 1 | todo |
+| Setup (first launch: create Super Admin or restore) | Desktop | 1 | done (restore button: Phase 4) |
+| Sign in | Desktop | 1 | done |
 | Dashboard (+ English) | Desktop | 3 | todo |
-| Income list | Desktop | 2 | todo |
-| Add income (duplicate warning, date picker) | Desktop | 2 | todo |
-| Income details | Desktop | 2 | todo |
-| Photo viewer | Desktop | 2 | todo |
-| Expense list | Desktop | 2 | todo |
-| Add expense | Desktop | 2 | todo |
-| Expense details (cancelled) | Desktop | 2 | todo |
-| Admin approval dialog | Desktop | 2 | todo |
-| Cancel entry dialog | Desktop | 2 | todo |
+| Income list | Desktop | 2 | done |
+| Add income (duplicate warning, date picker) | Desktop | 2 | done |
+| Income details | Desktop | 2 | done |
+| Photo viewer | Desktop | 2 | done |
+| Expense list | Desktop | 2 | done |
+| Add expense | Desktop | 2 | done |
+| Expense details (cancelled) | Desktop | 2 | done |
+| Admin approval dialog | Desktop | 2 | done |
+| Cancel entry dialog | Desktop | 2 | done |
 | Summary | Desktop | 3 | todo |
 | PDF report | Desktop | 3 | todo |
 | Excel upload | Desktop | 4 | todo |
 | Phone sync QR | Desktop | 6 | todo |
-| Users | Desktop | 1 | todo |
-| Add user | Desktop | 1 | todo |
+| Users | Desktop | 1 | done |
+| Add user | Desktop | 1 | done |
 | Backup and restore | Desktop | 4 | todo |
-| Settings (language, opening balance, approvers, password, update) | Desktop | 1 | todo |
+| Settings (language, opening balance, approvers, password, update) | Desktop | 1 | done (update check: Phase 5) |
 | Update available dialog | Desktop | 5 | todo |
 | Pair with desktop | Android | 6 | todo |
 | Sign in | Android | 6 | todo |
@@ -187,6 +187,7 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 
 ## Log (newest first)
 
+- 2026-11-13: Phase 2 done. Entry list (periods, search, open-by-number, paging, duplicate banner), add/edit form (suggested number, duplicate warning, approver dropdown, photos with labels), details (history, photos), photo viewer, approval and cancel dialogs, period selector, photo shrinker/picker. Bugs found by tests and fixed: corrupt image made the decoder throw RangeError (now PhotoUnreadableException), photo-label dialog disposed its controller too early. 127 tests pass, analyzer clean.
 - 2026-11-13: Phase 1 done. Settings screen (language, opening balance, approvers, password, version), Users screen + dialogs, Setup and Sign-in screens, desktop shell with role-aware menu, date field, l10n (bn/en) with parity test. Bugs found by tests and fixed: LIKE wildcards in search (`%`/`_`), `context.fmt` using `watch` in handlers, wrong argument order for `dateDayInvalid`, Users table horizontal-scroll layout, button text losing the Bangla font. 106 tests pass, analyzer clean.
 - 2026-11-13: Data layer: Drift schema, db opener with pre-migration copy + restore on failure, UserService/EntryService/BalanceService/SettingsService, parsing and period helpers, 80+ tests.
 - 2026-11-13: Session started. No progress file existed. Read requirements, plan, test cases list, design artifact (palette: primary #0F5C46, dark #0F3D30, bg #F4F6F3, expense #9A3709, font Hind Siliguri). `flutter create` for macos, windows, android done. Added dependencies.

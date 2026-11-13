@@ -59,6 +59,10 @@ class Entries extends Table {
   TextColumn get deviceId => text()();
   BoolColumn get synced => boolean().withDefault(const Constant(false))();
 
+  /// On the desktop: when a phone entry arrived (shown as "synced to the
+  /// computer at ..."). Null for entries made on this device.
+  DateTimeColumn get syncedAt => dateTime().nullable()();
+
   /// Set when a synced phone entry arrived with a receipt number the desktop
   /// already had (SYN-8).
   BoolColumn get isDuplicate => boolean().withDefault(const Constant(false))();

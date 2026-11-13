@@ -415,4 +415,484 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get versionUnknown => 'অজানা';
+
+  @override
+  String get newIncome => '+ নতুন আয়';
+
+  @override
+  String get newExpense => '+ নতুন ব্যয়';
+
+  @override
+  String get addIncomeTitle => 'নতুন আয় যোগ করুন';
+
+  @override
+  String get addExpenseTitle => 'নতুন ব্যয় যোগ করুন';
+
+  @override
+  String get editIncomeTitle => 'আয় সম্পাদনা করুন';
+
+  @override
+  String get editExpenseTitle => 'ব্যয় সম্পাদনা করুন';
+
+  @override
+  String get incomeDetailsTitle => 'আয়ের বিস্তারিত';
+
+  @override
+  String get expenseDetailsTitle => 'ব্যয়ের বিস্তারিত';
+
+  @override
+  String get receiptNoIncome => 'রশিদ নং';
+
+  @override
+  String get receiptNoExpense => 'ভাউচার নং';
+
+  @override
+  String get donorName => 'দাতার নাম';
+
+  @override
+  String get donorNameOptional => 'দাতার নাম (ঐচ্ছিক)';
+
+  @override
+  String get payeeNameForm => 'নাম (যাকে টাকা দেওয়া হয়েছে)';
+
+  @override
+  String get payeeName => 'নাম (প্রাপক)';
+
+  @override
+  String get purposeLabel => 'খরচ বাবদ';
+
+  @override
+  String get approvedBy => 'অনুমোদনকারী';
+
+  @override
+  String get addressLabel => 'ঠিকানা';
+
+  @override
+  String get addressOptional => 'ঠিকানা (ঐচ্ছিক)';
+
+  @override
+  String get amountTaka => 'টাকা';
+
+  @override
+  String get photosTitle => 'ছবি';
+
+  @override
+  String get donorNameHint => 'খালি রাখলে ‘অজ্ঞাত’ হিসেবে সংরক্ষণ হবে';
+
+  @override
+  String get addressHint => 'যেমন: ঘোড়াশাল, পলাশ';
+
+  @override
+  String suggestedNextReceipt(String n) {
+    return 'প্রস্তাবিত পরবর্তী নম্বর: $n — রশিদ বই দেখে বদলাতে পারেন';
+  }
+
+  @override
+  String suggestedNextVoucher(String n) {
+    return 'প্রস্তাবিত পরবর্তী নম্বর: $n — ভাউচার বই দেখে বদলাতে পারেন';
+  }
+
+  @override
+  String duplicateWarningReceipt(String date, String name, String amount) {
+    return 'এই রশিদ নং আগেই একটি আয়ে ব্যবহার হয়েছে ($date · $name · $amount)। নম্বরটি আবার দেখে নিন।';
+  }
+
+  @override
+  String duplicateWarningVoucher(String date, String name, String amount) {
+    return 'এই ভাউচার নং আগেই একটি ব্যয়ে ব্যবহার হয়েছে ($date · $name · $amount)। নম্বরটি আবার দেখে নিন।';
+  }
+
+  @override
+  String get receiptInvalid => 'নম্বরটি অঙ্কে লিখুন (১ বা তার বেশি)';
+
+  @override
+  String get approverSelect => 'যিনি অনুমোদন করেছেন তাঁকে বাছুন';
+
+  @override
+  String get approverRequired => 'অনুমোদনকারী বাছতে হবে';
+
+  @override
+  String get approverListEmpty =>
+      'অনুমোদনকারীর তালিকা খালি। আগে অ্যাডমিনকে সেটিংসে নাম যোগ করতে হবে।';
+
+  @override
+  String get approverNotInList => 'তালিকা থেকে অনুমোদনকারী বাছুন';
+
+  @override
+  String get photosHintIncome =>
+      'রশিদের ছবি, অথবা যে মালামাল বিক্রি হয়েছে তার ছবি';
+
+  @override
+  String get photosHintExpense =>
+      'ভাউচারের ছবি, অথবা যে মালামাল কেনা হয়েছে তার ছবি';
+
+  @override
+  String get photosOptionalMany => 'ছবি (ঐচ্ছিক, একাধিক দেওয়া যাবে)';
+
+  @override
+  String get addPhoto => '+ ছবি যোগ করুন';
+
+  @override
+  String removePhoto(String label) {
+    return '$label সরান';
+  }
+
+  @override
+  String get photoLabelTitle => 'ছবির লেবেল';
+
+  @override
+  String get photoLabelHint =>
+      'যেমন: রশিদ। খালি রাখলে বিবরণ ও নম্বর দেওয়া হবে।';
+
+  @override
+  String photoLimit(String max) {
+    return 'একটি এন্ট্রিতে সর্বোচ্চ $maxটি ছবি দেওয়া যায়';
+  }
+
+  @override
+  String photosCount(String n) {
+    return 'ছবি ($nটি)';
+  }
+
+  @override
+  String get photoReadError => 'এই ফাইলটি ছবি হিসেবে পড়া যায়নি';
+
+  @override
+  String get photoMissing => 'ছবির ফাইলটি এই কম্পিউটারে পাওয়া যায়নি';
+
+  @override
+  String openPhoto(String label) {
+    return '$label বড় করে দেখুন';
+  }
+
+  @override
+  String photoOf(String i, String n) {
+    return 'ছবি $i / $n';
+  }
+
+  @override
+  String get prevPhoto => 'আগের ছবি';
+
+  @override
+  String get nextPhoto => 'পরের ছবি';
+
+  @override
+  String get closePhoto => 'ছবি বন্ধ করুন';
+
+  @override
+  String get takePhoto => 'ক্যামেরা দিয়ে ছবি তুলুন';
+
+  @override
+  String get pickFromGallery => 'গ্যালারি থেকে বাছুন';
+
+  @override
+  String get entrySaved => 'এন্ট্রি সংরক্ষিত হয়েছে';
+
+  @override
+  String get entryUpdated => 'এন্ট্রি হালনাগাদ হয়েছে';
+
+  @override
+  String get periodToday => 'আজ';
+
+  @override
+  String get periodWeek => 'এই সপ্তাহ';
+
+  @override
+  String get periodMonth => 'এই মাস';
+
+  @override
+  String get periodYear => 'এই বছর';
+
+  @override
+  String get periodSpecific => 'নির্দিষ্ট দিন / সপ্তাহ / মাস / বছর';
+
+  @override
+  String get periodRange => 'তারিখের পরিসর';
+
+  @override
+  String get periodLabel => 'সময়কাল';
+
+  @override
+  String get unitDay => 'দিন';
+
+  @override
+  String get unitWeek => 'সপ্তাহ';
+
+  @override
+  String get unitMonth => 'মাস';
+
+  @override
+  String get unitYear => 'বছর';
+
+  @override
+  String get pickAnyDate => 'তার যেকোনো একটি তারিখ বাছুন';
+
+  @override
+  String get dateFrom => 'তারিখ থেকে';
+
+  @override
+  String get dateTo => 'তারিখ পর্যন্ত';
+
+  @override
+  String get rangeInvalid => 'শুরুর তারিখ শেষের তারিখের পরে হতে পারবে না';
+
+  @override
+  String periodDayName(String date) {
+    return 'দিন: $date';
+  }
+
+  @override
+  String periodWeekName(String from, String to) {
+    return 'সপ্তাহ: $from – $to';
+  }
+
+  @override
+  String periodMonthName(String month) {
+    return 'মাস: $month';
+  }
+
+  @override
+  String periodYearName(String year) {
+    return 'বছর: $year';
+  }
+
+  @override
+  String periodRangeName(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get searchLabel => 'খুঁজুন';
+
+  @override
+  String get searchHintReceipt =>
+      'রশিদ নং বা নামের অংশ (নম্বর লিখে এন্টার দিলে সরাসরি খুলবে)';
+
+  @override
+  String get searchHintVoucher =>
+      'ভাউচার নং বা নামের অংশ (নম্বর লিখে এন্টার দিলে সরাসরি খুলবে)';
+
+  @override
+  String entriesCount(String n) {
+    return '$nটি এন্ট্রি';
+  }
+
+  @override
+  String get totalLabel => 'মোট';
+
+  @override
+  String get cancelledNotCounted => 'বাতিল এন্ট্রি মোটে ধরা হয়নি';
+
+  @override
+  String showingRange(String from, String to, String total) {
+    return '$from–$to দেখানো হচ্ছে, মোট $totalটি';
+  }
+
+  @override
+  String get prevPage => 'আগের পাতা';
+
+  @override
+  String get nextPage => 'পরের পাতা';
+
+  @override
+  String get noEntries => 'এই নির্বাচনে কোনো এন্ট্রি নেই';
+
+  @override
+  String get colReceiptNo => 'রশিদ নং';
+
+  @override
+  String get colVoucherNo => 'ভাউচার নং';
+
+  @override
+  String get colDate => 'তারিখ';
+
+  @override
+  String get colDonor => 'দাতার নাম';
+
+  @override
+  String get colAddress => 'ঠিকানা';
+
+  @override
+  String get colPhotos => 'ছবি';
+
+  @override
+  String get colAmount => 'টাকা';
+
+  @override
+  String get colPurpose => 'খরচ বাবদ';
+
+  @override
+  String get colApprover => 'অনুমোদনকারী';
+
+  @override
+  String get statusCancelled => 'বাতিল';
+
+  @override
+  String get statusDuplicate => 'ডুপ্লিকেট';
+
+  @override
+  String duplicatesBanner(String n) {
+    return 'ফোন থেকে আসা $nটি এন্ট্রির নম্বর আগে থেকেই আছে। অ্যাডমিন যাচাই করুন।';
+  }
+
+  @override
+  String get showDuplicatesOnly => 'শুধু ডুপ্লিকেট দেখুন';
+
+  @override
+  String get showAll => 'সব দেখুন';
+
+  @override
+  String entryNotFoundByNumber(String no) {
+    return '$no নম্বরের কোনো এন্ট্রি পাওয়া যায়নি';
+  }
+
+  @override
+  String crumbReceipt(String n) {
+    return 'রশিদ নং $n';
+  }
+
+  @override
+  String crumbVoucher(String n) {
+    return 'ভাউচার নং $n';
+  }
+
+  @override
+  String get pdfExport => 'পিডিএফ এক্সপোর্ট';
+
+  @override
+  String get editEntry => 'সম্পাদনা';
+
+  @override
+  String get cancelEntry => 'এন্ট্রি বাতিল';
+
+  @override
+  String get typeLabel => 'ধরন';
+
+  @override
+  String get typeIncome => 'আয়';
+
+  @override
+  String get typeExpense => 'ব্যয়';
+
+  @override
+  String addedBy(String who, String role, String device, String when) {
+    return 'যোগ করেছেন: $who ($role) · $device · $when';
+  }
+
+  @override
+  String get fromPhone => 'ফোন থেকে';
+
+  @override
+  String get fromComputer => 'কম্পিউটার থেকে';
+
+  @override
+  String syncedAtDesktop(String when) {
+    return 'কম্পিউটারে সিঙ্ক: $when';
+  }
+
+  @override
+  String editedByLine(String who, String role, String when) {
+    return 'সম্পাদনা: $who ($role) · $when';
+  }
+
+  @override
+  String get notEdited => 'সম্পাদনা: হয়নি';
+
+  @override
+  String get cancelledBanner =>
+      'এই এন্ট্রি বাতিল করা হয়েছে। কোনো মোট বা ব্যালেন্সে এটি ধরা হয় না।';
+
+  @override
+  String cancelledByLine(String who, String role, String when) {
+    return 'বাতিল করেছেন: $who ($role) · $when';
+  }
+
+  @override
+  String cancelReasonLine(String reason) {
+    return 'কারণ: $reason';
+  }
+
+  @override
+  String amountNotCounted(String amount) {
+    return '$amount (মোটে ধরা হয়নি)';
+  }
+
+  @override
+  String get duplicateDetailBanner =>
+      'ফোন থেকে আসা এই এন্ট্রির নম্বর আগে থেকেই আছে। যাচাই করে নিন।';
+
+  @override
+  String get markReviewed => 'যাচাই হয়েছে';
+
+  @override
+  String get unknownUser => 'অজানা ব্যবহারকারী';
+
+  @override
+  String get approvalTitle => 'অ্যাডমিনের অনুমোদন প্রয়োজন';
+
+  @override
+  String get approvalBody =>
+      'আপনি ইউজার হিসেবে সাইন ইন করেছেন। এই এন্ট্রি সম্পাদনা বা বাতিল করতে একজন অ্যাডমিন বা সুপার অ্যাডমিনকে এখানে তাঁর নিজের ইউজারনেম ও পাসওয়ার্ড দিতে হবে।';
+
+  @override
+  String get adminUsername => 'অ্যাডমিনের ইউজারনেম';
+
+  @override
+  String get adminPassword => 'অ্যাডমিনের পাসওয়ার্ড';
+
+  @override
+  String get approvalNote => 'কে অনুমোদন দিলেন তা এন্ট্রির ইতিহাসে লেখা থাকবে।';
+
+  @override
+  String get approve => 'অনুমোদন দিন';
+
+  @override
+  String get cancelTitle => 'এন্ট্রি বাতিল করুন';
+
+  @override
+  String get cancelBody =>
+      'বাতিল করা এন্ট্রি মুছে যায় না। এটি তালিকায় ‘বাতিল’ চিহ্নসহ থেকে যাবে, কিন্তু কোনো মোট, সারাংশ বা ব্যালেন্সে ধরা হবে না।';
+
+  @override
+  String get cancelReasonLabel => 'বাতিলের কারণ';
+
+  @override
+  String get cancelReasonRequired => 'বাতিলের কারণ লিখতে হবে';
+
+  @override
+  String cancellingAs(String who) {
+    return 'বাতিল করছেন: $who';
+  }
+
+  @override
+  String get entryCancelled => 'এন্ট্রি বাতিল হয়েছে';
+
+  @override
+  String get entryAlreadyCancelled => 'এই এন্ট্রি আগেই বাতিল হয়েছে';
+
+  @override
+  String get entryNotFound => 'এই এন্ট্রিটি আর পাওয়া যাচ্ছে না';
+
+  @override
+  String get nothingToShow => 'এখনো দেখানোর কিছু নেই';
+
+  @override
+  String entrySummaryIncome(String no, String name, String amount) {
+    return 'আয় · রশিদ নং $no · $name · $amount';
+  }
+
+  @override
+  String entrySummaryExpense(
+    String no,
+    String name,
+    String purpose,
+    String amount,
+  ) {
+    return 'ব্যয় · ভাউচার নং $no · $name · $purpose · $amount';
+  }
+
+  @override
+  String entriesCountPhotos(String n) {
+    return '$nটি';
+  }
 }

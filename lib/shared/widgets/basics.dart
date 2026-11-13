@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../app/theme.dart';
 
@@ -118,7 +119,11 @@ class LabeledField extends StatelessWidget {
     this.suffix,
     this.textInputAction,
     this.borderColor,
+    this.errorText,
+    this.inputFormatters,
   });
+  final String? errorText;
+  final List<TextInputFormatter>? inputFormatters;
   final String label;
   final TextEditingController? controller;
   final String? initialValue;
@@ -159,7 +164,9 @@ class LabeledField extends StatelessWidget {
           maxLines: obscure ? 1 : maxLines,
           enabled: enabled,
           textInputAction: textInputAction,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
+            errorText: errorText,
             hintText: hint,
             helperText: helper,
             suffixIcon: suffix,
@@ -249,4 +256,22 @@ void showInfo(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message)));
+}
+
+/// "আয় › নতুন আয়": the first part goes back.
+class Breadcrumb extends StatelessWidget {
+  const Breadcrumb({super.key, required this.root, required this.current});
+  final String root;
+  final String current;
+
+  @override
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
+        InkWell(
+          onTap: () => Navigator.maybePop(context),
+          child: Text(root,
+              style: const TextStyle(fontSize: 14, color: AppColors.primary)),
+        ),
+        Text(' › $current',
+            style: const TextStyle(fontSize: 14, color: AppColors.muted)),
+      ]);
 }

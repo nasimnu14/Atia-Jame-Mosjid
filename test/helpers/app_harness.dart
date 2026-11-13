@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:atia_masjid_accounts/app/app.dart';
 import 'package:atia_masjid_accounts/app/app_services.dart';
 import 'package:atia_masjid_accounts/data/database.dart';
+import 'package:atia_masjid_accounts/features/entries/photo_picker.dart';
 import 'package:atia_masjid_accounts/shared/password_hasher.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
@@ -21,7 +22,9 @@ class AppHarness {
   final Directory dir;
 
   static Future<AppHarness> start(WidgetTester tester,
-      {Size size = const Size(1400, 900)}) async {
+      {Size size = const Size(1400, 900),
+      PhotoPicker? picker,
+      DateTime? now}) async {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
@@ -29,7 +32,9 @@ class AppHarness {
     final dir = Directory.systemTemp.createTempSync('atia_widget_');
     final services = (await tester.runAsync(() => AppServices.fromDatabase(
         AppDatabase(NativeDatabase.memory()), dir,
-        hasher: const PasswordHasher(logRounds: 4))))!;
+        hasher: const PasswordHasher(logRounds: 4),
+        now: now == null ? DateTime.now : () => now,
+        photoPicker: picker ?? const PlatformPhotoPicker())))!;
     final h = AppHarness(tester, services, dir);
     addTearDown(() async {
       await tester.runAsync(() => services.close());
@@ -99,7 +104,10 @@ class AppHarness {
   }
 
   Future<void> tapText(String text) async {
-    await tester.tap(find.text(text).first);
+    final f = find.text(text).first;
+    await tester.ensureVisible(f);
+    await tester.pump();
+    await tester.tap(f);
     await settle();
   }
 
@@ -117,4 +125,13 @@ void testApp(String description, Future<void> Function(WidgetTester tester) body
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 50));
   });
+}
+
+/// A photo picker for tests: hands back the bytes it was given.
+class FakePhotoPicker implements PhotoPicker {
+  FakePhotoPicker(this.photos);
+  List<Uint8List> photos;
+  @override
+  Future<List<Uint8List>> pick(BuildContext context, {required int maxCount}) async =>
+      photos.take(maxCount).toList();
 }

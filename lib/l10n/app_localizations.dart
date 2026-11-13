@@ -853,6 +853,821 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'unknown'**
   String get versionUnknown;
+
+  /// No description provided for @newIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'+ New income'**
+  String get newIncome;
+
+  /// No description provided for @newExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'+ New expense'**
+  String get newExpense;
+
+  /// No description provided for @addIncomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a new income'**
+  String get addIncomeTitle;
+
+  /// No description provided for @addExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a new expense'**
+  String get addExpenseTitle;
+
+  /// No description provided for @editIncomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit income'**
+  String get editIncomeTitle;
+
+  /// No description provided for @editExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit expense'**
+  String get editExpenseTitle;
+
+  /// No description provided for @incomeDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Income details'**
+  String get incomeDetailsTitle;
+
+  /// No description provided for @expenseDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense details'**
+  String get expenseDetailsTitle;
+
+  /// No description provided for @receiptNoIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt no.'**
+  String get receiptNoIncome;
+
+  /// No description provided for @receiptNoExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Voucher no.'**
+  String get receiptNoExpense;
+
+  /// No description provided for @donorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor\'s name'**
+  String get donorName;
+
+  /// No description provided for @donorNameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor\'s name (optional)'**
+  String get donorNameOptional;
+
+  /// No description provided for @payeeNameForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (who was paid)'**
+  String get payeeNameForm;
+
+  /// No description provided for @payeeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (payee)'**
+  String get payeeName;
+
+  /// No description provided for @purposeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose (খরচ বাবদ)'**
+  String get purposeLabel;
+
+  /// No description provided for @approvedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved by'**
+  String get approvedBy;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get addressLabel;
+
+  /// No description provided for @addressOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Address (optional)'**
+  String get addressOptional;
+
+  /// No description provided for @amountTaka.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amountTaka;
+
+  /// No description provided for @photosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get photosTitle;
+
+  /// No description provided for @donorNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to save as “Unknown”'**
+  String get donorNameHint;
+
+  /// No description provided for @addressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Ghorashal, Palash'**
+  String get addressHint;
+
+  /// No description provided for @suggestedNextReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested next number: {n} — change it to match the receipt book'**
+  String suggestedNextReceipt(String n);
+
+  /// No description provided for @suggestedNextVoucher.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested next number: {n} — change it to match the voucher book'**
+  String suggestedNextVoucher(String n);
+
+  /// No description provided for @duplicateWarningReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'This receipt no. is already used by another income ({date} · {name} · {amount}). Please check the number again.'**
+  String duplicateWarningReceipt(String date, String name, String amount);
+
+  /// No description provided for @duplicateWarningVoucher.
+  ///
+  /// In en, this message translates to:
+  /// **'This voucher no. is already used by another expense ({date} · {name} · {amount}). Please check the number again.'**
+  String duplicateWarningVoucher(String date, String name, String amount);
+
+  /// No description provided for @receiptInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the number as digits, 1 or more'**
+  String get receiptInvalid;
+
+  /// No description provided for @approverSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose who approved this'**
+  String get approverSelect;
+
+  /// No description provided for @approverRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the approver'**
+  String get approverRequired;
+
+  /// No description provided for @approverListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'The approver list is empty. An Admin must add names in Settings first.'**
+  String get approverListEmpty;
+
+  /// No description provided for @approverNotInList.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an approver from the list'**
+  String get approverNotInList;
+
+  /// No description provided for @photosHintIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo of the receipt, or of the goods that were sold'**
+  String get photosHintIncome;
+
+  /// No description provided for @photosHintExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo of the voucher, or of the goods that were bought'**
+  String get photosHintExpense;
+
+  /// No description provided for @photosOptionalMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos (optional, you can add several)'**
+  String get photosOptionalMany;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add photo'**
+  String get addPhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {label}'**
+  String removePhoto(String label);
+
+  /// No description provided for @photoLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo label'**
+  String get photoLabelTitle;
+
+  /// No description provided for @photoLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Receipt. If left blank, the description and a number are used.'**
+  String get photoLabelHint;
+
+  /// No description provided for @photoLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'An entry can have at most {max} photos'**
+  String photoLimit(String max);
+
+  /// No description provided for @photosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos ({n})'**
+  String photosCount(String n);
+
+  /// No description provided for @photoReadError.
+  ///
+  /// In en, this message translates to:
+  /// **'This file could not be read as a photo'**
+  String get photoReadError;
+
+  /// No description provided for @photoMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The photo file was not found on this computer'**
+  String get photoMissing;
+
+  /// No description provided for @openPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'View {label} full size'**
+  String openPhoto(String label);
+
+  /// No description provided for @photoOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {i} of {n}'**
+  String photoOf(String i, String n);
+
+  /// No description provided for @prevPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous photo'**
+  String get prevPhoto;
+
+  /// No description provided for @nextPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Next photo'**
+  String get nextPhoto;
+
+  /// No description provided for @closePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Close photo'**
+  String get closePhoto;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo with the camera'**
+  String get takePhoto;
+
+  /// No description provided for @pickFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from the gallery'**
+  String get pickFromGallery;
+
+  /// No description provided for @entrySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry saved'**
+  String get entrySaved;
+
+  /// No description provided for @entryUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry updated'**
+  String get entryUpdated;
+
+  /// No description provided for @periodToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get periodToday;
+
+  /// No description provided for @periodWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get periodWeek;
+
+  /// No description provided for @periodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get periodMonth;
+
+  /// No description provided for @periodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'This year'**
+  String get periodYear;
+
+  /// No description provided for @periodSpecific.
+  ///
+  /// In en, this message translates to:
+  /// **'A chosen day / week / month / year'**
+  String get periodSpecific;
+
+  /// No description provided for @periodRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get periodRange;
+
+  /// No description provided for @periodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get periodLabel;
+
+  /// No description provided for @unitDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get unitDay;
+
+  /// No description provided for @unitWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get unitWeek;
+
+  /// No description provided for @unitMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get unitMonth;
+
+  /// No description provided for @unitYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get unitYear;
+
+  /// No description provided for @pickAnyDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick any date in it'**
+  String get pickAnyDate;
+
+  /// No description provided for @dateFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From date'**
+  String get dateFrom;
+
+  /// No description provided for @dateTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To date'**
+  String get dateTo;
+
+  /// No description provided for @rangeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The start date must not be after the end date'**
+  String get rangeInvalid;
+
+  /// No description provided for @periodDayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Day: {date}'**
+  String periodDayName(String date);
+
+  /// No description provided for @periodWeekName.
+  ///
+  /// In en, this message translates to:
+  /// **'Week: {from} – {to}'**
+  String periodWeekName(String from, String to);
+
+  /// No description provided for @periodMonthName.
+  ///
+  /// In en, this message translates to:
+  /// **'Month: {month}'**
+  String periodMonthName(String month);
+
+  /// No description provided for @periodYearName.
+  ///
+  /// In en, this message translates to:
+  /// **'Year: {year}'**
+  String periodYearName(String year);
+
+  /// No description provided for @periodRangeName.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String periodRangeName(String from, String to);
+
+  /// No description provided for @searchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchLabel;
+
+  /// No description provided for @searchHintReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt no. or part of a name (Enter opens a number)'**
+  String get searchHintReceipt;
+
+  /// No description provided for @searchHintVoucher.
+  ///
+  /// In en, this message translates to:
+  /// **'Voucher no. or part of a name (Enter opens a number)'**
+  String get searchHintVoucher;
+
+  /// No description provided for @entriesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries'**
+  String entriesCount(String n);
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @cancelledNotCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled entries are not counted in the total'**
+  String get cancelledNotCounted;
+
+  /// No description provided for @showingRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {from}–{to} of {total}'**
+  String showingRange(String from, String to, String total);
+
+  /// No description provided for @prevPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get prevPage;
+
+  /// No description provided for @nextPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get nextPage;
+
+  /// No description provided for @noEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries for this selection'**
+  String get noEntries;
+
+  /// No description provided for @colReceiptNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt no.'**
+  String get colReceiptNo;
+
+  /// No description provided for @colVoucherNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Voucher no.'**
+  String get colVoucherNo;
+
+  /// No description provided for @colDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get colDate;
+
+  /// No description provided for @colDonor.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor'**
+  String get colDonor;
+
+  /// No description provided for @colAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get colAddress;
+
+  /// No description provided for @colPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get colPhotos;
+
+  /// No description provided for @colAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get colAmount;
+
+  /// No description provided for @colPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose'**
+  String get colPurpose;
+
+  /// No description provided for @colApprover.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved by'**
+  String get colApprover;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @statusDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get statusDuplicate;
+
+  /// No description provided for @duplicatesBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries from a phone have a number that already exists. An Admin should check them.'**
+  String duplicatesBanner(String n);
+
+  /// No description provided for @showDuplicatesOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Show only duplicates'**
+  String get showDuplicatesOnly;
+
+  /// No description provided for @showAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get showAll;
+
+  /// No description provided for @entryNotFoundByNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No entry with number {no}'**
+  String entryNotFoundByNumber(String no);
+
+  /// No description provided for @crumbReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt no. {n}'**
+  String crumbReceipt(String n);
+
+  /// No description provided for @crumbVoucher.
+  ///
+  /// In en, this message translates to:
+  /// **'Voucher no. {n}'**
+  String crumbVoucher(String n);
+
+  /// No description provided for @pdfExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export PDF'**
+  String get pdfExport;
+
+  /// No description provided for @editEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editEntry;
+
+  /// No description provided for @cancelEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel entry'**
+  String get cancelEntry;
+
+  /// No description provided for @typeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get typeLabel;
+
+  /// No description provided for @typeIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get typeIncome;
+
+  /// No description provided for @typeExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get typeExpense;
+
+  /// No description provided for @addedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by: {who} ({role}) · {device} · {when}'**
+  String addedBy(String who, String role, String device, String when);
+
+  /// No description provided for @fromPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'from a phone'**
+  String get fromPhone;
+
+  /// No description provided for @fromComputer.
+  ///
+  /// In en, this message translates to:
+  /// **'from the computer'**
+  String get fromComputer;
+
+  /// No description provided for @syncedAtDesktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced to the computer: {when}'**
+  String syncedAtDesktop(String when);
+
+  /// No description provided for @editedByLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited by: {who} ({role}) · {when}'**
+  String editedByLine(String who, String role, String when);
+
+  /// No description provided for @notEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited: no'**
+  String get notEdited;
+
+  /// No description provided for @cancelledBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry was cancelled. It is not counted in any total or balance.'**
+  String get cancelledBanner;
+
+  /// No description provided for @cancelledByLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled by: {who} ({role}) · {when}'**
+  String cancelledByLine(String who, String role, String when);
+
+  /// No description provided for @cancelReasonLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String cancelReasonLine(String reason);
+
+  /// No description provided for @amountNotCounted.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} (not counted)'**
+  String amountNotCounted(String amount);
+
+  /// No description provided for @duplicateDetailBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry came from a phone with a number that already exists. Please check it.'**
+  String get duplicateDetailBanner;
+
+  /// No description provided for @markReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as checked'**
+  String get markReviewed;
+
+  /// No description provided for @unknownUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown user'**
+  String get unknownUser;
+
+  /// No description provided for @approvalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An Admin\'s approval is needed'**
+  String get approvalTitle;
+
+  /// No description provided for @approvalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed in as a User. To edit or cancel this entry, an Admin or the Super Admin must enter their own username and password here.'**
+  String get approvalBody;
+
+  /// No description provided for @adminUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin\'s username'**
+  String get adminUsername;
+
+  /// No description provided for @adminPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin\'s password'**
+  String get adminPassword;
+
+  /// No description provided for @approvalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Who approved will be written in the entry\'s history.'**
+  String get approvalNote;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @cancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this entry'**
+  String get cancelTitle;
+
+  /// No description provided for @cancelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A cancelled entry is not deleted. It stays in the list marked “Cancelled”, but is not counted in any total, summary or balance.'**
+  String get cancelBody;
+
+  /// No description provided for @cancelReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for cancelling'**
+  String get cancelReasonLabel;
+
+  /// No description provided for @cancelReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the reason for cancelling'**
+  String get cancelReasonRequired;
+
+  /// No description provided for @cancellingAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling as: {who}'**
+  String cancellingAs(String who);
+
+  /// No description provided for @entryCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry cancelled'**
+  String get entryCancelled;
+
+  /// No description provided for @entryAlreadyCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry is already cancelled'**
+  String get entryAlreadyCancelled;
+
+  /// No description provided for @entryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry no longer exists'**
+  String get entryNotFound;
+
+  /// No description provided for @nothingToShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to show yet'**
+  String get nothingToShow;
+
+  /// No description provided for @entrySummaryIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income · Receipt no. {no} · {name} · {amount}'**
+  String entrySummaryIncome(String no, String name, String amount);
+
+  /// No description provided for @entrySummaryExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense · Voucher no. {no} · {name} · {purpose} · {amount}'**
+  String entrySummaryExpense(
+    String no,
+    String name,
+    String purpose,
+    String amount,
+  );
+
+  /// No description provided for @entriesCountPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'{n}'**
+  String entriesCountPhotos(String n);
 }
 
 class _AppLocalizationsDelegate

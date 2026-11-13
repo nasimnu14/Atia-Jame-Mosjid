@@ -91,9 +91,16 @@ class EntryWithPhotos {
 }
 
 class EntryQuery {
-  const EntryQuery({required this.type, this.period, this.text = ''});
+  const EntryQuery(
+      {required this.type,
+      this.period,
+      this.text = '',
+      this.onlyDuplicates = false});
   final EntryType type;
   final Period? period;
+
+  /// Only entries flagged as duplicate receipt numbers (SYN-8).
+  final bool onlyDuplicates;
 
   /// Part of a name, or a receipt number (FND-1, FND-2).
   final String text;
@@ -171,6 +178,16 @@ class EntryService {
             ..where((e) =>
                 e.type.equalsValue(type) & e.receiptNo.equals(receiptNo)))
           .get();
+
+  /// How many entries of this type are flagged as duplicates (SYN-8).
+  Future<int> duplicateCount(EntryType type) async {
+    final cnt = _db.entries.id.count();
+    final q = _db.selectOnly(_db.entries)
+      ..addColumns([cnt])
+      ..where(_db.entries.type.equalsValue(type) &
+          _db.entries.isDuplicate.equals(true));
+    return (await q.getSingle()).read(cnt) ?? 0;
+  }
 
   // ------------------------------------------------------------- validation
 
@@ -449,6 +466,7 @@ class EntryService {
           e.entryDate.isBiggerOrEqualValue(dayKey(p.from)) &
           e.entryDate.isSmallerOrEqualValue(dayKey(p.to));
     }
+    if (q.onlyDuplicates) cond = cond & e.isDuplicate.equals(true);
     final text = q.text.trim();
     if (text.isNotEmpty) {
       final asNumber = int.tryParse(toEnglishDigits(text));
