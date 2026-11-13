@@ -1,5 +1,7 @@
 # Track docs here, despite the global ignore rule for docs/
 !docs/
+# Track tests too, despite the global ignore rule for test/
+!test/
 
 # Flutter / Dart
 .dart_tool/
