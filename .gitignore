@@ -1,2 +1,21 @@
 # Track docs here, despite the global ignore rule for docs/
 !docs/
+
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.DS_Store
+**/Pods/
+**/ephemeral/
+android/.gradle/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+*.g.dart.tmp
+coverage/

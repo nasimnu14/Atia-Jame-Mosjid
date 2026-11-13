@@ -53,10 +53,16 @@ These were agreed with the requester on 13 Nov 2026:
 | Removing a wrong entry | **An Admin or the Super Admin cancels it, with a reason.** The entry stays visible but is left out of all totals. Nothing is permanently deleted. |
 | Users and roles | Everyone signs in with their own account. There are three roles: **Super Admin, Admin, User.** Only the Super Admin can add users. |
 | Phone sign-in | **Same username and password as on the desktop.** User accounts are copied to the phone each time it scans the desktop's QR code. |
-| Desktop platforms | **Windows and macOS.** |
+| Desktop platforms | **Windows** for the mosque. **macOS for testing only**, on macOS 26 (Tahoe). The app is not given to users on macOS. |
 | Super Admin password | **Only the Super Admin can change it.** Nobody else can reset it, and there is no recovery. |
 | Handing over Super Admin | **Not allowed.** The Super Admin role stays with the person who set it up. |
-| Publishing updates | **GitHub Releases.** |
+| Publishing updates | **GitHub Releases.** The developer publishes each new version after getting the customer's feedback. |
+| Android distribution | **An APK file on GitHub Releases first**, and **Google Play** later. |
+| Google account for backups and Excel | **1505011.mnu@ugrad.cse.buet.ac.bd** for now. A Google account for the mosque will be added later, and the app will switch to it. |
+| Backups kept | **One year.** Older backups are deleted automatically. |
+| Phone data safety | **Phone entries are backed up by syncing them to the desktop**, whose backups go to Google Drive. There is no separate backup from the phone. |
+| Photo labels | **Ask for a label** when a photo is added. If none is given, label it with the entry's description. |
+| Windows signing certificate | **To be bought later.** Until then, Windows shows an "unknown publisher" warning when installing. |
 | Expense approver | **Chosen from a list** that an Admin or the Super Admin adds to and edits. |
 | Cancelled entries in PDFs | **Shown and marked as cancelled**, and left out of the totals. |
 | Oldest Android version | **Android 12.** |
@@ -122,7 +128,7 @@ Each income entry has these fields:
 | Date | তারিখ | Yes | |
 | Amount | টাকা | Yes | Must be more than 0 |
 | Address | ঠিকানা | No | |
-| Photos | ছবি | No | Up to 10 photos, e.g. the paper receipt or the item that was sold |
+| Photos | ছবি | No | Up to 10 photos, e.g. the paper receipt or the item that was sold. Each photo has a label (INC-10). |
 
 - **INC-1** The user must be able to add an income entry with the fields above.
 - **INC-2** The app must not save an income entry if a required field is missing or the amount is 0 or less.
@@ -133,6 +139,7 @@ Each income entry has these fields:
 - **INC-7** The user must be able to view each photo of an entry at full size.
 - **INC-8** Adding or removing a photo on a saved entry counts as an edit, so only an Admin or the Super Admin can do it (see EDT-1 and EDT-2).
 - **INC-9** When a large photo is attached, the app must shrink it before saving, so it stays clear enough to read the receipt but takes less space in backups and syncs. This applies on both desktop and phone.
+- **INC-10** When a photo is added, the app must ask for a short label, such as "রশিদ" or "বিক্রি করা মালামাল". If the user leaves it blank, the photo must be labelled with the entry's description (the purpose, *খরচ বাবদ*, for an expense; the name for an income) followed by a number, e.g. "সিলেট বালু ২ ট্রলি ১". The label is shown under the photo everywhere it appears.
 
 #### Expense — ব্যয় (EXP)
 
@@ -147,12 +154,12 @@ Each expense entry has these fields:
 | Date | তারিখ | Yes | |
 | Amount | টাকা | Yes | Must be more than 0 |
 | Address | ঠিকানা | No | |
-| Photos | ছবি | No | Up to 10 photos, e.g. the paper voucher or the item that was bought |
+| Photos | ছবি | No | Up to 10 photos, e.g. the paper voucher or the item that was bought. Each photo has a label (INC-10). |
 
 - **EXP-1** The user must be able to add an expense entry with the fields above.
 - **EXP-2** The app must not save an expense entry if a required field is missing or the amount is 0 or less.
 - **EXP-3** Expense receipt numbers must be a separate series from income receipt numbers. The same number may appear once in income and once in expense.
-- **EXP-4** Receipt number suggestion, the duplicate warning and photos must work for expenses exactly as INC-4 to INC-9 describe for income.
+- **EXP-4** Receipt number suggestion, the duplicate warning and photos must work for expenses exactly as INC-4 to INC-10 describe for income.
 - **EXP-5** Every feature in the sections below (finding, listing, entry details, editing, cancelling, PDF, Excel) must work for expenses as well as for income.
 - **EXP-6** "Approved by" must be chosen from an approver list (e.g. সভাপতি, সেক্রেটারী, ক্যাশিয়ার). It cannot be typed freely.
 - **EXP-7** Only an Admin or the Super Admin can add a name to the approver list or edit one, on the desktop.
@@ -212,6 +219,8 @@ These apply to both income and expense.
 - **BAK-4** If more than 4 hours have passed since the last successful backup when the app starts, the app must back up straight away.
 - **BAK-5** The app must show the date and time of the last successful backup, and must tell the user when a backup fails.
 - **BAK-6** The Super Admin must be able to restore all data from a Google Drive backup, for example on a new computer. Only the Super Admin can restore, because restoring replaces all current data.
+- **BAK-7** Backups must be kept on Google Drive for one year. Backups older than one year must be deleted automatically.
+- **BAK-8** When an Admin or the Super Admin connects a different Google account (for example the mosque's own account, later), the app must make a full backup to the new account straight away.
 
 #### Excel sheets on Google Drive (XLS)
 
@@ -232,6 +241,7 @@ These apply to both income and expense.
 - **UPD-3** After an update, every entry, photo, setting, user account and sync flag must still be there and unchanged.
 - **UPD-4** If an update changes how data is stored, the app must convert the existing data automatically, and must back it up before converting.
 - **UPD-5** If an update fails, the previous version must still open and work with all its data.
+- **UPD-6** The Android app is first given out as an APK file on GitHub Releases, and later also on Google Play. The Google Play version must update only through Google Play, never by downloading an APK file.
 
 #### Android app (MOB)
 
@@ -279,7 +289,7 @@ These apply to both income and expense.
 
 These are assumptions where `idea.md` gave no detail. Please confirm or correct them.
 
-- The desktop app supports Windows 10 and 11, and recent versions of macOS. The Android app supports Android 12 and newer.
+- The desktop app supports Windows 10 and 11. macOS is used only for testing, on macOS 26 (Tahoe). The Android app supports Android 12 and newer.
 - A change to a user account (new user, new password, disabled user) reaches a phone only at its next sync. Until then, the phone uses the accounts it last received.
 - Only one desktop computer runs the app. It holds the master record, and all data is stored on it.
 - Every feature except backup and the update check works without internet.
@@ -291,12 +301,9 @@ These are assumptions where `idea.md` gave no detail. Please confirm or correct 
 - Amounts are whole Taka with no paisa, as in the paper records.
 - An expense's purpose is required because the expense ledger lists every expense by its description.
 - Backups run while the desktop app is open. BAK-3 and BAK-4 cover the time when it is closed or offline.
+- Entries made on a phone are safe once they are synced to the desktop, because the desktop's backups go to Google Drive. Until then they exist only on the phone, so phones should be synced often.
 - The daily Excel upload and manual Excel uploads are done from the desktop, because it holds the full records. The phone app does not upload Excel files.
 
 ## Open Questions
 
-1. **Backup account:** which Google account will hold the backups, and how many old backups should be kept?
-2. **Lost phone:** entries that haven't been synced exist only on the phone. Should the phone back them up somewhere too?
-3. **Who publishes updates:** updates go on GitHub Releases, but who will publish new versions?
-4. **Oldest macOS version:** the answer was "macOS 18", but there is no macOS 18. Apple went from macOS 15 (Sequoia) to macOS 26 (Tahoe). Which one is meant?
-5. **Photo labels:** the answer was "item photo". Does this mean photos are only of the item (not the receipt), so no labels are needed? Or should every photo be labelled "item photo"?
+None right now. All earlier questions are answered in **Decisions So Far**.
