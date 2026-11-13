@@ -2,32 +2,147 @@
 
 ## RESUME HERE
 
-- **Last updated:** 2026-11-13 (session start)
-- **Current phase / step:** Phase 0, step 0.1 (project scaffolding, dependencies)
-- **Exact next action:** Finish `flutter pub add` of dependencies (running), verify `flutter pub get` works, commit "chore: scaffold Flutter project". Then build the Phase 0 risk proofs (Bangla PDF, Drive interface, Wi-Fi sync loopback, updater check).
-- **Half-done / broken:** nothing yet.
+- **Last updated:** 2026-11-13 (Phase 1 finished)
+- **Current phase / step:** Phase 2, step 2.1: income/expense UI (forms, lists, details, photos, edit, cancel dialogs)
+- **Exact next action:** Build `lib/features/entries/` screens on top of the existing `EntryService` (already tested): entry list (income & expense, one screen with a type parameter), entry form, details, photo viewer, cancel dialog, admin-approval dialog. Wire them into `lib/app/desktop_shell.dart` (`Section.income` / `Section.expense` currently show `SectionPlaceholder`). Read designs first: Artifact boards IncomeList, IncomeForm, IncomeDetails, PhotoViewer, ExpenseList, ExpenseForm, ExpenseDetails, AdminApproval, CancelEntry (use the Artifact tool `read` with `paths`, never WebFetch).
+- **Half-done / broken:** nothing broken. `lib/app/section_placeholder.dart` and `lib/features/google_drive/restore_launcher.dart` are deliberate stubs to be replaced (Phase 2/3 and Phase 4). `UpdateCard` only shows the version (update check = Phase 5).
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
-  - `flutter pub get && flutter analyze`
-  - `flutter test`
-  - run macOS: `flutter run -d macos`; Android emulator: `flutter run -d emulator-5554`
+  - `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter gen-l10n`
+  - `flutter analyze` (expect: No issues found)
+  - `flutter test` (expect: all pass; 106 at end of Phase 1)
+  - run: `flutter run -d macos` / `flutter run -d emulator-5554`
+  - Screenshots without screen-capture permission: `SHOT_DIR=<dir> flutter test test/widget/screens_shot_test.dart`, then view the PNGs.
+- **Working notes:** widget tests must use `testApp(...)` (test/helpers/app_harness.dart) and `tester.runAsync` for real async (Drift, bcrypt isolates). Add translations with `tool/l10n_add.py` (keeps both ARB files identical) then `flutter gen-l10n`; multi-placeholder args are generated in alphabetical order. Tests folder is un-ignored in `.gitignore` because the user's global gitignore ignores `test/`.
 
 ## Phase checklist
 
 | Phase | Name | Status | Finished |
 |---|---|---|---|
-| 0 | Set-up and risk checks | in progress | |
-| 1 | Foundation: database, sign-in, language | not started | |
-| 2 | Income and expense | not started | |
-| 3 | Balance, summary, PDF | not started | |
+| 0 | Set-up and risk checks | done | 2026-11-13 |
+| 1 | Foundation: database, sign-in, language | done | 2026-11-13 |
+| 2 | Income and expense | in progress (services + tests done, UI to do) | |
+| 3 | Balance, summary, PDF | not started (BalanceService done) | |
 | 4 | Google Drive: backup and Excel | not started | |
 | 5 | Updates and installers | not started | |
 | 6 | Android app and sync | not started | |
 | Review | 3+ review/fix cycles | not started | |
 
+### Phase 0 results (risk checks)
+
+1. **Bangla PDF:** the `pdf` package breaks Bangla (unjoined conjuncts, misplaced vowel signs). Fallback chosen (plan Risk 1): draw report pages with Flutter's text engine and embed them as images. Proven in `test/proof/bangla_raster_pdf_proof_test.dart`.
+2. **Google Drive:** no credentials here; built behind an interface with a fake in Phase 4. Not verified against real Google.
+3. **Wi-Fi sync:** `shelf` server + AES-GCM encrypted message over localhost works (`test/proof/sync_loopback_proof_test.dart`). Real phone↔desktop flow in Phase 6.
+4. **Updater:** cannot be run here (Windows). GitHub Releases check built in Phase 5.
+5. Build check: `flutter build macos --debug` and `flutter build apk --debug` both succeeded.
+
 ## Requirement tracker
 
-(To be filled as phases complete. Statuses: todo / partial / done / blocked.)
+Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_set.py <status> <ids> [files] [tests]`.
+
+<!-- REQ-TABLE-START -->
+| ID | Status | Implemented in | Covered by |
+|---|---|---|---|
+| GEN-1 | partial | macOS+Android builds OK; Windows folder generated, not built | flutter build macos/apk |
+| GEN-2 | partial | lib/l10n/*.arb (all screens built so far) | test/l10n_test.dart |
+| GEN-3 | done | lib/app/app_state.dart, lib/features/sign_in/language_switch.dart | test/widget/sign_in_flow_test.dart |
+| GEN-4 | partial | lib/shared/formatters.dart, bangla.dart | test/shared/shared_utils_test.dart, date_field_test.dart |
+| GEN-5 | done | lib/app/app_state.dart, lib/features/sign_in/language_switch.dart | test/widget/sign_in_flow_test.dart |
+| GEN-6 | partial | lib/features/entries/entry_service.dart (forms in Phase 2) | test/features/entry_service_test.dart |
+| GEN-7 | done | lib/shared/widgets/date_form_field.dart, lib/shared/date_parse.dart | test/shared/date_parse_test.dart, test/widget/date_field_test.dart |
+| GEN-8 | done | lib/shared/widgets/date_form_field.dart, lib/shared/date_parse.dart | test/shared/date_parse_test.dart, test/widget/date_field_test.dart |
+| USR-1 | partial | sign_in_screen.dart, user_service.dart (desktop done; phone in Phase 6) | test/widget/sign_in_flow_test.dart |
+| USR-2 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
+| USR-3 | partial | setup_screen.dart (restore button wired in Phase 4) | test/widget/sign_in_flow_test.dart |
+| USR-4 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
+| USR-5 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
+| USR-6 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
+| USR-7 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
+| USR-8 | partial | entry_service.dart (stored; shown in Phase 2 details) | test/features/entry_service_test.dart |
+| USR-9 | done | lib/shared/password_hasher.dart (bcrypt) | test/features/user_service_test.dart |
+| INC-1 | todo |  |  |
+| INC-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| INC-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| INC-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| INC-5 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| INC-6 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| INC-7 | todo |  |  |
+| INC-8 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| INC-9 | todo |  |  |
+| INC-10 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EXP-1 | todo |  |  |
+| EXP-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EXP-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EXP-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EXP-5 | todo |  |  |
+| EXP-6 | partial | settings_service.dart + entry_service.dart validation (form in Phase 2) | test/features/entry_service_test.dart |
+| EXP-7 | done | settings_service.dart, settings_screen.dart | test/features/balance_test.dart, test/widget/users_settings_test.dart |
+| EXP-8 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-1 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-5 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-6 | todo |  |  |
+| FND-7 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-8 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| FND-9 | todo |  |  |
+| DET-1 | todo |  |  |
+| DET-2 | todo |  |  |
+| DET-3 | todo |  |  |
+| EDT-1 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EDT-2 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EDT-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| EDT-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| BAL-1 | done | lib/features/settings/settings_service.dart, settings_screen.dart | test/features/balance_test.dart, test/widget/users_settings_test.dart |
+| BAL-2 | done | lib/features/settings/settings_service.dart, settings_screen.dart | test/features/balance_test.dart, test/widget/users_settings_test.dart |
+| BAL-3 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| BAL-4 | partial | service layer done (entry_service.dart, balance_service.dart); screens pending | test/features/entry_service_test.dart, balance_test.dart |
+| PDF-1 | todo |  |  |
+| PDF-2 | todo |  |  |
+| PDF-3 | todo |  |  |
+| PDF-4 | todo |  |  |
+| PDF-5 | todo |  |  |
+| PDF-6 | todo |  |  |
+| BAK-1 | todo |  |  |
+| BAK-2 | todo |  |  |
+| BAK-3 | todo |  |  |
+| BAK-4 | todo |  |  |
+| BAK-5 | todo |  |  |
+| BAK-6 | todo |  |  |
+| BAK-7 | todo |  |  |
+| BAK-8 | todo |  |  |
+| XLS-1 | todo |  |  |
+| XLS-2 | todo |  |  |
+| XLS-3 | todo |  |  |
+| XLS-4 | todo |  |  |
+| XLS-5 | todo |  |  |
+| XLS-6 | todo |  |  |
+| XLS-7 | todo |  |  |
+| XLS-8 | todo |  |  |
+| XLS-9 | todo |  |  |
+| UPD-1 | todo |  |  |
+| UPD-2 | todo |  |  |
+| UPD-3 | todo |  |  |
+| UPD-4 | todo |  |  |
+| UPD-5 | todo |  |  |
+| UPD-6 | todo |  |  |
+| MOB-1 | todo |  |  |
+| MOB-2 | todo |  |  |
+| MOB-3 | todo |  |  |
+| MOB-4 | todo |  |  |
+| MOB-5 | todo |  |  |
+| SYN-1 | todo |  |  |
+| SYN-2 | todo |  |  |
+| SYN-3 | todo |  |  |
+| SYN-4 | todo |  |  |
+| SYN-5 | todo |  |  |
+| SYN-6 | todo |  |  |
+| SYN-7 | todo |  |  |
+| SYN-8 | todo |  |  |
+| SYN-9 | todo |  |  |
+| SYN-10 | todo |  |  |
+<!-- REQ-TABLE-END -->
 
 ## Screen tracker
 
@@ -72,6 +187,8 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 
 ## Log (newest first)
 
+- 2026-11-13: Phase 1 done. Settings screen (language, opening balance, approvers, password, version), Users screen + dialogs, Setup and Sign-in screens, desktop shell with role-aware menu, date field, l10n (bn/en) with parity test. Bugs found by tests and fixed: LIKE wildcards in search (`%`/`_`), `context.fmt` using `watch` in handlers, wrong argument order for `dateDayInvalid`, Users table horizontal-scroll layout, button text losing the Bangla font. 106 tests pass, analyzer clean.
+- 2026-11-13: Data layer: Drift schema, db opener with pre-migration copy + restore on failure, UserService/EntryService/BalanceService/SettingsService, parsing and period helpers, 80+ tests.
 - 2026-11-13: Session started. No progress file existed. Read requirements, plan, test cases list, design artifact (palette: primary #0F5C46, dark #0F3D30, bg #F4F6F3, expense #9A3709, font Hind Siliguri). `flutter create` for macos, windows, android done. Added dependencies.
 
 ## Review cycles

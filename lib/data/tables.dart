@@ -18,6 +18,7 @@ class Users extends Table {
   TextColumn get role => textEnum<Role>()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastSignInAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -1,0 +1,184 @@
+{
+  "@@locale": "en",
+  "appName": "Atia Jame Masjid",
+  "appTitle": "Atia Jame Masjid — Accounts",
+  "mosquePlace": "Ghorashal, Palash, Narsingdi",
+  "mosqueAddressLine": "Atia, Ghorashal, Palash, Narsingdi",
+  "save": "Save",
+  "back": "Go back",
+  "add": "Add",
+  "close": "Close",
+  "ok": "OK",
+  "edit": "Edit",
+  "search": "Search",
+  "tryAgain": "Try again",
+  "signOut": "Sign out",
+  "loading": "Loading…",
+  "saved": "Saved",
+  "never": "Never",
+  "navDashboard": "Dashboard",
+  "navIncome": "Income",
+  "navExpense": "Expense",
+  "navSummary": "Summary",
+  "navPdf": "PDF reports",
+  "navExcel": "Excel upload",
+  "navSync": "Phone sync",
+  "navUsers": "Users",
+  "navBackup": "Backup",
+  "navSettings": "Settings",
+  "mainMenu": "Main menu",
+  "roleSuperAdmin": "Super Admin",
+  "roleAdmin": "Admin",
+  "roleUser": "User",
+  "language": "Language",
+  "langBangla": "বাংলা",
+  "langEnglish": "English",
+  "setupWelcome": "Welcome to the Atia Jame Masjid accounts app",
+  "setupChoose": "To begin, choose one of the two below",
+  "setupStartFresh": "Start fresh",
+  "setupStartFreshDesc": "Create the Super Admin account. There is only one Super Admin, and only they can add new users.",
+  "fullName": "Full name",
+  "username": "Username",
+  "password": "Password",
+  "confirmPassword": "Enter the password again",
+  "createAccountStart": "Create the account and start",
+  "setupRestoreTitle": "Restore from a backup",
+  "setupRestoreDesc": "On a new computer, bring back all entries, photos, users and settings from the Google Drive backup.",
+  "setupRestoreStep1": "Connect to the mosque's Google account",
+  "setupRestoreStep2": "Choose which backup to restore",
+  "setupRestoreStep3": "Sign in with the old Super Admin's username and password",
+  "connectGoogle": "Connect to a Google account",
+  "signInTitle": "Sign in",
+  "signIn": "Sign in",
+  "forgotPasswordHint": "If you forgot your password, ask the Super Admin to reset it.",
+  "switchLanguage": "বাংলা",
+  "fieldRequired": "This field is required",
+  "passwordsDontMatch": "The two passwords do not match",
+  "passwordTooShort": "Use at least {n} characters",
+  "@passwordTooShort": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordTooLong": "This password is too long",
+  "usernameInvalid": "Use only English letters, digits, dot, dash or underscore",
+  "usernameTaken": "This username is already taken",
+  "invalidCredentials": "Wrong username or password",
+  "accountDisabled": "This account is disabled. Ask the Super Admin.",
+  "wrongCurrentPassword": "The current password is wrong",
+  "genericError": "Something went wrong: {detail}",
+  "@genericError": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "permissionDenied": "You are not allowed to do this",
+  "notAnApprover": "Only an Admin or the Super Admin can approve this",
+  "usersTitle": "Users",
+  "usersSubtitle": "Only the Super Admin can see this page",
+  "addUser": "+ New user",
+  "colName": "Name",
+  "colRole": "Role",
+  "colStatus": "Status",
+  "colLastSignIn": "Last sign-in",
+  "colActions": "Actions",
+  "statusActive": "Active",
+  "statusDisabled": "Disabled",
+  "youChangeOwnPassword": "You — change your own password in Settings",
+  "changeRole": "Change role",
+  "resetPassword": "Reset password",
+  "disableUser": "Disable",
+  "enableUser": "Enable",
+  "usersNeverDeleted": "Users are never deleted. A disabled user can no longer sign in, but their name stays on the entries they added. Changes reach phones at the phone's next sync.",
+  "roleSuperAdminCan": "Everything, and only they can add users, change roles, disable users, reset passwords and restore a backup.",
+  "roleAdminCan": "Edit and cancel entries, opening balance, Google account, backup and settings.",
+  "roleUserCan": "Add entries, search, view details, make PDFs and Excel, sync a phone, change own password.",
+  "addUserTitle": "Add a new user",
+  "addUserNote": "Only the Super Admin can add users. There is only one Super Admin.",
+  "newPassword": "New password",
+  "resetPasswordFor": "Reset password for {name}",
+  "@resetPasswordFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "changeRoleFor": "Change role of {name}",
+  "@changeRoleFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userAdded": "User added",
+  "settingsTitle": "Settings",
+  "languageDesc": "Language of the app, PDFs and Excel",
+  "openingBalanceTitle": "Opening balance",
+  "openingBalanceDesc": "The cash the mosque had in hand on the day it started using the app",
+  "adminOnlyChip": "Admin and Super Admin",
+  "amountLabel": "Amount (Taka)",
+  "dateLabel": "Date",
+  "balanceFormula": "Current balance = opening balance + all income − all expense",
+  "myPassword": "My password",
+  "currentPassword": "Current password",
+  "confirmNewPassword": "Enter the new password again",
+  "changePassword": "Change password",
+  "passwordChanged": "Password changed",
+  "approversTitle": "Expense approvers",
+  "approversDesc": "The list used for \"Approved by\" on every expense. Changing a name here does not change old expenses.",
+  "approverName": "Approver name",
+  "addApprover": "Add approver",
+  "approverNameTaken": "This name is already in the list",
+  "renameApprover": "Rename",
+  "appAndUpdate": "App and updates",
+  "version": "Version: {v}",
+  "@version": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "lastChecked": "Last checked: {when}",
+  "@lastChecked": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "checkForUpdates": "Check for updates",
+  "datePlaceholder": "DD/MM/YYYY",
+  "dateHelp": "Type the date (e.g. 13/11/2026) or pick it from the calendar",
+  "pickDateFromCalendar": "Pick the date from a calendar",
+  "dateEmpty": "Enter a date",
+  "dateFormat": "Write the date as DD/MM/YYYY, e.g. 13/11/2026",
+  "dateMonthInvalid": "The month must be between 1 and 12",
+  "dateYearInvalid": "The year is not valid",
+  "dateDayInvalid": "This date does not exist: {month} {year} has only {max} days",
+  "@dateDayInvalid": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "amountRequired": "Enter the amount",
+  "amountWhole": "Enter a whole number of Taka, with no decimals",
+  "amountPositive": "The amount must be more than 0",
+  "amountTooLarge": "This amount is too large",
+  "unknownDonor": "Unknown",
+  "versionUnknown": "unknown"
+}

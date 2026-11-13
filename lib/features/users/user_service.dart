@@ -140,7 +140,10 @@ class UserService {
       throw UserException(UserProblem.invalidCredentials);
     }
     if (!user.isActive) throw UserException(UserProblem.accountDisabled);
-    return user;
+    final at = now();
+    await (_db.update(_db.users)..where((u) => u.id.equals(user.id)))
+        .write(UsersCompanion(lastSignInAt: Value(at)));
+    return user.copyWith(lastSignInAt: Value(at));
   }
 
   /// An Admin or Super Admin approves an edit or cancel on the spot with their

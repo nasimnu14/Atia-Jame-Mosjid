@@ -84,6 +84,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastSignInAtMeta = const VerificationMeta(
+    'lastSignInAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSignInAt = GeneratedColumn<DateTime>(
+    'last_sign_in_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -93,6 +104,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     role,
     isActive,
     createdAt,
+    lastSignInAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -152,6 +164,15 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_sign_in_at')) {
+      context.handle(
+        _lastSignInAtMeta,
+        lastSignInAt.isAcceptableOrUnknown(
+          data['last_sign_in_at']!,
+          _lastSignInAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -191,6 +212,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastSignInAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_sign_in_at'],
+      ),
     );
   }
 
@@ -213,6 +238,7 @@ class User extends DataClass implements Insertable<User> {
   final Role role;
   final bool isActive;
   final DateTime createdAt;
+  final DateTime? lastSignInAt;
   const User({
     required this.id,
     required this.name,
@@ -221,6 +247,7 @@ class User extends DataClass implements Insertable<User> {
     required this.role,
     required this.isActive,
     required this.createdAt,
+    this.lastSignInAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -234,6 +261,9 @@ class User extends DataClass implements Insertable<User> {
     }
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || lastSignInAt != null) {
+      map['last_sign_in_at'] = Variable<DateTime>(lastSignInAt);
+    }
     return map;
   }
 
@@ -246,6 +276,9 @@ class User extends DataClass implements Insertable<User> {
       role: Value(role),
       isActive: Value(isActive),
       createdAt: Value(createdAt),
+      lastSignInAt: lastSignInAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSignInAt),
     );
   }
 
@@ -264,6 +297,7 @@ class User extends DataClass implements Insertable<User> {
       ),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastSignInAt: serializer.fromJson<DateTime?>(json['lastSignInAt']),
     );
   }
   @override
@@ -279,6 +313,7 @@ class User extends DataClass implements Insertable<User> {
       ),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastSignInAt': serializer.toJson<DateTime?>(lastSignInAt),
     };
   }
 
@@ -290,6 +325,7 @@ class User extends DataClass implements Insertable<User> {
     Role? role,
     bool? isActive,
     DateTime? createdAt,
+    Value<DateTime?> lastSignInAt = const Value.absent(),
   }) => User(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -298,6 +334,7 @@ class User extends DataClass implements Insertable<User> {
     role: role ?? this.role,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
+    lastSignInAt: lastSignInAt.present ? lastSignInAt.value : this.lastSignInAt,
   );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -310,6 +347,9 @@ class User extends DataClass implements Insertable<User> {
       role: data.role.present ? data.role.value : this.role,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastSignInAt: data.lastSignInAt.present
+          ? data.lastSignInAt.value
+          : this.lastSignInAt,
     );
   }
 
@@ -322,14 +362,23 @@ class User extends DataClass implements Insertable<User> {
           ..write('passwordHash: $passwordHash, ')
           ..write('role: $role, ')
           ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastSignInAt: $lastSignInAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, username, passwordHash, role, isActive, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    username,
+    passwordHash,
+    role,
+    isActive,
+    createdAt,
+    lastSignInAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -340,7 +389,8 @@ class User extends DataClass implements Insertable<User> {
           other.passwordHash == this.passwordHash &&
           other.role == this.role &&
           other.isActive == this.isActive &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastSignInAt == this.lastSignInAt);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -351,6 +401,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<Role> role;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
+  final Value<DateTime?> lastSignInAt;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -360,6 +411,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.role = const Value.absent(),
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastSignInAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -370,6 +422,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required Role role,
     this.isActive = const Value.absent(),
     required DateTime createdAt,
+    this.lastSignInAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -385,6 +438,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? role,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastSignInAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -395,6 +449,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (role != null) 'role': role,
       if (isActive != null) 'is_active': isActive,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastSignInAt != null) 'last_sign_in_at': lastSignInAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -407,6 +462,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<Role>? role,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
+    Value<DateTime?>? lastSignInAt,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
@@ -417,6 +473,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      lastSignInAt: lastSignInAt ?? this.lastSignInAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -447,6 +504,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastSignInAt.present) {
+      map['last_sign_in_at'] = Variable<DateTime>(lastSignInAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -463,6 +523,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('role: $role, ')
           ..write('isActive: $isActive, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastSignInAt: $lastSignInAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2881,6 +2942,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       required Role role,
       Value<bool> isActive,
       required DateTime createdAt,
+      Value<DateTime?> lastSignInAt,
       Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -2892,6 +2954,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<Role> role,
       Value<bool> isActive,
       Value<DateTime> createdAt,
+      Value<DateTime?> lastSignInAt,
       Value<int> rowid,
     });
 
@@ -2936,6 +2999,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSignInAt => $composableBuilder(
+    column: $table.lastSignInAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2983,6 +3051,11 @@ class $$UsersTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get lastSignInAt => $composableBuilder(
+    column: $table.lastSignInAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableAnnotationComposer
@@ -3016,6 +3089,11 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSignInAt => $composableBuilder(
+    column: $table.lastSignInAt,
+    builder: (column) => column,
+  );
 }
 
 class $$UsersTableTableManager
@@ -3053,6 +3131,7 @@ class $$UsersTableTableManager
                 Value<Role> role = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> lastSignInAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -3062,6 +3141,7 @@ class $$UsersTableTableManager
                 role: role,
                 isActive: isActive,
                 createdAt: createdAt,
+                lastSignInAt: lastSignInAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3073,6 +3153,7 @@ class $$UsersTableTableManager
                 required Role role,
                 Value<bool> isActive = const Value.absent(),
                 required DateTime createdAt,
+                Value<DateTime?> lastSignInAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -3082,6 +3163,7 @@ class $$UsersTableTableManager
                 role: role,
                 isActive: isActive,
                 createdAt: createdAt,
+                lastSignInAt: lastSignInAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
