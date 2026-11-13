@@ -19,6 +19,9 @@ import '../features/google_drive/excel_upload_service.dart';
 import '../features/google_drive/google_drive_auth.dart';
 import '../features/google_drive/restore_service.dart';
 import '../features/reports/report_pdf_service.dart';
+import '../features/updates/update_installer.dart';
+import '../features/updates/update_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../features/settings/settings_service.dart';
 import '../features/users/user_service.dart';
 import '../shared/file_saver.dart';
@@ -46,6 +49,8 @@ class AppServices {
     required this.excel,
     required this.restore,
     required this.scheduler,
+    required this.updates,
+    required this.updateInstaller,
   });
 
   /// App-data folder (outside the install folder, plan rule 1).
@@ -70,6 +75,8 @@ class AppServices {
   final ExcelUploadService excel;
   final RestoreService restore;
   final DriveScheduler scheduler;
+  final UpdateService updates;
+  final UpdateInstaller updateInstaller;
 
   /// Opens the database (copying it first if an upgrade is needed) and wires
   /// the services. [hasher] is only replaced in tests.
@@ -79,6 +86,8 @@ class AppServices {
     FileSaver fileSaver = const PlatformFileSaver(),
     DriveAuth? driveAuth,
     PhotoPicker photoPicker = const PlatformPhotoPicker(),
+    UpdateService Function(SettingsRepository settings)? updatesBuilder,
+    UpdateInstaller? updateInstaller,
   }) async {
     final db = await openAppDatabase(dataDir);
     return fromDatabase(
@@ -100,6 +109,8 @@ class AppServices {
     PhotoShrinker photoShrinker = const PhotoShrinker(),
     FileSaver fileSaver = const PlatformFileSaver(),
     DriveAuth? driveAuth,
+    UpdateService Function(SettingsRepository settings)? updatesBuilder,
+    UpdateInstaller? updateInstaller,
   }) async {
     final repo = SettingsRepository(db);
     var deviceId = await repo.get(SettingKey.deviceId);
@@ -156,7 +167,25 @@ class AppServices {
         excel: excel,
         now: now,
       ),
+      updates:
+          updatesBuilder?.call(repo) ??
+          UpdateService(
+            settings: repo,
+            currentVersion: _installedVersion,
+            now: now,
+          ),
+      updateInstaller: updateInstaller ?? PlatformUpdateInstaller(),
     );
+  }
+
+  /// The installed version. If it cannot be read (it always can on a real
+  /// device) this answers 0.0.0 rather than failing a screen.
+  static Future<String> _installedVersion() async {
+    try {
+      return (await PackageInfo.fromPlatform()).version;
+    } catch (_) {
+      return '0.0.0';
+    }
   }
 
   Future<void> close() async {

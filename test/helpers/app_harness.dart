@@ -5,7 +5,10 @@ import 'package:atia_masjid_accounts/app/app.dart';
 import 'package:atia_masjid_accounts/app/app_services.dart';
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/db_opener.dart';
+import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
 import 'package:atia_masjid_accounts/features/google_drive/drive_client.dart';
+import 'package:atia_masjid_accounts/features/updates/update_installer.dart';
+import 'package:atia_masjid_accounts/features/updates/update_service.dart';
 import 'package:atia_masjid_accounts/features/entries/photo_picker.dart';
 import 'package:atia_masjid_accounts/shared/file_saver.dart';
 import 'package:atia_masjid_accounts/shared/password_hasher.dart';
@@ -32,6 +35,8 @@ class AppHarness {
     FileSaver? saver,
     DateTime? now,
     DriveAuth? driveAuth,
+    UpdateService Function(SettingsRepository settings)? updatesBuilder,
+    UpdateInstaller? updateInstaller,
 
     /// Keep the database in a real file (needed for the restore flow).
     bool onDisk = false,
@@ -56,6 +61,8 @@ class AppHarness {
       photoPicker: picker ?? const PlatformPhotoPicker(),
       fileSaver: fileSaver,
       driveAuth: driveAuth,
+      updatesBuilder: updatesBuilder,
+      updateInstaller: updateInstaller,
     );
     final services = (await tester.runAsync(build))!;
     final h = AppHarness(tester, services, dir, onDisk ? build : null);
@@ -224,5 +231,24 @@ class FakeFileSaver implements FileSaver {
     if (cancel) return null;
     saved.add((name: suggestedName, extension: extension, bytes: bytes));
     return '/fake/$suggestedName.$extension';
+  }
+}
+
+/// An update installer for tests: remembers what it was asked to install.
+class FakeUpdateInstaller implements UpdateInstaller {
+  final installed = <UpdateInfo>[];
+  Object? failWith;
+
+  @override
+  Future<void> install(
+    UpdateInfo info, {
+    required void Function(double progress) onProgress,
+  }) async {
+    onProgress(0.5);
+    if (failWith != null) {
+      throw failWith!;
+    }
+    installed.add(info);
+    onProgress(1);
   }
 }

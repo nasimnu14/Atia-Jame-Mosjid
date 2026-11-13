@@ -950,5 +950,63 @@
   "logOk": "OK",
   "logFailed": "Failed",
   "connectFirst": "Connect a Google account first (Backup page)",
-  "noUploadsYet": "No uploads yet"
+  "noUploadsYet": "No uploads yet",
+  "upToDateMsg": "The app is up to date",
+  "updateAvailableTitle": "A new version is available",
+  "updateVersionLine": "Version {newVersion} · you are running {oldVersion}",
+  "@updateVersionLine": {
+    "placeholders": {
+      "newVersion": {
+        "type": "String"
+      },
+      "oldVersion": {
+        "type": "String"
+      }
+    }
+  },
+  "whatChanged": "What changed",
+  "updateSafety1": "All data is backed up before the update",
+  "updateSafety2": "Every entry, photo, user, setting and sync mark stays exactly as it is",
+  "updateSafety3": "If the update fails, the previous version keeps working with all its data",
+  "later": "Later",
+  "updateNow": "Update now",
+  "updateBackingUp": "Backing up before the update…",
+  "updateDownloading": "Downloading… {percent}",
+  "@updateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "updateFailed": "The update could not be installed: {detail}",
+  "@updateFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNotSetUp": "Update checks are not set up in this build. See docs/setup-notes.md.",
+  "updateStoreOnly": "This app is updated only through Google Play.",
+  "updateCheckFailed": "Could not check for updates: {detail}",
+  "@updateCheckFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "openReleasePage": "Open the release page",
+  "updateNoInstaller": "This test version does not update itself. Download the new version from the release page.",
+  "updateBanner": "Version {version} is available",
+  "@updateBanner": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateBannerAction": "View",
+  "checking": "Checking…"
 }

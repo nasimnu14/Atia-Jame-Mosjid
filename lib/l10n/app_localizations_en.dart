@@ -1344,4 +1344,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUploadsYet => 'No uploads yet';
+
+  @override
+  String get upToDateMsg => 'The app is up to date';
+
+  @override
+  String get updateAvailableTitle => 'A new version is available';
+
+  @override
+  String updateVersionLine(String newVersion, String oldVersion) {
+    return 'Version $newVersion · you are running $oldVersion';
+  }
+
+  @override
+  String get whatChanged => 'What changed';
+
+  @override
+  String get updateSafety1 => 'All data is backed up before the update';
+
+  @override
+  String get updateSafety2 =>
+      'Every entry, photo, user, setting and sync mark stays exactly as it is';
+
+  @override
+  String get updateSafety3 =>
+      'If the update fails, the previous version keeps working with all its data';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get updateNow => 'Update now';
+
+  @override
+  String get updateBackingUp => 'Backing up before the update…';
+
+  @override
+  String updateDownloading(String percent) {
+    return 'Downloading… $percent';
+  }
+
+  @override
+  String updateFailed(String detail) {
+    return 'The update could not be installed: $detail';
+  }
+
+  @override
+  String get updateNotSetUp =>
+      'Update checks are not set up in this build. See docs/setup-notes.md.';
+
+  @override
+  String get updateStoreOnly => 'This app is updated only through Google Play.';
+
+  @override
+  String updateCheckFailed(String detail) {
+    return 'Could not check for updates: $detail';
+  }
+
+  @override
+  String get openReleasePage => 'Open the release page';
+
+  @override
+  String get updateNoInstaller =>
+      'This test version does not update itself. Download the new version from the release page.';
+
+  @override
+  String updateBanner(String version) {
+    return 'Version $version is available';
+  }
+
+  @override
+  String get updateBannerAction => 'View';
+
+  @override
+  String get checking => 'Checking…';
 }

@@ -1341,4 +1341,78 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get noUploadsYet => 'এখনো কোনো আপলোড হয়নি';
+
+  @override
+  String get upToDateMsg => 'অ্যাপ সর্বশেষ সংস্করণে আছে';
+
+  @override
+  String get updateAvailableTitle => 'নতুন সংস্করণ পাওয়া গেছে';
+
+  @override
+  String updateVersionLine(String newVersion, String oldVersion) {
+    return 'সংস্করণ $newVersion · এখন চালু আছে $oldVersion';
+  }
+
+  @override
+  String get whatChanged => 'কী বদলেছে';
+
+  @override
+  String get updateSafety1 => 'আপডেটের আগে সব তথ্যের ব্যাকআপ নেওয়া হবে';
+
+  @override
+  String get updateSafety2 =>
+      'সব এন্ট্রি, ছবি, ব্যবহারকারী, সেটিংস ও সিঙ্কের তথ্য যেমন আছে তেমন থাকবে';
+
+  @override
+  String get updateSafety3 =>
+      'আপডেট ব্যর্থ হলে আগের সংস্করণ সব তথ্যসহ চালু থাকবে';
+
+  @override
+  String get later => 'পরে';
+
+  @override
+  String get updateNow => 'এখনই আপডেট করুন';
+
+  @override
+  String get updateBackingUp => 'আপডেটের আগে ব্যাকআপ নেওয়া হচ্ছে…';
+
+  @override
+  String updateDownloading(String percent) {
+    return 'ডাউনলোড হচ্ছে… $percent';
+  }
+
+  @override
+  String updateFailed(String detail) {
+    return 'আপডেট করা যায়নি: $detail';
+  }
+
+  @override
+  String get updateNotSetUp =>
+      'এই সংস্করণে আপডেট পরীক্ষা সেট করা নেই। docs/setup-notes.md দেখুন।';
+
+  @override
+  String get updateStoreOnly => 'এই অ্যাপ শুধু গুগল প্লে থেকে আপডেট হয়।';
+
+  @override
+  String updateCheckFailed(String detail) {
+    return 'আপডেট দেখা যায়নি: $detail';
+  }
+
+  @override
+  String get openReleasePage => 'রিলিজ পাতা খুলুন';
+
+  @override
+  String get updateNoInstaller =>
+      'এই পরীক্ষামূলক সংস্করণ নিজে আপডেট হয় না। রিলিজ পাতা থেকে নতুন সংস্করণ নামিয়ে নিন।';
+
+  @override
+  String updateBanner(String version) {
+    return 'সংস্করণ $version পাওয়া গেছে';
+  }
+
+  @override
+  String get updateBannerAction => 'দেখুন';
+
+  @override
+  String get checking => 'দেখা হচ্ছে…';
 }

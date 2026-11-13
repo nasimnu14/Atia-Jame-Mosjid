@@ -2,9 +2,9 @@
 
 ## RESUME HERE
 
-- **Last updated:** 2026-11-14 (Phase 4 finished)
-- **Current phase / step:** Phase 5, step 5.1: update check (GitHub Releases), updater, installers, release checklist
-- **Exact next action:** Build Phase 5. (1) `lib/features/updates/`: `UpdateService` that reads the latest GitHub Release (JSON from `https://api.github.com/repos/<owner>/<repo>/releases/latest`, owner/repo from a `--dart-define=GITHUB_REPO=owner/name`), compares versions (semver, test it), exposes `UpdateInfo` (version, notes bn/en, windows installer url, apk url). On Windows use `auto_updater` (WinSparkle appcast feed on the release) when available; on Android download the APK and open the installer (REQUEST_INSTALL_PACKAGES already in the manifest) via a small `ApkInstaller` interface; macOS test build: check only, no installer. UI: Settings `UpdateCard` button + 'Update available' dialog (board UpdateDialog; read it first), automatic check at start (once a day) with a notice on the dashboard. (2) The pre-upgrade DB copy and rollback already exist (`openAppDatabase`, tested); add a test that a failed upgrade keeps v-old working (done in `test/data`). (3) GitHub Actions workflow `.github/workflows/release.yml` (build Windows installer with Inno Setup or MSIX? choose Inno Setup script `windows/installer/atia.iss`, macOS test zip, signed Android APK from secrets) and a release checklist in docs/setup-notes.md sections 3 and 5. Cannot be proven on a Mac: Windows build/updater; say so.
+- **Last updated:** 2026-11-14 (Phase 5 finished)
+- **Current phase / step:** Phase 6, step 6.1: sync server/client (desktop + phone) then Android UI
+- **Exact next action:** Build Phase 6 in this order, committing after each. (1) Sync core, pure Dart + tests first: `lib/features/sync/`: `SyncKey` (one-time key + token in the QR payload `atia-sync://host:port?k=<key>&t=<token>`), `SyncCrypto` (AES-GCM via `cryptography`, already proven in test/proof/sync_loopback_proof_test.dart), `SyncServer` (shelf, runs only while the Sync screen is open; endpoints: POST /session (token, single use), POST /entries (batch: encrypted JSON of entries + photos with ids; idempotent insert-or-ignore by entry id; flag duplicates by receipt no (SYN-8); write sync_log; reply with saved ids), GET /accounts (users + approvers, encrypted; SYN-10)), `SyncClient` (phone: send only `synced=false` entries, mark synced ONLY after the desktop confirms, per-entry or per-batch confirm so an interrupted transfer loses nothing and resending saves once (SYN-5), then lock them read-only (SYN-7), then fetch accounts and approvers). Tests: sent twice saves once; interrupted mid-transfer; wrong/reused QR token refused; wrong key rejected; duplicate receipt flagged; users and approvers reach the phone; password change works after next sync. (2) Desktop Sync screen (board SyncQR; `qr_flutter`; local IP via NetworkInterface; received count). (3) Android UI: pair screen (MOB-5), sign in (MOB-4), home with the phone-only note (MOB-3), lists, forms with camera/gallery (MOB-2), details read-only when synced (SYN-7), summary, PDF (FileSaver share), scan screen (`mobile_scanner`), sync done, More. Read boards MPair, MSignIn, MHome, MIncomeList, MIncomeForm, MDetails, MPhoto, MApproval, MSummary, MPdf, MSyncScan, MSyncDone, MMore, MBottomNav, MTopBar, SyncQR first. Choose mobile vs desktop shell in `RootGate` by platform (`Platform.isAndroid`). Test on the Android emulator (emulator-5554) and between emulator and desktop via the host loopback `10.0.2.2`.
 - **Half-done / broken:** nothing broken. `lib/app/section_placeholder.dart` and `lib/features/google_drive/restore_launcher.dart` are deliberate stubs to be replaced (Phase 2/3 and Phase 4). `UpdateCard` only shows the version (update check = Phase 5).
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
@@ -24,8 +24,8 @@
 | 2 | Income and expense | done | 2026-11-13 |
 | 3 | Balance, summary, PDF | done | 2026-11-13 |
 | 4 | Google Drive: backup and Excel | done (real Google not verified) | 2026-11-14 |
-| 5 | Updates and installers | in progress | |
-| 6 | Android app and sync | not started | |
+| 5 | Updates and installers | done (Windows installer/updater not run) | 2026-11-14 |
+| 6 | Android app and sync | in progress | |
 | Review | 3+ review/fix cycles | not started | |
 
 ### Phase 0 results (risk checks)
@@ -121,12 +121,12 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 | XLS-7 | done | lib/features/google_drive/{excel_builder,excel_upload_service,excel_upload_screen}.dart | test/features/excel_builder_test.dart, drive_excel_scheduler_test.dart, test/widget/drive_screens_test.dart |
 | XLS-8 | done | lib/features/google_drive/{excel_builder,excel_upload_service,excel_upload_screen}.dart | test/features/excel_builder_test.dart, drive_excel_scheduler_test.dart, test/widget/drive_screens_test.dart |
 | XLS-9 | done | lib/features/google_drive/{excel_builder,excel_upload_service,excel_upload_screen}.dart | test/features/excel_builder_test.dart, drive_excel_scheduler_test.dart, test/widget/drive_screens_test.dart |
-| UPD-1 | todo |  |  |
-| UPD-2 | todo |  |  |
-| UPD-3 | todo |  |  |
-| UPD-4 | todo |  |  |
-| UPD-5 | todo |  |  |
-| UPD-6 | todo |  |  |
+| UPD-1 | done | lib/features/updates/{update_service,app_version_number,update_card,update_banner}.dart | test/features/update_test.dart, test/widget/update_screens_test.dart |
+| UPD-2 | partial | update_installer.dart, update_dialog.dart (download+checksum+launch tested with fakes; real Windows/Android install NOT run) | test/features/update_test.dart, test/widget/update_screens_test.dart |
+| UPD-3 | done | lib/data/db_opener.dart (copy before upgrade, restore on failure), windows/installer/atia.iss (never touches %APPDATA%), pre-update copy in update_dialog.dart | test/data/db_opener_test.dart, test/data/migration_test.dart |
+| UPD-4 | done | lib/data/db_opener.dart (copy before upgrade, restore on failure), windows/installer/atia.iss (never touches %APPDATA%), pre-update copy in update_dialog.dart | test/data/db_opener_test.dart, test/data/migration_test.dart |
+| UPD-5 | done | lib/data/db_opener.dart (copy before upgrade, restore on failure), windows/installer/atia.iss (never touches %APPDATA%), pre-update copy in update_dialog.dart | test/data/db_opener_test.dart, test/data/migration_test.dart |
+| UPD-6 | partial | APK flow + PLAY_STORE_BUILD flag done; the Google Play build itself is out of scope | test/features/update_test.dart |
 | MOB-1 | todo |  |  |
 | MOB-2 | todo |  |  |
 | MOB-3 | todo |  |  |
@@ -170,7 +170,7 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 | Add user | Desktop | 1 | done |
 | Backup and restore | Desktop | 4 | done |
 | Settings (language, opening balance, approvers, password, update) | Desktop | 1 | done (update check: Phase 5) |
-| Update available dialog | Desktop | 5 | todo |
+| Update available dialog | Desktop | 5 | done |
 | Pair with desktop | Android | 6 | todo |
 | Sign in | Android | 6 | todo |
 | Home (this phone only) | Android | 6 | todo |
@@ -187,6 +187,7 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 
 ## Log (newest first)
 
+- 2026-11-14: Phase 5 done. `UpdateService` (GitHub latest release, semver compare, per-platform asset, bn/en notes, daily check, Play-build switch), `PlatformUpdateInstaller` (download, SHA-256 check, Windows installer launch / Android APK / macOS release page), update dialog (backs up first), Settings card, dashboard banner. Inno Setup script, CI and release GitHub workflows, Android release signing via `android/key.properties`. Deviation: no `auto_updater` (see setup notes section 3). One inconsistency found by a test and fixed: the dialog's "you are running" version came from a different source than the update check.
 - 2026-11-14: Phase 4 done (against a fake Drive; the real Google connection is written but NOT verified). Drive interfaces, `GoogleDriveAuth/Client` (googleapis, drive.file), `DriveService`, `BackupService` (VACUUM INTO snapshot, gzip, photos uploaded once per account, 1-year retention keeping the newest, no backup of an empty installation), `RestoreService` (download, verify, copy current aside, replace, fetch missing photos), `ExcelUploadService` + `buildEntriesWorkbook` (real numbers/dates), `DriveScheduler` (4 h, at start if overdue, retry every 2 min after failure, daily Excel with catch-up), screens Backup / Excel / first-launch Restore, `AppHost` to replace the data after a restore. Schema v2 (drive_uploaded_photos, drive_log) with a real migration test (drift_dev schema dump/generate, `test/data/migration_test.dart`). Bugs found by tests and fixed: missing `onUpgrade` (migration test), notice banner not shown after restore, test-harness deadlocks (see Working notes). macOS entitlements (network client/server, file save) and Android minSdk 31 + permissions set. docs/setup-notes.md written.
 - 2026-11-13: Phase 3 done. Dashboard, Summary (day/week/month breakdown), PDF report screen with preview, entry PDF, PDF engine (pages painted with Flutter's text engine, embedded as images; header repeated on continued pages), FileSaver interface. Visually checked: Bangla conjuncts, digits, cancelled strike-through, photos with labels. Limitation: PDF text is an image (not selectable). Bug found and fixed by tests: RadioListTile ink hidden by coloured card.
 - 2026-11-13: Phase 2 done. Entry list (periods, search, open-by-number, paging, duplicate banner), add/edit form (suggested number, duplicate warning, approver dropdown, photos with labels), details (history, photos), photo viewer, approval and cancel dialogs, period selector, photo shrinker/picker. Bugs found by tests and fixed: corrupt image made the decoder throw RangeError (now PhotoUnreadableException), photo-label dialog disposed its controller too early. 127 tests pass, analyzer clean.
@@ -203,6 +204,7 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 - Drive backups: the requirements say keep one year (BAK-7). The task text mentions a default of 10; the requirements doc is the source of truth, so one year is used.
 - State management: `provider` (ChangeNotifier), chosen for simplicity.
 - Password hash: bcrypt (pure Dart, works on all three platforms).
+- Updates: `auto_updater` (WinSparkle) from the plan was replaced by a GitHub-release download + installer launch flow (no appcast or extra signing key needed; unit-testable). Reason and details in docs/setup-notes.md section 3.
 - Phone notifications: PushNotification is skipped by the tool while the terminal is active; milestones are still attempted.
 
 ## Known gaps / needs a human

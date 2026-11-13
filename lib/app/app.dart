@@ -38,7 +38,11 @@ class _AtiaAppState extends State<AtiaApp> {
   @override
   void initState() {
     super.initState();
-    if (widget.runDriveJobs) _services.scheduler.start();
+    if (widget.runDriveJobs) {
+      _services.scheduler.start();
+      // Once a day, quietly: a failed check is not shown.
+      _services.updates.checkIfDue();
+    }
   }
 
   @override

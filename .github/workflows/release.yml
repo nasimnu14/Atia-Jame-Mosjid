@@ -1,0 +1,124 @@
+# Publishes a release when a version tag is pushed, e.g.  git tag v1.0.1 && git push --tags
+# The developer does this after the customer's feedback (plan Section 7).
+#
+# Repository secrets used (see docs/setup-notes.md):
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET     Google Drive sign-in
+#   ANDROID_KEYSTORE_BASE64, ANDROID_STORE_PASSWORD, ANDROID_KEY_PASSWORD, ANDROID_KEY_ALIAS
+name: Release
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  GITHUB_REPO: ${{ github.repository }}
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter gen-l10n
+      - name: Build
+        shell: bash
+        run: >
+          flutter build windows --release
+          --dart-define=GITHUB_REPO=$GITHUB_REPO
+          --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          --dart-define=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+      - name: Installer
+        shell: pwsh
+        run: |
+          $v = "${{ github.ref_name }}".TrimStart("v")
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$v" windows\installer\atia.iss
+          $f = "build\installer\Atia-Setup-$v.exe"
+          (Get-FileHash $f -Algorithm SHA256).Hash.ToLower() + "  Atia-Setup-$v.exe" | Out-File "$f.sha256" -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            build/installer/*.exe
+            build/installer/*.sha256
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter gen-l10n
+      - run: flutter build macos --release --dart-define=GITHUB_REPO=$GITHUB_REPO
+      - name: Zip (test build, not given to users)
+        run: |
+          v=${GITHUB_REF_NAME#v}
+          cd build/macos/Build/Products/Release
+          ditto -c -k --keepParent atia_masjid_accounts.app "$GITHUB_WORKSPACE/atia-macos-$v.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: atia-macos-*.zip
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter gen-l10n
+      - name: Signing key
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/release.jks
+          cat > android/key.properties <<EOF2
+          storeFile=release.jks
+          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF2
+      - run: flutter build apk --release --dart-define=GITHUB_REPO=$GITHUB_REPO
+      - name: Name the file
+        run: |
+          v=${GITHUB_REF_NAME#v}
+          cp build/app/outputs/flutter-apk/app-release.apk "atia-$v.apk"
+          sha256sum "atia-$v.apk" > "atia-$v.apk.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: |
+            atia-*.apk
+            atia-*.apk.sha256
+
+  publish:
+    needs: [windows, macos, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          # Write the notes in the tag message with two sections: "## বাংলা" and "## English".
+          generate_release_notes: true

@@ -119,16 +119,95 @@ always kept. Photo files are never deleted from Drive, so any backup of the last
 with all its photos. (The task brief mentioned "keep 10 backups"; the requirements document says one
 year and is the source of truth, so one year is implemented.)
 
-## 3. Windows installer and updates (Phase 5)
+## 3. Windows installer and updates
 
-See section 5 below once Phase 5 is done. The Windows build cannot be produced or run on a Mac; it is
-built by GitHub Actions on a Windows runner, or on a Windows PC.
+The Windows build **cannot be produced or run on a Mac**. It is built on a Windows machine by GitHub
+Actions (`.github/workflows/release.yml`), or by hand on a Windows PC:
 
-## 4. Android signing key (Phase 6)
+```bat
+flutter build windows --release --dart-define=GITHUB_REPO=<owner>/<repo> ^
+  --dart-define=GOOGLE_CLIENT_ID=... --dart-define=GOOGLE_CLIENT_SECRET=...
+iscc /DAppVersion=1.0.0 windows\installer\atia.iss
+```
 
-Create the key once and back it up in **two safe places** with its password. Google Play will later need
-the **same key** (plan, Risk 9). Details are added in Phase 6.
+Output: `build\installer\Atia-Setup-1.0.0.exe`. It is a per-user install (no administrator password) and
+**unsigned**, so Windows shows an "unknown publisher" warning that can be clicked through, until the
+code-signing certificate is bought (then add a SignTool line to `atia.iss`).
 
-## 5. Publishing a release on GitHub
+**Data safety on update (UPD-3 to UPD-5):** the installer only replaces the program files. All data is in
+`%APPDATA%`, which it never touches. When the new version starts and the database needs converting, the
+app first copies the database into `backups\pre-migration-v<old>-to-v<new>-<time>.db`; if the
+conversion fails the copy is put back and the old data stays intact (tests in `test/data/`).
+Before the in-app update installs, the app also copies the database (`pre-update-<version>-...`) and
+makes a Google Drive backup if an account is connected.
 
-Filled in during Phase 5.
+### How the in-app update works
+
+- On start (once a day) and from **Settings → Check for updates**, the app reads
+  `https://api.github.com/repos/<GITHUB_REPO>/releases/latest` and compares the tag (e.g. `v1.3.0`) with
+  the installed version.
+- Windows: it downloads the `.exe` asset, checks it against the `.exe.sha256` asset if there is one,
+  starts it with `/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS` and exits. The installer updates the
+  program and starts the app again.
+- Android (APK build): downloads the `.apk` and opens Android's installer; the user confirms. The phone
+  must allow "install unknown apps" for this app (permission `REQUEST_INSTALL_PACKAGES` is declared).
+- macOS test build: only opens the release page.
+- **Google Play build:** build with `--dart-define=PLAY_STORE_BUILD=true`. That build never checks for
+  or downloads updates (Google Play does not allow it); it updates only through Google Play (UPD-6).
+
+> Deviation from the plan: the plan named the `auto_updater` (WinSparkle) package. It needs an appcast
+> feed and an extra signing key, and cannot be run on a Mac. The GitHub-release download flow above
+> does the same job, needs no extra infrastructure, and is covered by unit tests with a fake download.
+> **Not proven on a real Windows PC or phone**: see "Known gaps" in `docs/progress/accounts-app.md`.
+
+## 4. Android signing key
+
+Create the key **once** and back it up in **two safe places**, with its password. Google Play will later
+need the **same key** (plan, Risk 9); if it is lost, phones must uninstall the APK version first, which
+deletes any entries not yet synced.
+
+```bash
+keytool -genkey -v -keystore atia-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias atia
+```
+
+Local release build: create `android/key.properties` (it is git-ignored):
+
+```
+storeFile=../atia-release.jks
+storePassword=...
+keyAlias=atia
+keyPassword=...
+```
+
+then `flutter build apk --release`. Without `key.properties` the release APK is signed with the debug
+key (fine for testing only). On GitHub, store the key as secrets: `ANDROID_KEYSTORE_BASE64`
+(`base64 -i atia-release.jks`), `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_PASSWORD`, `ANDROID_KEY_ALIAS`.
+
+## 5. Publishing a release on GitHub (plan Section 7)
+
+The developer publishes every version, after the customer's feedback.
+
+1. Decide what goes in the new version.
+2. Raise the version in `pubspec.yaml` (`version: 1.1.0+2`).
+3. If the database changed: bump `AppDatabase.currentSchemaVersion`, add the upgrade step, then
+   `dart run drift_dev schema dump lib/data/database.dart drift_schemas/` and
+   `dart run drift_dev schema generate drift_schemas/ test/generated_migrations/`, and add a case to
+   `test/data/migration_test.dart`.
+4. `flutter analyze` and `flutter test --concurrency=3` must pass.
+5. On a test computer and phone with realistic data, install the new version over the old one and check
+   that nothing is lost (entries, photos, users, settings, sync marks).
+6. Push the tag: `git tag -a v1.1.0 -m "## বাংলা ... ## English ..." && git push origin v1.1.0`.
+   The tag message becomes the release notes: write a `## বাংলা` section and a `## English` section; the
+   app shows the one that matches the language. GitHub Actions builds the Windows installer
+   (+ checksum), the macOS test zip and the signed Android APK and attaches them to the release.
+7. Check that the release page has `Atia-Setup-<version>.exe`, its `.sha256`, `atia-<version>.apk`.
+8. Apps find the new version at their next update check.
+
+Repository settings needed once: the secrets listed in section 2.3 and 4, and the variable/secret
+`GITHUB_REPO` is taken automatically from the repository name by the workflow.
+
+## 6. Troubleshooting
+
+- **Wi-Fi sync does not connect (Windows):** allow the app through the Windows firewall on "Private
+  networks" when Windows asks. A phone hotspot can serve as the shared network.
+- **Test processes are killed (exit 137):** run `flutter test --concurrency=3`.

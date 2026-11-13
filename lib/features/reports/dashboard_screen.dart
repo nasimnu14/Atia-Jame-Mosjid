@@ -19,6 +19,7 @@ import '../../shared/widgets/basics.dart';
 import '../entries/entry_details_screen.dart';
 import '../entries/entry_form_screen.dart';
 import '../entries/entry_text.dart';
+import '../updates/update_banner.dart';
 import 'balance_service.dart';
 
 class _DashData {
@@ -228,6 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const UpdateBanner(),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),

@@ -2412,6 +2412,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No uploads yet'**
   String get noUploadsYet;
+
+  /// No description provided for @upToDateMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'The app is up to date'**
+  String get upToDateMsg;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version is available'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateVersionLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {newVersion} · you are running {oldVersion}'**
+  String updateVersionLine(String newVersion, String oldVersion);
+
+  /// No description provided for @whatChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'What changed'**
+  String get whatChanged;
+
+  /// No description provided for @updateSafety1.
+  ///
+  /// In en, this message translates to:
+  /// **'All data is backed up before the update'**
+  String get updateSafety1;
+
+  /// No description provided for @updateSafety2.
+  ///
+  /// In en, this message translates to:
+  /// **'Every entry, photo, user, setting and sync mark stays exactly as it is'**
+  String get updateSafety2;
+
+  /// No description provided for @updateSafety3.
+  ///
+  /// In en, this message translates to:
+  /// **'If the update fails, the previous version keeps working with all its data'**
+  String get updateSafety3;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get updateNow;
+
+  /// No description provided for @updateBackingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Backing up before the update…'**
+  String get updateBackingUp;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading… {percent}'**
+  String updateDownloading(String percent);
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The update could not be installed: {detail}'**
+  String updateFailed(String detail);
+
+  /// No description provided for @updateNotSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Update checks are not set up in this build. See docs/setup-notes.md.'**
+  String get updateNotSetUp;
+
+  /// No description provided for @updateStoreOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'This app is updated only through Google Play.'**
+  String get updateStoreOnly;
+
+  /// No description provided for @updateCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not check for updates: {detail}'**
+  String updateCheckFailed(String detail);
+
+  /// No description provided for @openReleasePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the release page'**
+  String get openReleasePage;
+
+  /// No description provided for @updateNoInstaller.
+  ///
+  /// In en, this message translates to:
+  /// **'This test version does not update itself. Download the new version from the release page.'**
+  String get updateNoInstaller;
+
+  /// No description provided for @updateBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} is available'**
+  String updateBanner(String version);
+
+  /// No description provided for @updateBannerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get updateBannerAction;
+
+  /// No description provided for @checking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get checking;
 }
 
 class _AppLocalizationsDelegate
