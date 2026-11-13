@@ -2046,6 +2046,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled at'**
   String get xlsCancelledAt;
+
+  /// No description provided for @excelFilePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'income-expense'**
+  String get excelFilePrefix;
+
+  /// No description provided for @excelBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Income and expense'**
+  String get excelBoth;
+
+  /// No description provided for @logExcelDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily · all income and expense'**
+  String get logExcelDaily;
+
+  /// No description provided for @logExcelManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual · {period} · {content}'**
+  String logExcelManual(String period, String content);
+
+  /// No description provided for @logBackupLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup · {photos} new photos'**
+  String logBackupLine(String photos);
+
+  /// No description provided for @logBackupNewAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Full backup to the new Google account · {photos} photos'**
+  String logBackupNewAccount(String photos);
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup and Google Drive'**
+  String get backupTitle;
+
+  /// No description provided for @googleAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google account'**
+  String get googleAccountTitle;
+
+  /// No description provided for @connectedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected: {email}'**
+  String connectedAs(String email);
+
+  /// No description provided for @notConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get notConnected;
+
+  /// No description provided for @googleAccountNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Backups and the daily Excel files go to this account'**
+  String get googleAccountNote;
+
+  /// No description provided for @changeAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Change account'**
+  String get changeAccount;
+
+  /// No description provided for @googleNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in is not set up in this build. See docs/setup-notes.md.'**
+  String get googleNotConfigured;
+
+  /// No description provided for @connectFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to Google: {detail}'**
+  String connectFailed(String detail);
+
+  /// No description provided for @accountChangedBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'A full backup is being made to the new account…'**
+  String get accountChangedBackup;
+
+  /// No description provided for @accountChangedDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected. The first full backup to this account is done.'**
+  String get accountChangedDone;
+
+  /// No description provided for @autoBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup — every 4 hours'**
+  String get autoBackupTitle;
+
+  /// No description provided for @lastGoodBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Last successful backup'**
+  String get lastGoodBackup;
+
+  /// No description provided for @nextBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Next backup'**
+  String get nextBackup;
+
+  /// No description provided for @backupIncludes.
+  ///
+  /// In en, this message translates to:
+  /// **'What a backup holds'**
+  String get backupIncludes;
+
+  /// No description provided for @backupIncludesValue.
+  ///
+  /// In en, this message translates to:
+  /// **'All entries, photos, users and settings'**
+  String get backupIncludesValue;
+
+  /// No description provided for @backupFailedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The last backup attempt failed: {detail}. It will be tried again every few minutes.'**
+  String backupFailedNote(String detail);
+
+  /// No description provided for @backupAppClosedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Backups do not run while the app is closed. When the app opens and more than 4 hours have passed, a backup is made at once.'**
+  String get backupAppClosedNote;
+
+  /// No description provided for @backupNever.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup yet'**
+  String get backupNever;
+
+  /// No description provided for @recentBackups.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent backup attempts'**
+  String get recentBackups;
+
+  /// No description provided for @restoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from a backup'**
+  String get restoreTitle;
+
+  /// No description provided for @superOnlyChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin only'**
+  String get superOnlyChip;
+
+  /// No description provided for @restoreWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Careful: this replaces all the data on this computer with the chosen backup.'**
+  String get restoreWarning;
+
+  /// No description provided for @whichBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Which backup'**
+  String get whichBackup;
+
+  /// No description provided for @loadBackups.
+  ///
+  /// In en, this message translates to:
+  /// **'Load the list of backups'**
+  String get loadBackups;
+
+  /// No description provided for @noBackupsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No backups were found in Google Drive'**
+  String get noBackupsFound;
+
+  /// No description provided for @restoreButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreButton;
+
+  /// No description provided for @restoreConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Really restore?'**
+  String get restoreConfirmTitle;
+
+  /// No description provided for @restoreConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'All data on this computer will be replaced by the backup of {when}. A copy of the current data is kept aside first.'**
+  String restoreConfirmBody(String when);
+
+  /// No description provided for @restoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring…'**
+  String get restoring;
+
+  /// No description provided for @restoreDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything was restored. Photos brought back: {n}.'**
+  String restoreDone(String n);
+
+  /// No description provided for @restoreDoneMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything was restored. Photos brought back: {n}. {missing} photos were not in Google Drive.'**
+  String restoreDoneMissing(String n, String missing);
+
+  /// No description provided for @restoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not restore: {detail}'**
+  String restoreFailed(String detail);
+
+  /// No description provided for @restoreDamaged.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file is damaged or not a backup'**
+  String get restoreDamaged;
+
+  /// No description provided for @restoreTooNew.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup is from a newer version of the app. Update the app first.'**
+  String get restoreTooNew;
+
+  /// No description provided for @restoreNeedConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to the Google account first'**
+  String get restoreNeedConnect;
+
+  /// No description provided for @restoreSignInNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Now sign in with the old Super Admin\'s username and password.'**
+  String get restoreSignInNext;
+
+  /// No description provided for @excelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel upload (Google Drive)'**
+  String get excelTitle;
+
+  /// No description provided for @dailyAutoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily automatic upload'**
+  String get dailyAutoTitle;
+
+  /// No description provided for @dailyAutoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day all income and expense (without photos) go to Google Drive in one Excel file. If the computer is off or there is no internet, it uploads as soon as the app is open and online.'**
+  String get dailyAutoDesc;
+
+  /// No description provided for @googleAccountLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Google account: {email}'**
+  String googleAccountLine(String email);
+
+  /// No description provided for @lastGoodDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Last successful daily upload'**
+  String get lastGoodDaily;
+
+  /// No description provided for @uploadNowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload now'**
+  String get uploadNowTitle;
+
+  /// No description provided for @whichData.
+  ///
+  /// In en, this message translates to:
+  /// **'Which data'**
+  String get whichData;
+
+  /// No description provided for @excelFileLine.
+  ///
+  /// In en, this message translates to:
+  /// **'File: {name}'**
+  String excelFileLine(String name);
+
+  /// No description provided for @excelSheetsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Sheets: {sheets}'**
+  String excelSheetsLine(String sheets);
+
+  /// No description provided for @excelCancelledNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled entries are marked in the Status column'**
+  String get excelCancelledNote;
+
+  /// No description provided for @uploadToDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload to Google Drive'**
+  String get uploadToDrive;
+
+  /// No description provided for @uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading…'**
+  String get uploading;
+
+  /// No description provided for @excelUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded: {name}'**
+  String excelUploaded(String name);
+
+  /// No description provided for @excelUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The upload failed: {detail}'**
+  String excelUploadFailed(String detail);
+
+  /// No description provided for @recentUploads.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent uploads'**
+  String get recentUploads;
+
+  /// No description provided for @logOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get logOk;
+
+  /// No description provided for @logFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get logFailed;
+
+  /// No description provided for @connectFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect a Google account first (Backup page)'**
+  String get connectFirst;
+
+  /// No description provided for @noUploadsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No uploads yet'**
+  String get noUploadsYet;
 }
 
 class _AppLocalizationsDelegate

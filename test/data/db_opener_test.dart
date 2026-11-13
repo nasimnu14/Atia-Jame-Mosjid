@@ -9,11 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
 /// A pretend "next version" of the database whose upgrade step we control.
-class _FakeV2 extends AppDatabase {
-  _FakeV2(super.e, {this.fail = false});
+class _FakeNext extends AppDatabase {
+  _FakeNext(super.e, {this.fail = false});
   final bool fail;
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => next;
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
@@ -24,6 +24,9 @@ class _FakeV2 extends AppDatabase {
     beforeOpen: (d) async {},
   );
 }
+
+const current = AppDatabase.currentSchemaVersion;
+const next = current + 1;
 
 void main() {
   late Directory dir;
@@ -89,8 +92,8 @@ void main() {
       await seedV1();
       final db = await openAppDatabase(
         dir,
-        targetVersion: 2,
-        factory: (f) => _FakeV2(NativeDatabase.createInBackground(f)),
+        targetVersion: next,
+        factory: (f) => _FakeNext(NativeDatabase.createInBackground(f)),
       );
       await db.close();
       final backups = Directory(
@@ -99,11 +102,11 @@ void main() {
       expect(backups.length, 1);
       expect(
         p.basename(backups.single.path),
-        startsWith('pre-migration-v1-to-v2-'),
+        startsWith('pre-migration-v$current-to-v$next-'),
       );
-      expect(readUserVersion(backups.single), 1);
+      expect(readUserVersion(backups.single), current);
       expect(await nameIn(backups.single), 'মূল নাম'); // copy is the old data
-      expect(readUserVersion(File(p.join(dir.path, dbFileName))), 2);
+      expect(readUserVersion(File(p.join(dir.path, dbFileName))), next);
     },
   );
 
@@ -114,14 +117,14 @@ void main() {
       await expectLater(
         openAppDatabase(
           dir,
-          targetVersion: 2,
+          targetVersion: next,
           factory: (f) =>
-              _FakeV2(NativeDatabase.createInBackground(f), fail: true),
+              _FakeNext(NativeDatabase.createInBackground(f), fail: true),
         ),
         throwsA(isA<MigrationFailedException>()),
       );
       final file = File(p.join(dir.path, dbFileName));
-      expect(readUserVersion(file), 1); // still the old schema
+      expect(readUserVersion(file), current); // still the old schema
       final db = await openAppDatabase(dir); // the previous version opens fine
       final u = await db.select(db.users).getSingle();
       expect(u.name, 'মূল নাম'); // nothing was changed
@@ -134,11 +137,11 @@ void main() {
     await expectLater(
       openAppDatabase(
         dir,
-        targetVersion: 2,
-        factory: (f) => _FakeV2(NativeDatabase.createInBackground(f)),
+        targetVersion: next,
+        factory: (f) => _FakeNext(NativeDatabase.createInBackground(f)),
       ),
       completes,
-    ); // upgrade to v2
+    ); // upgrade to the next version
     final before = File(p.join(dir.path, dbFileName)).readAsBytesSync();
     await expectLater(
       openAppDatabase(dir),

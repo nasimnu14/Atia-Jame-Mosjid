@@ -778,5 +778,177 @@
   "xlsEditedBy": "Edited by",
   "xlsEditedAt": "Edited at",
   "xlsCancelledBy": "Cancelled by",
-  "xlsCancelledAt": "Cancelled at"
+  "xlsCancelledAt": "Cancelled at",
+  "excelFilePrefix": "income-expense",
+  "excelBoth": "Income and expense",
+  "logExcelDaily": "Daily · all income and expense",
+  "logExcelManual": "Manual · {period} · {content}",
+  "@logExcelManual": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "content": {
+        "type": "String"
+      }
+    }
+  },
+  "logBackupLine": "Backup · {photos} new photos",
+  "@logBackupLine": {
+    "placeholders": {
+      "photos": {
+        "type": "String"
+      }
+    }
+  },
+  "logBackupNewAccount": "Full backup to the new Google account · {photos} photos",
+  "@logBackupNewAccount": {
+    "placeholders": {
+      "photos": {
+        "type": "String"
+      }
+    }
+  },
+  "backupTitle": "Backup and Google Drive",
+  "googleAccountTitle": "Google account",
+  "connectedAs": "Connected: {email}",
+  "@connectedAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "notConnected": "Not connected",
+  "googleAccountNote": "Backups and the daily Excel files go to this account",
+  "changeAccount": "Change account",
+  "googleNotConfigured": "Google sign-in is not set up in this build. See docs/setup-notes.md.",
+  "connectFailed": "Could not connect to Google: {detail}",
+  "@connectFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "accountChangedBackup": "A full backup is being made to the new account…",
+  "accountChangedDone": "Connected. The first full backup to this account is done.",
+  "autoBackupTitle": "Automatic backup — every 4 hours",
+  "lastGoodBackup": "Last successful backup",
+  "nextBackup": "Next backup",
+  "backupIncludes": "What a backup holds",
+  "backupIncludesValue": "All entries, photos, users and settings",
+  "backupFailedNote": "The last backup attempt failed: {detail}. It will be tried again every few minutes.",
+  "@backupFailedNote": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "backupAppClosedNote": "Backups do not run while the app is closed. When the app opens and more than 4 hours have passed, a backup is made at once.",
+  "backupNever": "No backup yet",
+  "recentBackups": "Recent backup attempts",
+  "restoreTitle": "Restore from a backup",
+  "superOnlyChip": "Super Admin only",
+  "restoreWarning": "Careful: this replaces all the data on this computer with the chosen backup.",
+  "whichBackup": "Which backup",
+  "loadBackups": "Load the list of backups",
+  "noBackupsFound": "No backups were found in Google Drive",
+  "restoreButton": "Restore",
+  "restoreConfirmTitle": "Really restore?",
+  "restoreConfirmBody": "All data on this computer will be replaced by the backup of {when}. A copy of the current data is kept aside first.",
+  "@restoreConfirmBody": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "restoring": "Restoring…",
+  "restoreDone": "Everything was restored. Photos brought back: {n}.",
+  "@restoreDone": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDoneMissing": "Everything was restored. Photos brought back: {n}. {missing} photos were not in Google Drive.",
+  "@restoreDoneMissing": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      },
+      "missing": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Could not restore: {detail}",
+  "@restoreFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDamaged": "The backup file is damaged or not a backup",
+  "restoreTooNew": "This backup is from a newer version of the app. Update the app first.",
+  "restoreNeedConnect": "Connect to the Google account first",
+  "restoreSignInNext": "Now sign in with the old Super Admin's username and password.",
+  "excelTitle": "Excel upload (Google Drive)",
+  "dailyAutoTitle": "Daily automatic upload",
+  "dailyAutoDesc": "Every day all income and expense (without photos) go to Google Drive in one Excel file. If the computer is off or there is no internet, it uploads as soon as the app is open and online.",
+  "googleAccountLine": "Google account: {email}",
+  "@googleAccountLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "lastGoodDaily": "Last successful daily upload",
+  "uploadNowTitle": "Upload now",
+  "whichData": "Which data",
+  "excelFileLine": "File: {name}",
+  "@excelFileLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "excelSheetsLine": "Sheets: {sheets}",
+  "@excelSheetsLine": {
+    "placeholders": {
+      "sheets": {
+        "type": "String"
+      }
+    }
+  },
+  "excelCancelledNote": "Cancelled entries are marked in the Status column",
+  "uploadToDrive": "Upload to Google Drive",
+  "uploading": "Uploading…",
+  "excelUploaded": "Uploaded: {name}",
+  "@excelUploaded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "excelUploadFailed": "The upload failed: {detail}",
+  "@excelUploadFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "recentUploads": "Recent uploads",
+  "logOk": "OK",
+  "logFailed": "Failed",
+  "connectFirst": "Connect a Google account first (Backup page)",
+  "noUploadsYet": "No uploads yet"
 }

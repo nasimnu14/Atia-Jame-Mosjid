@@ -87,6 +87,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                       ),
+                      if (context.appWatch.notice != null) ...[
+                        const SizedBox(height: 12),
+                        MessageBanner(
+                          context.appWatch.notice!,
+                          kind: BannerKind.info,
+                        ),
+                      ],
                       const SizedBox(height: 14),
                       Text(
                         l.signInTitle,

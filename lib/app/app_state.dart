@@ -12,6 +12,9 @@ class AppState extends ChangeNotifier {
 
   bool ready = false;
 
+  /// A message to show once on the sign-in screen (for example after a restore).
+  String? notice;
+
   /// Whether any account exists yet. False on the very first launch (USR-3).
   bool hasUsers = false;
   User? user;
@@ -58,6 +61,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> signIn(String username, String password) async {
     user = await services.users.signIn(username, password);
+    notice = null;
     notifyListeners();
   }
 

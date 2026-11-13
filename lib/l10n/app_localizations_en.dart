@@ -1121,4 +1121,227 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get xlsCancelledAt => 'Cancelled at';
+
+  @override
+  String get excelFilePrefix => 'income-expense';
+
+  @override
+  String get excelBoth => 'Income and expense';
+
+  @override
+  String get logExcelDaily => 'Daily · all income and expense';
+
+  @override
+  String logExcelManual(String period, String content) {
+    return 'Manual · $period · $content';
+  }
+
+  @override
+  String logBackupLine(String photos) {
+    return 'Backup · $photos new photos';
+  }
+
+  @override
+  String logBackupNewAccount(String photos) {
+    return 'Full backup to the new Google account · $photos photos';
+  }
+
+  @override
+  String get backupTitle => 'Backup and Google Drive';
+
+  @override
+  String get googleAccountTitle => 'Google account';
+
+  @override
+  String connectedAs(String email) {
+    return 'Connected: $email';
+  }
+
+  @override
+  String get notConnected => 'Not connected';
+
+  @override
+  String get googleAccountNote =>
+      'Backups and the daily Excel files go to this account';
+
+  @override
+  String get changeAccount => 'Change account';
+
+  @override
+  String get googleNotConfigured =>
+      'Google sign-in is not set up in this build. See docs/setup-notes.md.';
+
+  @override
+  String connectFailed(String detail) {
+    return 'Could not connect to Google: $detail';
+  }
+
+  @override
+  String get accountChangedBackup =>
+      'A full backup is being made to the new account…';
+
+  @override
+  String get accountChangedDone =>
+      'Connected. The first full backup to this account is done.';
+
+  @override
+  String get autoBackupTitle => 'Automatic backup — every 4 hours';
+
+  @override
+  String get lastGoodBackup => 'Last successful backup';
+
+  @override
+  String get nextBackup => 'Next backup';
+
+  @override
+  String get backupIncludes => 'What a backup holds';
+
+  @override
+  String get backupIncludesValue => 'All entries, photos, users and settings';
+
+  @override
+  String backupFailedNote(String detail) {
+    return 'The last backup attempt failed: $detail. It will be tried again every few minutes.';
+  }
+
+  @override
+  String get backupAppClosedNote =>
+      'Backups do not run while the app is closed. When the app opens and more than 4 hours have passed, a backup is made at once.';
+
+  @override
+  String get backupNever => 'No backup yet';
+
+  @override
+  String get recentBackups => 'Recent backup attempts';
+
+  @override
+  String get restoreTitle => 'Restore from a backup';
+
+  @override
+  String get superOnlyChip => 'Super Admin only';
+
+  @override
+  String get restoreWarning =>
+      'Careful: this replaces all the data on this computer with the chosen backup.';
+
+  @override
+  String get whichBackup => 'Which backup';
+
+  @override
+  String get loadBackups => 'Load the list of backups';
+
+  @override
+  String get noBackupsFound => 'No backups were found in Google Drive';
+
+  @override
+  String get restoreButton => 'Restore';
+
+  @override
+  String get restoreConfirmTitle => 'Really restore?';
+
+  @override
+  String restoreConfirmBody(String when) {
+    return 'All data on this computer will be replaced by the backup of $when. A copy of the current data is kept aside first.';
+  }
+
+  @override
+  String get restoring => 'Restoring…';
+
+  @override
+  String restoreDone(String n) {
+    return 'Everything was restored. Photos brought back: $n.';
+  }
+
+  @override
+  String restoreDoneMissing(String n, String missing) {
+    return 'Everything was restored. Photos brought back: $n. $missing photos were not in Google Drive.';
+  }
+
+  @override
+  String restoreFailed(String detail) {
+    return 'Could not restore: $detail';
+  }
+
+  @override
+  String get restoreDamaged => 'The backup file is damaged or not a backup';
+
+  @override
+  String get restoreTooNew =>
+      'This backup is from a newer version of the app. Update the app first.';
+
+  @override
+  String get restoreNeedConnect => 'Connect to the Google account first';
+
+  @override
+  String get restoreSignInNext =>
+      'Now sign in with the old Super Admin\'s username and password.';
+
+  @override
+  String get excelTitle => 'Excel upload (Google Drive)';
+
+  @override
+  String get dailyAutoTitle => 'Daily automatic upload';
+
+  @override
+  String get dailyAutoDesc =>
+      'Every day all income and expense (without photos) go to Google Drive in one Excel file. If the computer is off or there is no internet, it uploads as soon as the app is open and online.';
+
+  @override
+  String googleAccountLine(String email) {
+    return 'Google account: $email';
+  }
+
+  @override
+  String get lastGoodDaily => 'Last successful daily upload';
+
+  @override
+  String get uploadNowTitle => 'Upload now';
+
+  @override
+  String get whichData => 'Which data';
+
+  @override
+  String excelFileLine(String name) {
+    return 'File: $name';
+  }
+
+  @override
+  String excelSheetsLine(String sheets) {
+    return 'Sheets: $sheets';
+  }
+
+  @override
+  String get excelCancelledNote =>
+      'Cancelled entries are marked in the Status column';
+
+  @override
+  String get uploadToDrive => 'Upload to Google Drive';
+
+  @override
+  String get uploading => 'Uploading…';
+
+  @override
+  String excelUploaded(String name) {
+    return 'Uploaded: $name';
+  }
+
+  @override
+  String excelUploadFailed(String detail) {
+    return 'The upload failed: $detail';
+  }
+
+  @override
+  String get recentUploads => 'Recent uploads';
+
+  @override
+  String get logOk => 'OK';
+
+  @override
+  String get logFailed => 'Failed';
+
+  @override
+  String get connectFirst => 'Connect a Google account first (Backup page)';
+
+  @override
+  String get noUploadsYet => 'No uploads yet';
 }

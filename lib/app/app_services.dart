@@ -11,6 +11,13 @@ import '../features/entries/entry_service.dart';
 import '../features/entries/photo_picker.dart';
 import '../features/entries/photo_shrinker.dart';
 import '../features/reports/balance_service.dart';
+import '../features/google_drive/backup_service.dart';
+import '../features/google_drive/drive_client.dart';
+import '../features/google_drive/drive_scheduler.dart';
+import '../features/google_drive/drive_service.dart';
+import '../features/google_drive/excel_upload_service.dart';
+import '../features/google_drive/google_drive_auth.dart';
+import '../features/google_drive/restore_service.dart';
 import '../features/reports/report_pdf_service.dart';
 import '../features/settings/settings_service.dart';
 import '../features/users/user_service.dart';
@@ -34,6 +41,11 @@ class AppServices {
     required this.photoShrinker,
     required this.fileSaver,
     required this.reports,
+    required this.drive,
+    required this.backup,
+    required this.excel,
+    required this.restore,
+    required this.scheduler,
   });
 
   /// App-data folder (outside the install folder, plan rule 1).
@@ -53,15 +65,30 @@ class AppServices {
   final PhotoShrinker photoShrinker;
   final FileSaver fileSaver;
   final ReportPdfService reports;
+  final DriveService drive;
+  final BackupService backup;
+  final ExcelUploadService excel;
+  final RestoreService restore;
+  final DriveScheduler scheduler;
 
   /// Opens the database (copying it first if an upgrade is needed) and wires
   /// the services. [hasher] is only replaced in tests.
   static Future<AppServices> open(
     Directory dataDir, {
     PasswordHasher hasher = const PasswordHasher(),
+    FileSaver fileSaver = const PlatformFileSaver(),
+    DriveAuth? driveAuth,
+    PhotoPicker photoPicker = const PlatformPhotoPicker(),
   }) async {
     final db = await openAppDatabase(dataDir);
-    return fromDatabase(db, dataDir, hasher: hasher);
+    return fromDatabase(
+      db,
+      dataDir,
+      hasher: hasher,
+      fileSaver: fileSaver,
+      driveAuth: driveAuth,
+      photoPicker: photoPicker,
+    );
   }
 
   static Future<AppServices> fromDatabase(
@@ -72,6 +99,7 @@ class AppServices {
     PhotoPicker photoPicker = const PlatformPhotoPicker(),
     PhotoShrinker photoShrinker = const PhotoShrinker(),
     FileSaver fileSaver = const PlatformFileSaver(),
+    DriveAuth? driveAuth,
   }) async {
     final repo = SettingsRepository(db);
     var deviceId = await repo.get(SettingKey.deviceId);
@@ -83,6 +111,26 @@ class AppServices {
     final settings = SettingsService(db, repo);
     final users = UserService(db, hasher: hasher, now: now);
     final entries = EntryService(db, photos, deviceId, now: now);
+    final drive = DriveService(
+      db,
+      repo,
+      driveAuth ?? GoogleDriveAuth(),
+      now: now,
+    );
+    final backup = BackupService(
+      db: db,
+      settings: repo,
+      drive: drive,
+      dataDir: dataDir,
+      now: now,
+    );
+    final excel = ExcelUploadService(
+      drive: drive,
+      entries: entries,
+      users: users,
+      settings: repo,
+      now: now,
+    );
     return AppServices._(
       dataDir: dataDir,
       db: db,
@@ -98,8 +146,21 @@ class AppServices {
       photoShrinker: photoShrinker,
       fileSaver: fileSaver,
       reports: ReportPdfService(entries, users, now),
+      drive: drive,
+      backup: backup,
+      excel: excel,
+      restore: RestoreService(drive: drive, backup: backup, dataDir: dataDir),
+      scheduler: DriveScheduler(
+        drive: drive,
+        backup: backup,
+        excel: excel,
+        now: now,
+      ),
     );
   }
 
-  Future<void> close() => db.close();
+  Future<void> close() async {
+    scheduler.stop();
+    await db.close();
+  }
 }

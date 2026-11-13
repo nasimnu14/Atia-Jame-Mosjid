@@ -18,7 +18,8 @@ class FakeDrive {
 
   DriveClient client(String email) => FakeDriveClient._(this, email);
 
-  Iterable<DriveFile> get files => _nodes.values.where((n) => !n.isFolder).map((n) => n.toFile());
+  Iterable<DriveFile> get files =>
+      _nodes.values.where((n) => !n.isFolder).map((n) => n.toFile());
 
   List<DriveFile> filesIn(String folderName, {String? account}) {
     final folder = _nodes.values
@@ -169,4 +170,10 @@ class FakeDriveAuth implements DriveAuth {
 
   @override
   Future<void> disconnect() async => stored = null;
+}
+
+/// A placeholder [DriveFile] for tests that never reach Drive.
+class DriveFileStub {
+  static DriveFile make() =>
+      DriveFile(id: 'x', name: 'x', createdTime: DateTime(2026));
 }

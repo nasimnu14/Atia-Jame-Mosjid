@@ -2962,6 +2962,781 @@ class SyncLogCompanion extends UpdateCompanion<SyncLogData> {
   }
 }
 
+class $DriveUploadedPhotosTable extends DriveUploadedPhotos
+    with TableInfo<$DriveUploadedPhotosTable, DriveUploadedPhoto> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DriveUploadedPhotosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _accountMeta = const VerificationMeta(
+    'account',
+  );
+  @override
+  late final GeneratedColumn<String> account = GeneratedColumn<String>(
+    'account',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entryIdMeta = const VerificationMeta(
+    'entryId',
+  );
+  @override
+  late final GeneratedColumn<String> entryId = GeneratedColumn<String>(
+    'entry_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fileNameMeta = const VerificationMeta(
+    'fileName',
+  );
+  @override
+  late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
+    'file_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _driveFileIdMeta = const VerificationMeta(
+    'driveFileId',
+  );
+  @override
+  late final GeneratedColumn<String> driveFileId = GeneratedColumn<String>(
+    'drive_file_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> uploadedAt = GeneratedColumn<DateTime>(
+    'uploaded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    account,
+    entryId,
+    fileName,
+    driveFileId,
+    uploadedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'drive_uploaded_photos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DriveUploadedPhoto> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('account')) {
+      context.handle(
+        _accountMeta,
+        account.isAcceptableOrUnknown(data['account']!, _accountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_accountMeta);
+    }
+    if (data.containsKey('entry_id')) {
+      context.handle(
+        _entryIdMeta,
+        entryId.isAcceptableOrUnknown(data['entry_id']!, _entryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryIdMeta);
+    }
+    if (data.containsKey('file_name')) {
+      context.handle(
+        _fileNameMeta,
+        fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileNameMeta);
+    }
+    if (data.containsKey('drive_file_id')) {
+      context.handle(
+        _driveFileIdMeta,
+        driveFileId.isAcceptableOrUnknown(
+          data['drive_file_id']!,
+          _driveFileIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_driveFileIdMeta);
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_uploadedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {account, entryId, fileName};
+  @override
+  DriveUploadedPhoto map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DriveUploadedPhoto(
+      account: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}account'],
+      )!,
+      entryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entry_id'],
+      )!,
+      fileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_name'],
+      )!,
+      driveFileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}drive_file_id'],
+      )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}uploaded_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DriveUploadedPhotosTable createAlias(String alias) {
+    return $DriveUploadedPhotosTable(attachedDatabase, alias);
+  }
+}
+
+class DriveUploadedPhoto extends DataClass
+    implements Insertable<DriveUploadedPhoto> {
+  final String account;
+  final String entryId;
+  final String fileName;
+  final String driveFileId;
+  final DateTime uploadedAt;
+  const DriveUploadedPhoto({
+    required this.account,
+    required this.entryId,
+    required this.fileName,
+    required this.driveFileId,
+    required this.uploadedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['account'] = Variable<String>(account);
+    map['entry_id'] = Variable<String>(entryId);
+    map['file_name'] = Variable<String>(fileName);
+    map['drive_file_id'] = Variable<String>(driveFileId);
+    map['uploaded_at'] = Variable<DateTime>(uploadedAt);
+    return map;
+  }
+
+  DriveUploadedPhotosCompanion toCompanion(bool nullToAbsent) {
+    return DriveUploadedPhotosCompanion(
+      account: Value(account),
+      entryId: Value(entryId),
+      fileName: Value(fileName),
+      driveFileId: Value(driveFileId),
+      uploadedAt: Value(uploadedAt),
+    );
+  }
+
+  factory DriveUploadedPhoto.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DriveUploadedPhoto(
+      account: serializer.fromJson<String>(json['account']),
+      entryId: serializer.fromJson<String>(json['entryId']),
+      fileName: serializer.fromJson<String>(json['fileName']),
+      driveFileId: serializer.fromJson<String>(json['driveFileId']),
+      uploadedAt: serializer.fromJson<DateTime>(json['uploadedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'account': serializer.toJson<String>(account),
+      'entryId': serializer.toJson<String>(entryId),
+      'fileName': serializer.toJson<String>(fileName),
+      'driveFileId': serializer.toJson<String>(driveFileId),
+      'uploadedAt': serializer.toJson<DateTime>(uploadedAt),
+    };
+  }
+
+  DriveUploadedPhoto copyWith({
+    String? account,
+    String? entryId,
+    String? fileName,
+    String? driveFileId,
+    DateTime? uploadedAt,
+  }) => DriveUploadedPhoto(
+    account: account ?? this.account,
+    entryId: entryId ?? this.entryId,
+    fileName: fileName ?? this.fileName,
+    driveFileId: driveFileId ?? this.driveFileId,
+    uploadedAt: uploadedAt ?? this.uploadedAt,
+  );
+  DriveUploadedPhoto copyWithCompanion(DriveUploadedPhotosCompanion data) {
+    return DriveUploadedPhoto(
+      account: data.account.present ? data.account.value : this.account,
+      entryId: data.entryId.present ? data.entryId.value : this.entryId,
+      fileName: data.fileName.present ? data.fileName.value : this.fileName,
+      driveFileId: data.driveFileId.present
+          ? data.driveFileId.value
+          : this.driveFileId,
+      uploadedAt: data.uploadedAt.present
+          ? data.uploadedAt.value
+          : this.uploadedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriveUploadedPhoto(')
+          ..write('account: $account, ')
+          ..write('entryId: $entryId, ')
+          ..write('fileName: $fileName, ')
+          ..write('driveFileId: $driveFileId, ')
+          ..write('uploadedAt: $uploadedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(account, entryId, fileName, driveFileId, uploadedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DriveUploadedPhoto &&
+          other.account == this.account &&
+          other.entryId == this.entryId &&
+          other.fileName == this.fileName &&
+          other.driveFileId == this.driveFileId &&
+          other.uploadedAt == this.uploadedAt);
+}
+
+class DriveUploadedPhotosCompanion extends UpdateCompanion<DriveUploadedPhoto> {
+  final Value<String> account;
+  final Value<String> entryId;
+  final Value<String> fileName;
+  final Value<String> driveFileId;
+  final Value<DateTime> uploadedAt;
+  final Value<int> rowid;
+  const DriveUploadedPhotosCompanion({
+    this.account = const Value.absent(),
+    this.entryId = const Value.absent(),
+    this.fileName = const Value.absent(),
+    this.driveFileId = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DriveUploadedPhotosCompanion.insert({
+    required String account,
+    required String entryId,
+    required String fileName,
+    required String driveFileId,
+    required DateTime uploadedAt,
+    this.rowid = const Value.absent(),
+  }) : account = Value(account),
+       entryId = Value(entryId),
+       fileName = Value(fileName),
+       driveFileId = Value(driveFileId),
+       uploadedAt = Value(uploadedAt);
+  static Insertable<DriveUploadedPhoto> custom({
+    Expression<String>? account,
+    Expression<String>? entryId,
+    Expression<String>? fileName,
+    Expression<String>? driveFileId,
+    Expression<DateTime>? uploadedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (account != null) 'account': account,
+      if (entryId != null) 'entry_id': entryId,
+      if (fileName != null) 'file_name': fileName,
+      if (driveFileId != null) 'drive_file_id': driveFileId,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DriveUploadedPhotosCompanion copyWith({
+    Value<String>? account,
+    Value<String>? entryId,
+    Value<String>? fileName,
+    Value<String>? driveFileId,
+    Value<DateTime>? uploadedAt,
+    Value<int>? rowid,
+  }) {
+    return DriveUploadedPhotosCompanion(
+      account: account ?? this.account,
+      entryId: entryId ?? this.entryId,
+      fileName: fileName ?? this.fileName,
+      driveFileId: driveFileId ?? this.driveFileId,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (account.present) {
+      map['account'] = Variable<String>(account.value);
+    }
+    if (entryId.present) {
+      map['entry_id'] = Variable<String>(entryId.value);
+    }
+    if (fileName.present) {
+      map['file_name'] = Variable<String>(fileName.value);
+    }
+    if (driveFileId.present) {
+      map['drive_file_id'] = Variable<String>(driveFileId.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<DateTime>(uploadedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriveUploadedPhotosCompanion(')
+          ..write('account: $account, ')
+          ..write('entryId: $entryId, ')
+          ..write('fileName: $fileName, ')
+          ..write('driveFileId: $driveFileId, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DriveLogTable extends DriveLog
+    with TableInfo<$DriveLogTable, DriveLogData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DriveLogTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _atMeta = const VerificationMeta('at');
+  @override
+  late final GeneratedColumn<DateTime> at = GeneratedColumn<DateTime>(
+    'at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _okMeta = const VerificationMeta('ok');
+  @override
+  late final GeneratedColumn<bool> ok = GeneratedColumn<bool>(
+    'ok',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("ok" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _errorMeta = const VerificationMeta('error');
+  @override
+  late final GeneratedColumn<String> error = GeneratedColumn<String>(
+    'error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, at, kind, description, ok, error];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'drive_log';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DriveLogData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('at')) {
+      context.handle(_atMeta, at.isAcceptableOrUnknown(data['at']!, _atMeta));
+    } else if (isInserting) {
+      context.missing(_atMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('ok')) {
+      context.handle(_okMeta, ok.isAcceptableOrUnknown(data['ok']!, _okMeta));
+    } else if (isInserting) {
+      context.missing(_okMeta);
+    }
+    if (data.containsKey('error')) {
+      context.handle(
+        _errorMeta,
+        error.isAcceptableOrUnknown(data['error']!, _errorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DriveLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DriveLogData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      at: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}at'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      ok: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}ok'],
+      )!,
+      error: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error'],
+      ),
+    );
+  }
+
+  @override
+  $DriveLogTable createAlias(String alias) {
+    return $DriveLogTable(attachedDatabase, alias);
+  }
+}
+
+class DriveLogData extends DataClass implements Insertable<DriveLogData> {
+  final String id;
+  final DateTime at;
+
+  /// `backup`, `excel_daily` or `excel_manual`.
+  final String kind;
+  final String description;
+  final bool ok;
+  final String? error;
+  const DriveLogData({
+    required this.id,
+    required this.at,
+    required this.kind,
+    required this.description,
+    required this.ok,
+    this.error,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['at'] = Variable<DateTime>(at);
+    map['kind'] = Variable<String>(kind);
+    map['description'] = Variable<String>(description);
+    map['ok'] = Variable<bool>(ok);
+    if (!nullToAbsent || error != null) {
+      map['error'] = Variable<String>(error);
+    }
+    return map;
+  }
+
+  DriveLogCompanion toCompanion(bool nullToAbsent) {
+    return DriveLogCompanion(
+      id: Value(id),
+      at: Value(at),
+      kind: Value(kind),
+      description: Value(description),
+      ok: Value(ok),
+      error: error == null && nullToAbsent
+          ? const Value.absent()
+          : Value(error),
+    );
+  }
+
+  factory DriveLogData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DriveLogData(
+      id: serializer.fromJson<String>(json['id']),
+      at: serializer.fromJson<DateTime>(json['at']),
+      kind: serializer.fromJson<String>(json['kind']),
+      description: serializer.fromJson<String>(json['description']),
+      ok: serializer.fromJson<bool>(json['ok']),
+      error: serializer.fromJson<String?>(json['error']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'at': serializer.toJson<DateTime>(at),
+      'kind': serializer.toJson<String>(kind),
+      'description': serializer.toJson<String>(description),
+      'ok': serializer.toJson<bool>(ok),
+      'error': serializer.toJson<String?>(error),
+    };
+  }
+
+  DriveLogData copyWith({
+    String? id,
+    DateTime? at,
+    String? kind,
+    String? description,
+    bool? ok,
+    Value<String?> error = const Value.absent(),
+  }) => DriveLogData(
+    id: id ?? this.id,
+    at: at ?? this.at,
+    kind: kind ?? this.kind,
+    description: description ?? this.description,
+    ok: ok ?? this.ok,
+    error: error.present ? error.value : this.error,
+  );
+  DriveLogData copyWithCompanion(DriveLogCompanion data) {
+    return DriveLogData(
+      id: data.id.present ? data.id.value : this.id,
+      at: data.at.present ? data.at.value : this.at,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      ok: data.ok.present ? data.ok.value : this.ok,
+      error: data.error.present ? data.error.value : this.error,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriveLogData(')
+          ..write('id: $id, ')
+          ..write('at: $at, ')
+          ..write('kind: $kind, ')
+          ..write('description: $description, ')
+          ..write('ok: $ok, ')
+          ..write('error: $error')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, at, kind, description, ok, error);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DriveLogData &&
+          other.id == this.id &&
+          other.at == this.at &&
+          other.kind == this.kind &&
+          other.description == this.description &&
+          other.ok == this.ok &&
+          other.error == this.error);
+}
+
+class DriveLogCompanion extends UpdateCompanion<DriveLogData> {
+  final Value<String> id;
+  final Value<DateTime> at;
+  final Value<String> kind;
+  final Value<String> description;
+  final Value<bool> ok;
+  final Value<String?> error;
+  final Value<int> rowid;
+  const DriveLogCompanion({
+    this.id = const Value.absent(),
+    this.at = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.description = const Value.absent(),
+    this.ok = const Value.absent(),
+    this.error = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DriveLogCompanion.insert({
+    required String id,
+    required DateTime at,
+    required String kind,
+    required String description,
+    required bool ok,
+    this.error = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       at = Value(at),
+       kind = Value(kind),
+       description = Value(description),
+       ok = Value(ok);
+  static Insertable<DriveLogData> custom({
+    Expression<String>? id,
+    Expression<DateTime>? at,
+    Expression<String>? kind,
+    Expression<String>? description,
+    Expression<bool>? ok,
+    Expression<String>? error,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (at != null) 'at': at,
+      if (kind != null) 'kind': kind,
+      if (description != null) 'description': description,
+      if (ok != null) 'ok': ok,
+      if (error != null) 'error': error,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DriveLogCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? at,
+    Value<String>? kind,
+    Value<String>? description,
+    Value<bool>? ok,
+    Value<String?>? error,
+    Value<int>? rowid,
+  }) {
+    return DriveLogCompanion(
+      id: id ?? this.id,
+      at: at ?? this.at,
+      kind: kind ?? this.kind,
+      description: description ?? this.description,
+      ok: ok ?? this.ok,
+      error: error ?? this.error,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (at.present) {
+      map['at'] = Variable<DateTime>(at.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (ok.present) {
+      map['ok'] = Variable<bool>(ok.value);
+    }
+    if (error.present) {
+      map['error'] = Variable<String>(error.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriveLogCompanion(')
+          ..write('id: $id, ')
+          ..write('at: $at, ')
+          ..write('kind: $kind, ')
+          ..write('description: $description, ')
+          ..write('ok: $ok, ')
+          ..write('error: $error, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2971,6 +3746,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ApproversTable approvers = $ApproversTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $SyncLogTable syncLog = $SyncLogTable(this);
+  late final $DriveUploadedPhotosTable driveUploadedPhotos =
+      $DriveUploadedPhotosTable(this);
+  late final $DriveLogTable driveLog = $DriveLogTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2982,6 +3760,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     approvers,
     settings,
     syncLog,
+    driveUploadedPhotos,
+    driveLog,
   ];
 }
 
@@ -4719,6 +5499,467 @@ typedef $$SyncLogTableProcessedTableManager =
       SyncLogData,
       PrefetchHooks Function()
     >;
+typedef $$DriveUploadedPhotosTableCreateCompanionBuilder =
+    DriveUploadedPhotosCompanion Function({
+      required String account,
+      required String entryId,
+      required String fileName,
+      required String driveFileId,
+      required DateTime uploadedAt,
+      Value<int> rowid,
+    });
+typedef $$DriveUploadedPhotosTableUpdateCompanionBuilder =
+    DriveUploadedPhotosCompanion Function({
+      Value<String> account,
+      Value<String> entryId,
+      Value<String> fileName,
+      Value<String> driveFileId,
+      Value<DateTime> uploadedAt,
+      Value<int> rowid,
+    });
+
+class $$DriveUploadedPhotosTableFilterComposer
+    extends Composer<_$AppDatabase, $DriveUploadedPhotosTable> {
+  $$DriveUploadedPhotosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get account => $composableBuilder(
+    column: $table.account,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get driveFileId => $composableBuilder(
+    column: $table.driveFileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DriveUploadedPhotosTableOrderingComposer
+    extends Composer<_$AppDatabase, $DriveUploadedPhotosTable> {
+  $$DriveUploadedPhotosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get account => $composableBuilder(
+    column: $table.account,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entryId => $composableBuilder(
+    column: $table.entryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get driveFileId => $composableBuilder(
+    column: $table.driveFileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DriveUploadedPhotosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DriveUploadedPhotosTable> {
+  $$DriveUploadedPhotosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get account =>
+      $composableBuilder(column: $table.account, builder: (column) => column);
+
+  GeneratedColumn<String> get entryId =>
+      $composableBuilder(column: $table.entryId, builder: (column) => column);
+
+  GeneratedColumn<String> get fileName =>
+      $composableBuilder(column: $table.fileName, builder: (column) => column);
+
+  GeneratedColumn<String> get driveFileId => $composableBuilder(
+    column: $table.driveFileId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$DriveUploadedPhotosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DriveUploadedPhotosTable,
+          DriveUploadedPhoto,
+          $$DriveUploadedPhotosTableFilterComposer,
+          $$DriveUploadedPhotosTableOrderingComposer,
+          $$DriveUploadedPhotosTableAnnotationComposer,
+          $$DriveUploadedPhotosTableCreateCompanionBuilder,
+          $$DriveUploadedPhotosTableUpdateCompanionBuilder,
+          (
+            DriveUploadedPhoto,
+            BaseReferences<
+              _$AppDatabase,
+              $DriveUploadedPhotosTable,
+              DriveUploadedPhoto
+            >,
+          ),
+          DriveUploadedPhoto,
+          PrefetchHooks Function()
+        > {
+  $$DriveUploadedPhotosTableTableManager(
+    _$AppDatabase db,
+    $DriveUploadedPhotosTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DriveUploadedPhotosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DriveUploadedPhotosTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DriveUploadedPhotosTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> account = const Value.absent(),
+                Value<String> entryId = const Value.absent(),
+                Value<String> fileName = const Value.absent(),
+                Value<String> driveFileId = const Value.absent(),
+                Value<DateTime> uploadedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DriveUploadedPhotosCompanion(
+                account: account,
+                entryId: entryId,
+                fileName: fileName,
+                driveFileId: driveFileId,
+                uploadedAt: uploadedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String account,
+                required String entryId,
+                required String fileName,
+                required String driveFileId,
+                required DateTime uploadedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => DriveUploadedPhotosCompanion.insert(
+                account: account,
+                entryId: entryId,
+                fileName: fileName,
+                driveFileId: driveFileId,
+                uploadedAt: uploadedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DriveUploadedPhotosTable, DriveUploadedPhoto>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $DriveUploadedPhotosTable,
+                    DriveUploadedPhoto
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DriveUploadedPhotosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DriveUploadedPhotosTable,
+      DriveUploadedPhoto,
+      $$DriveUploadedPhotosTableFilterComposer,
+      $$DriveUploadedPhotosTableOrderingComposer,
+      $$DriveUploadedPhotosTableAnnotationComposer,
+      $$DriveUploadedPhotosTableCreateCompanionBuilder,
+      $$DriveUploadedPhotosTableUpdateCompanionBuilder,
+      (
+        DriveUploadedPhoto,
+        BaseReferences<
+          _$AppDatabase,
+          $DriveUploadedPhotosTable,
+          DriveUploadedPhoto
+        >,
+      ),
+      DriveUploadedPhoto,
+      PrefetchHooks Function()
+    >;
+typedef $$DriveLogTableCreateCompanionBuilder =
+    DriveLogCompanion Function({
+      required String id,
+      required DateTime at,
+      required String kind,
+      required String description,
+      required bool ok,
+      Value<String?> error,
+      Value<int> rowid,
+    });
+typedef $$DriveLogTableUpdateCompanionBuilder =
+    DriveLogCompanion Function({
+      Value<String> id,
+      Value<DateTime> at,
+      Value<String> kind,
+      Value<String> description,
+      Value<bool> ok,
+      Value<String?> error,
+      Value<int> rowid,
+    });
+
+class $$DriveLogTableFilterComposer
+    extends Composer<_$AppDatabase, $DriveLogTable> {
+  $$DriveLogTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get ok => $composableBuilder(
+    column: $table.ok,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get error => $composableBuilder(
+    column: $table.error,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DriveLogTableOrderingComposer
+    extends Composer<_$AppDatabase, $DriveLogTable> {
+  $$DriveLogTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get ok => $composableBuilder(
+    column: $table.ok,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get error => $composableBuilder(
+    column: $table.error,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DriveLogTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DriveLogTable> {
+  $$DriveLogTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get at =>
+      $composableBuilder(column: $table.at, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get ok =>
+      $composableBuilder(column: $table.ok, builder: (column) => column);
+
+  GeneratedColumn<String> get error =>
+      $composableBuilder(column: $table.error, builder: (column) => column);
+}
+
+class $$DriveLogTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DriveLogTable,
+          DriveLogData,
+          $$DriveLogTableFilterComposer,
+          $$DriveLogTableOrderingComposer,
+          $$DriveLogTableAnnotationComposer,
+          $$DriveLogTableCreateCompanionBuilder,
+          $$DriveLogTableUpdateCompanionBuilder,
+          (
+            DriveLogData,
+            BaseReferences<_$AppDatabase, $DriveLogTable, DriveLogData>,
+          ),
+          DriveLogData,
+          PrefetchHooks Function()
+        > {
+  $$DriveLogTableTableManager(_$AppDatabase db, $DriveLogTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DriveLogTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DriveLogTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DriveLogTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> at = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<bool> ok = const Value.absent(),
+                Value<String?> error = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DriveLogCompanion(
+                id: id,
+                at: at,
+                kind: kind,
+                description: description,
+                ok: ok,
+                error: error,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime at,
+                required String kind,
+                required String description,
+                required bool ok,
+                Value<String?> error = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DriveLogCompanion.insert(
+                id: id,
+                at: at,
+                kind: kind,
+                description: description,
+                ok: ok,
+                error: error,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DriveLogTable, DriveLogData>(table),
+                  BaseReferences<_$AppDatabase, $DriveLogTable, DriveLogData>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DriveLogTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DriveLogTable,
+      DriveLogData,
+      $$DriveLogTableFilterComposer,
+      $$DriveLogTableOrderingComposer,
+      $$DriveLogTableAnnotationComposer,
+      $$DriveLogTableCreateCompanionBuilder,
+      $$DriveLogTableUpdateCompanionBuilder,
+      (
+        DriveLogData,
+        BaseReferences<_$AppDatabase, $DriveLogTable, DriveLogData>,
+      ),
+      DriveLogData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4735,4 +5976,8 @@ class $AppDatabaseManager {
       $$SettingsTableTableManager(_db, _db.settings);
   $$SyncLogTableTableManager get syncLog =>
       $$SyncLogTableTableManager(_db, _db.syncLog);
+  $$DriveUploadedPhotosTableTableManager get driveUploadedPhotos =>
+      $$DriveUploadedPhotosTableTableManager(_db, _db.driveUploadedPhotos);
+  $$DriveLogTableTableManager get driveLog =>
+      $$DriveLogTableTableManager(_db, _db.driveLog);
 }

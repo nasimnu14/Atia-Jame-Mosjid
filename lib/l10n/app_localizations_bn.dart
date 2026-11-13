@@ -1119,4 +1119,226 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get xlsCancelledAt => 'বাতিলের সময়';
+
+  @override
+  String get excelFilePrefix => 'আয়-ব্যয়';
+
+  @override
+  String get excelBoth => 'আয় ও ব্যয় দুটোই';
+
+  @override
+  String get logExcelDaily => 'দৈনিক · সব আয় ও ব্যয়';
+
+  @override
+  String logExcelManual(String period, String content) {
+    return 'নিজে · $period · $content';
+  }
+
+  @override
+  String logBackupLine(String photos) {
+    return 'ব্যাকআপ · নতুন ছবি $photosটি';
+  }
+
+  @override
+  String logBackupNewAccount(String photos) {
+    return 'নতুন গুগল অ্যাকাউন্টে পূর্ণ ব্যাকআপ · ছবি $photosটি';
+  }
+
+  @override
+  String get backupTitle => 'ব্যাকআপ ও গুগল ড্রাইভ';
+
+  @override
+  String get googleAccountTitle => 'গুগল অ্যাকাউন্ট';
+
+  @override
+  String connectedAs(String email) {
+    return 'সংযুক্ত: $email';
+  }
+
+  @override
+  String get notConnected => 'সংযুক্ত নেই';
+
+  @override
+  String get googleAccountNote =>
+      'ব্যাকআপ ও দৈনিক এক্সেল ফাইল এই অ্যাকাউন্টে যায়';
+
+  @override
+  String get changeAccount => 'অ্যাকাউন্ট বদলান';
+
+  @override
+  String get googleNotConfigured =>
+      'এই সংস্করণে গুগল সাইন-ইন সেট করা নেই। docs/setup-notes.md দেখুন।';
+
+  @override
+  String connectFailed(String detail) {
+    return 'গুগলে সংযুক্ত হওয়া যায়নি: $detail';
+  }
+
+  @override
+  String get accountChangedBackup =>
+      'নতুন অ্যাকাউন্টে পূর্ণ ব্যাকআপ নেওয়া হচ্ছে…';
+
+  @override
+  String get accountChangedDone =>
+      'সংযুক্ত হয়েছে। এই অ্যাকাউন্টে প্রথম পূর্ণ ব্যাকআপ সম্পন্ন।';
+
+  @override
+  String get autoBackupTitle => 'স্বয়ংক্রিয় ব্যাকআপ — প্রতি ৪ ঘণ্টা';
+
+  @override
+  String get lastGoodBackup => 'শেষ সফল ব্যাকআপ';
+
+  @override
+  String get nextBackup => 'পরের ব্যাকআপ';
+
+  @override
+  String get backupIncludes => 'ব্যাকআপে যা থাকে';
+
+  @override
+  String get backupIncludesValue => 'সব এন্ট্রি, ছবি, ব্যবহারকারী ও সেটিংস';
+
+  @override
+  String backupFailedNote(String detail) {
+    return 'সর্বশেষ চেষ্টায় ব্যাকআপ ব্যর্থ হয়েছে: $detail। কিছুক্ষণ পরপর আবার চেষ্টা হবে।';
+  }
+
+  @override
+  String get backupAppClosedNote =>
+      'অ্যাপ বন্ধ থাকলে ব্যাকআপ হয় না। অ্যাপ খোলার সময় ৪ ঘণ্টার বেশি পেরিয়ে গেলে সঙ্গে সঙ্গে ব্যাকআপ নেওয়া হয়।';
+
+  @override
+  String get backupNever => 'এখনো ব্যাকআপ হয়নি';
+
+  @override
+  String get recentBackups => 'সাম্প্রতিক ব্যাকআপ';
+
+  @override
+  String get restoreTitle => 'ব্যাকআপ থেকে ফিরিয়ে আনুন';
+
+  @override
+  String get superOnlyChip => 'শুধু সুপার অ্যাডমিন';
+
+  @override
+  String get restoreWarning =>
+      'সাবধান: এতে এই কম্পিউটারের বর্তমান সব তথ্য বাছাই করা ব্যাকআপের তথ্য দিয়ে বদলে যাবে।';
+
+  @override
+  String get whichBackup => 'কোন ব্যাকআপ';
+
+  @override
+  String get loadBackups => 'ব্যাকআপের তালিকা আনুন';
+
+  @override
+  String get noBackupsFound => 'গুগল ড্রাইভে কোনো ব্যাকআপ পাওয়া যায়নি';
+
+  @override
+  String get restoreButton => 'ফিরিয়ে আনুন';
+
+  @override
+  String get restoreConfirmTitle => 'সত্যিই ফিরিয়ে আনবেন?';
+
+  @override
+  String restoreConfirmBody(String when) {
+    return 'এই কম্পিউটারের বর্তমান সব তথ্য $when-এর ব্যাকআপ দিয়ে বদলে যাবে। আগে বর্তমান তথ্যের একটি কপি রেখে দেওয়া হবে।';
+  }
+
+  @override
+  String get restoring => 'ফিরিয়ে আনা হচ্ছে…';
+
+  @override
+  String restoreDone(String n) {
+    return 'সব তথ্য ফিরিয়ে আনা হয়েছে। ছবি ফিরেছে $nটি।';
+  }
+
+  @override
+  String restoreDoneMissing(String n, String missing) {
+    return 'সব তথ্য ফিরিয়ে আনা হয়েছে। ছবি ফিরেছে $nটি, গুগল ড্রাইভে পাওয়া যায়নি $missingটি।';
+  }
+
+  @override
+  String restoreFailed(String detail) {
+    return 'ফিরিয়ে আনা যায়নি: $detail';
+  }
+
+  @override
+  String get restoreDamaged => 'ব্যাকআপ ফাইলটি নষ্ট বা ভুল ধরনের';
+
+  @override
+  String get restoreTooNew =>
+      'এই ব্যাকআপ অ্যাপের নতুন সংস্করণের। আগে অ্যাপ আপডেট করুন।';
+
+  @override
+  String get restoreNeedConnect => 'আগে গুগল অ্যাকাউন্টে সংযুক্ত হন';
+
+  @override
+  String get restoreSignInNext =>
+      'এবার পুরনো সুপার অ্যাডমিনের ইউজারনেম ও পাসওয়ার্ড দিয়ে সাইন ইন করুন।';
+
+  @override
+  String get excelTitle => 'এক্সেল আপলোড (গুগল ড্রাইভ)';
+
+  @override
+  String get dailyAutoTitle => 'দৈনিক স্বয়ংক্রিয় আপলোড';
+
+  @override
+  String get dailyAutoDesc =>
+      'প্রতিদিন সব আয় ও ব্যয়ের তথ্য (ছবি ছাড়া) একটি এক্সেল ফাইলে গুগল ড্রাইভে যায়। কম্পিউটার বন্ধ বা ইন্টারনেট না থাকলে, পরে চালু ও অনলাইন হলেই আপলোড হবে।';
+
+  @override
+  String googleAccountLine(String email) {
+    return 'গুগল অ্যাকাউন্ট: $email';
+  }
+
+  @override
+  String get lastGoodDaily => 'শেষ সফল দৈনিক আপলোড';
+
+  @override
+  String get uploadNowTitle => 'এখনই আপলোড করুন';
+
+  @override
+  String get whichData => 'কোন তথ্য';
+
+  @override
+  String excelFileLine(String name) {
+    return 'ফাইল: $name';
+  }
+
+  @override
+  String excelSheetsLine(String sheets) {
+    return 'শিট: $sheets';
+  }
+
+  @override
+  String get excelCancelledNote => 'বাতিল এন্ট্রি ‘অবস্থা’ কলামে চিহ্নিত থাকবে';
+
+  @override
+  String get uploadToDrive => 'গুগল ড্রাইভে আপলোড করুন';
+
+  @override
+  String get uploading => 'আপলোড হচ্ছে…';
+
+  @override
+  String excelUploaded(String name) {
+    return 'আপলোড হয়েছে: $name';
+  }
+
+  @override
+  String excelUploadFailed(String detail) {
+    return 'আপলোড হয়নি: $detail';
+  }
+
+  @override
+  String get recentUploads => 'সাম্প্রতিক আপলোড';
+
+  @override
+  String get logOk => 'সফল';
+
+  @override
+  String get logFailed => 'ব্যর্থ';
+
+  @override
+  String get connectFirst => 'আগে গুগল অ্যাকাউন্টে সংযুক্ত হন (ব্যাকআপ পাতায়)';
+
+  @override
+  String get noUploadsYet => 'এখনো কোনো আপলোড হয়নি';
 }

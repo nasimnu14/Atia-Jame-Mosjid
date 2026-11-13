@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:atia_masjid_accounts/app/app.dart';
 import 'package:atia_masjid_accounts/app/app_services.dart';
 import 'package:atia_masjid_accounts/data/database.dart';
+import 'package:atia_masjid_accounts/data/db_opener.dart';
+import 'package:atia_masjid_accounts/features/google_drive/drive_client.dart';
 import 'package:atia_masjid_accounts/features/entries/photo_picker.dart';
 import 'package:atia_masjid_accounts/shared/file_saver.dart';
 import 'package:atia_masjid_accounts/shared/password_hasher.dart';
@@ -17,10 +19,11 @@ import 'package:flutter_test/flutter_test.dart';
 /// Runs the real app on an in-memory database. Real async work (database,
 /// password hashing in an isolate) happens inside `tester.runAsync`.
 class AppHarness {
-  AppHarness(this.tester, this.services, this.dir);
+  AppHarness(this.tester, this.services, this.dir, [this._reopen]);
   final WidgetTester tester;
   final AppServices services;
   final Directory dir;
+  final Future<AppServices> Function()? _reopen;
 
   static Future<AppHarness> start(
     WidgetTester tester, {
@@ -28,28 +31,47 @@ class AppHarness {
     PhotoPicker? picker,
     FileSaver? saver,
     DateTime? now,
+    DriveAuth? driveAuth,
+
+    /// Keep the database in a real file (needed for the restore flow).
+    bool onDisk = false,
   }) async {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
     final dir = Directory.systemTemp.createTempSync('atia_widget_');
-    final services = (await tester.runAsync(
-      () => AppServices.fromDatabase(
-        AppDatabase(NativeDatabase.memory()),
-        dir,
-        hasher: const PasswordHasher(logRounds: 4),
-        now: now == null ? DateTime.now : () => now,
-        photoPicker: picker ?? const PlatformPhotoPicker(),
-        fileSaver: saver ?? FakeFileSaver(),
-      ),
-    ))!;
-    final h = AppHarness(tester, services, dir);
+    final fileSaver = saver ?? FakeFileSaver();
+    Future<AppServices> build() async => AppServices.fromDatabase(
+      onDisk
+          ? await openAppDatabase(
+              dir,
+              // In the same isolate, so nothing needs real time to pass.
+              factory: (f) => AppDatabase(NativeDatabase(f)),
+            )
+          : AppDatabase(NativeDatabase.memory()),
+      dir,
+      hasher: const PasswordHasher(logRounds: 4),
+      now: now == null ? DateTime.now : () => now,
+      photoPicker: picker ?? const PlatformPhotoPicker(),
+      fileSaver: fileSaver,
+      driveAuth: driveAuth,
+    );
+    final services = (await tester.runAsync(build))!;
+    final h = AppHarness(tester, services, dir, onDisk ? build : null);
     addTearDown(() async {
-      await tester.runAsync(() => services.close());
+      await tester.runAsync(() => h.currentServices.close());
       if (dir.existsSync()) dir.deleteSync(recursive: true);
     });
     return h;
+  }
+
+  /// The services in use now (they are replaced after a restore).
+  late AppServices currentServices = services;
+
+  Future<AppServices> _wrapReopen() async {
+    currentServices = await _reopen!();
+    return currentServices;
   }
 
   final _shotKey = GlobalKey();
@@ -59,7 +81,10 @@ class AppHarness {
     await tester.pumpWidget(
       RepaintBoundary(
         key: _shotKey,
-        child: AtiaApp(services: services),
+        child: AtiaApp(
+          services: services,
+          reopen: _reopen == null ? null : _wrapReopen,
+        ),
       ),
     );
     await settle();
@@ -81,6 +106,23 @@ class AppHarness {
       Directory(dir).createSync(recursive: true);
       File('$dir/$name.png').writeAsBytesSync(data!.buffer.asUint8List());
     });
+  }
+
+  /// Runs real async work (a database or Drive call) and then pumps, so screens
+  /// that listen for changes finish reloading inside the test's fake clock
+  /// before the next real-async call (otherwise they would hold the database
+  /// lock and the test would wait forever).
+  Future<T?> run<T>(Future<T> Function() work) async {
+    final r = await tester.runAsync(work);
+    await settle(4);
+    return r;
+  }
+
+  /// Pumps until [finder] matches something (or gives up after [maxRounds]).
+  Future<void> settleUntil(Finder finder, {int maxRounds = 300}) async {
+    for (var i = 0; i < maxRounds && finder.evaluate().isEmpty; i++) {
+      await settle(1);
+    }
   }
 
   /// Lets real async work finish, then renders.
@@ -113,7 +155,9 @@ void testApp(
   String description,
   Future<void> Function(WidgetTester tester) body,
 ) {
-  testWidgets(description, (tester) async {
+  testWidgets(description, timeout: const Timeout(Duration(seconds: 90)), (
+    tester,
+  ) async {
     await body(tester);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 50));

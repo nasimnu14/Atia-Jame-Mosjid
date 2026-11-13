@@ -114,3 +114,33 @@ class SyncLog extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+/// Photos already uploaded to Google Drive, per Google account. A photo file
+/// is uploaded once and never again, so each 4-hour backup only uploads the
+/// database and new photos (plan Section 5, Phase 4). Added in schema 2.
+class DriveUploadedPhotos extends Table {
+  TextColumn get account => text()();
+  TextColumn get entryId => text()();
+  TextColumn get fileName => text()();
+  TextColumn get driveFileId => text()();
+  DateTimeColumn get uploadedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {account, entryId, fileName};
+}
+
+/// What the app did with Google Drive: backups and Excel uploads, shown on the
+/// Backup and Excel screens (BAK-5, XLS-8). Added in schema 2.
+class DriveLog extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get at => dateTime()();
+
+  /// `backup`, `excel_daily` or `excel_manual`.
+  TextColumn get kind => text()();
+  TextColumn get description => text()();
+  BoolColumn get ok => boolean()();
+  TextColumn get error => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

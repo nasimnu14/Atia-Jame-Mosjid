@@ -2,6 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:atia_masjid_accounts/data/database.dart';
+import 'package:atia_masjid_accounts/data/db_opener.dart';
+import 'package:atia_masjid_accounts/features/google_drive/backup_service.dart';
+import 'package:atia_masjid_accounts/features/google_drive/drive_scheduler.dart';
+import 'package:atia_masjid_accounts/features/google_drive/drive_service.dart';
+import 'package:atia_masjid_accounts/features/google_drive/excel_upload_service.dart';
+import 'package:atia_masjid_accounts/features/google_drive/restore_service.dart';
+import 'package:path/path.dart' as p;
+import 'fake_drive.dart';
 import 'package:atia_masjid_accounts/data/photo_storage.dart';
 import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
 import 'package:atia_masjid_accounts/data/tables.dart';
@@ -17,9 +25,13 @@ import 'package:flutter_test/flutter_test.dart';
 /// An in-memory database with every service wired up, a fixed clock, and a
 /// temp folder for photos. Passwords hash with a low cost to keep tests fast.
 class TestEnv {
-  TestEnv._(this.db, this.photoDir);
+  TestEnv._(this.db, this.photoDir, this.dataDir);
   final AppDatabase db;
   final Directory photoDir;
+
+  /// The app-data folder (holds the database file when [create] was called
+  /// with `onDisk: true`).
+  final Directory dataDir;
   DateTime clock = DateTime(2026, 11, 13, 10, 0);
 
   late final UserService users = UserService(
@@ -37,18 +49,73 @@ class TestEnv {
   );
   late final BalanceService balance = BalanceService(db, settings);
 
+  // Google Drive pieces, wired to a fake Drive that can be shared between
+  // two "computers" (pass the same [FakeDrive] to both).
+  late FakeDrive fakeDrive;
+  late FakeDriveAuth auth;
+  late final DriveService driveService = DriveService(
+    db,
+    settingsRepo,
+    auth,
+    now: () => clock,
+  );
+  late final BackupService backup = BackupService(
+    db: db,
+    settings: settingsRepo,
+    drive: driveService,
+    dataDir: dataDir,
+    now: () => clock,
+  );
+  late final ExcelUploadService excel = ExcelUploadService(
+    drive: driveService,
+    entries: entries,
+    users: users,
+    settings: settingsRepo,
+    now: () => clock,
+  );
+  late final RestoreService restore = RestoreService(
+    drive: driveService,
+    backup: backup,
+    dataDir: dataDir,
+  );
+  late final DriveScheduler scheduler = DriveScheduler(
+    drive: driveService,
+    backup: backup,
+    excel: excel,
+    now: () => clock,
+  );
+
   late User superAdmin;
   late User admin;
   late User user;
 
-  static Future<TestEnv> create() async {
+  /// [onDisk] keeps the database in a real file (needed to test restore).
+  /// [drive] is the shared fake Google Drive; [connected] signs in to it.
+  static Future<TestEnv> create({
+    bool onDisk = false,
+    bool seedUsers = true,
+    FakeDrive? drive,
+    bool connected = false,
+  }) async {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     final dir = Directory.systemTemp.createTempSync('atia_test_');
-    final env = TestEnv._(AppDatabase(NativeDatabase.memory()), dir);
+    final dataDir = Directory(p.join(dir.path, 'data'))..createSync();
+    final db = onDisk
+        ? await openAppDatabase(dataDir)
+        : AppDatabase(NativeDatabase.memory());
+    final photoDir = Directory(
+      onDisk ? p.join(dataDir.path, 'photos') : dir.path,
+    );
+    final env = TestEnv._(db, photoDir, dataDir);
+    env.fakeDrive = drive ?? FakeDrive();
+    env.fakeDrive.clock = () => env.clock;
+    env.auth = FakeDriveAuth(env.fakeDrive);
     addTearDown(() async {
       await env.db.close();
       if (dir.existsSync()) dir.deleteSync(recursive: true);
     });
+    if (connected) await env.driveService.connect();
+    if (!seedUsers) return env;
     env.superAdmin = await env.users.createSuperAdmin(
       name: 'Super',
       username: 'super',

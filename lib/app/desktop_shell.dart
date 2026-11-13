@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../data/tables.dart';
 import '../features/entries/entry_list_screen.dart';
+import '../features/google_drive/backup_screen.dart';
+import '../features/google_drive/excel_upload_screen.dart';
 import '../features/reports/dashboard_screen.dart';
 import '../features/reports/pdf_report_screen.dart';
 import '../features/reports/summary_screen.dart';
@@ -68,6 +70,8 @@ class _DesktopShellState extends State<DesktopShell> {
     Section.dashboard => const DashboardScreen(),
     Section.summary => const SummaryScreen(),
     Section.pdf => const PdfReportScreen(),
+    Section.excel => const ExcelUploadScreen(),
+    Section.backup => const BackupScreen(),
     Section.income => const EntryListScreen(type: EntryType.income),
     Section.expense => const EntryListScreen(type: EntryType.expense),
     Section.users => const UsersScreen(),
