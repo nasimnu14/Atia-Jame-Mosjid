@@ -16,9 +16,9 @@ class FakeDrive {
   int failUploadNumber = 0;
   int uploadCount = 0;
 
-  DriveClient client(String email) => _FakeClient(this, email);
+  DriveClient client(String email) => FakeDriveClient._(this, email);
 
-  Iterable<_Node> get files => _nodes.values.where((n) => !n.isFolder);
+  Iterable<DriveFile> get files => _nodes.values.where((n) => !n.isFolder).map((n) => n.toFile());
 
   List<DriveFile> filesIn(String folderName, {String? account}) {
     final folder = _nodes.values
@@ -59,8 +59,8 @@ class _Node {
       DriveFile(id: id, name: name, createdTime: created, size: bytes?.length);
 }
 
-class _FakeClient implements DriveClient {
-  _FakeClient(this._d, this.accountEmail);
+class FakeDriveClient implements DriveClient {
+  FakeDriveClient._(this._d, this.accountEmail);
   final FakeDrive _d;
   @override
   final String accountEmail;
@@ -78,7 +78,7 @@ class _FakeClient implements DriveClient {
     for (final n in _d._nodes.values) {
       if (n.isFolder &&
           n.name == name &&
-          n.parent == (parentId == null ? null : parentId) &&
+          n.parent == parentId &&
           n.id.startsWith('$accountEmail|')) {
         return n.id;
       }

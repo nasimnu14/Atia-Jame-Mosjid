@@ -171,10 +171,12 @@ List<PdfBlock> buildPeriodReport({
     blocks.add(SpacerBlock(12));
   }
 
-  if (content != ReportContent.expense)
+  if (content != ReportContent.expense) {
     section(EntryType.income, income, incomeTotal);
-  if (content != ReportContent.income)
+  }
+  if (content != ReportContent.income) {
     section(EntryType.expense, expense, expenseTotal);
+  }
 
   if (content == ReportContent.both) {
     final net = incomeTotal - expenseTotal;

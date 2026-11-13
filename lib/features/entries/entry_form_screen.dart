@@ -73,8 +73,9 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final e = widget.existing;
     final approvers = await services.settings.approvers();
     int? suggested;
-    if (e == null)
+    if (e == null) {
       suggested = await services.entries.suggestReceiptNo(widget.type);
+    }
     if (!mounted) return;
     setState(() {
       _approvers = approvers;
@@ -177,11 +178,13 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final errors = <EntryField, String>{};
     if (_receiptNo == null) errors[EntryField.receiptNo] = l.receiptInvalid;
     final dateError = _dateKey.currentState?.validate();
-    if (dateError != null || _date == null)
+    if (dateError != null || _date == null) {
       errors[EntryField.date] = dateError ?? l.dateEmpty;
+    }
     final amount = parseAmount(_amount.text);
-    if (!amount.isOk)
+    if (!amount.isOk) {
       errors[EntryField.amount] = amountProblemText(l, amount.problem!);
+    }
 
     final draft = EntryDraft(
       type: widget.type,

@@ -223,8 +223,9 @@ class _OpeningBalanceCardState extends State<_OpeningBalanceCard> {
 /// The opening balance may be 0.
 AmountParseResult parseAmountAllowZero(String input) {
   final r = parseAmount(input);
-  if (r.problem == AmountProblem.notPositive)
+  if (r.problem == AmountProblem.notPositive) {
     return const AmountParseResult.ok(0);
+  }
   return r;
 }
 

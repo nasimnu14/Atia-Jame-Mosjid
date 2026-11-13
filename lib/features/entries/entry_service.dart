@@ -220,8 +220,9 @@ class EntryService {
       errors[EntryField.amount] = EntryProblem.notPositive;
     }
     if (d.type == EntryType.expense) {
-      if (d.name.trim().isEmpty)
+      if (d.name.trim().isEmpty) {
         errors[EntryField.name] = EntryProblem.required;
+      }
       if (d.purpose.trim().isEmpty) {
         errors[EntryField.purpose] = EntryProblem.required;
       }
@@ -234,8 +235,9 @@ class EntryService {
                   (a) => a.name.equals(approver) & a.isActive.equals(true),
                 ))
                 .get();
-        if (ok.isEmpty)
+        if (ok.isEmpty) {
           errors[EntryField.approver] = EntryProblem.notInApproverList;
+        }
       }
     }
     if (d.photos.length > maxPhotosPerEntry) {
