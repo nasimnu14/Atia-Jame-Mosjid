@@ -25,8 +25,10 @@ void main() {
     test('dates', () {
       expect(const Fmt.bn().date(DateTime(2026, 11, 13)), '১৩/১১/২০২৬');
       expect(const Fmt.en().date(DateTime(2026, 1, 5)), '05/01/2026');
-      expect(const Fmt.bn().longDate(DateTime(2026, 11, 13)),
-          'শুক্রবার, ১৩ নভেম্বর ২০২৬');
+      expect(
+        const Fmt.bn().longDate(DateTime(2026, 11, 13)),
+        'শুক্রবার, ১৩ নভেম্বর ২০২৬',
+      );
     });
     test('day keys sort as text', () {
       expect(dayKey(DateTime(2026, 3, 5)), '2026-03-05');
@@ -57,8 +59,14 @@ void main() {
       expect(w.to, DateTime(2026, 11, 13));
     });
     test('Saturday starts a new week; Sunday is day 2', () {
-      expect(Period.weekOf(DateTime(2026, 11, 14)).from, DateTime(2026, 11, 14));
-      expect(Period.weekOf(DateTime(2026, 11, 15)).from, DateTime(2026, 11, 14));
+      expect(
+        Period.weekOf(DateTime(2026, 11, 14)).from,
+        DateTime(2026, 11, 14),
+      );
+      expect(
+        Period.weekOf(DateTime(2026, 11, 15)).from,
+        DateTime(2026, 11, 14),
+      );
       expect(Period.weekOf(DateTime(2026, 11, 14)).to, DateTime(2026, 11, 20));
     });
     test('week across a month end', () {
@@ -80,12 +88,17 @@ void main() {
 
   group('role permissions (USR-2 table)', () {
     const user = {
-      Permission.addEntry, Permission.viewEntries, Permission.syncPhone,
+      Permission.addEntry,
+      Permission.viewEntries,
+      Permission.syncPhone,
       Permission.changeOwnPassword,
     };
     const adminExtra = {
-      Permission.editEntry, Permission.cancelEntry, Permission.setOpeningBalance,
-      Permission.manageApprovers, Permission.manageBackupAndSettings,
+      Permission.editEntry,
+      Permission.cancelEntry,
+      Permission.setOpeningBalance,
+      Permission.manageApprovers,
+      Permission.manageBackupAndSettings,
     };
     const superOnly = {Permission.restoreBackup, Permission.manageUsers};
 
@@ -96,8 +109,11 @@ void main() {
     });
     test('Admin', () {
       for (final p in Permission.values) {
-        expect(can(Role.admin, p), user.contains(p) || adminExtra.contains(p),
-            reason: p.name);
+        expect(
+          can(Role.admin, p),
+          user.contains(p) || adminExtra.contains(p),
+          reason: p.name,
+        );
       }
     });
     test('Super Admin can do everything', () {
@@ -107,8 +123,10 @@ void main() {
       expect(superOnly.every((p) => !can(Role.admin, p)), isTrue);
     });
     test('requirePermission throws', () {
-      expect(() => requirePermission(Role.user, Permission.editEntry),
-          throwsA(isA<PermissionDeniedException>()));
+      expect(
+        () => requirePermission(Role.user, Permission.editEntry),
+        throwsA(isA<PermissionDeniedException>()),
+      );
     });
   });
 }

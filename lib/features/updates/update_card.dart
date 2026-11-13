@@ -31,13 +31,20 @@ class _UpdateCardState extends State<UpdateCard> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     return AppCard(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l.appAndUpdate,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 12),
-        Text(l.version(context.fmt.digits(_version ?? '…')),
-            style: const TextStyle(fontSize: 14, color: AppColors.text)),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l.appAndUpdate,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l.version(context.fmt.digits(_version ?? '…')),
+            style: const TextStyle(fontSize: 14, color: AppColors.text),
+          ),
+        ],
+      ),
     );
   }
 }

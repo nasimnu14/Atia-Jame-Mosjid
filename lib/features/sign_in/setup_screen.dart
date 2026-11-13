@@ -44,7 +44,10 @@ class _SetupScreenState extends State<SetupScreen> {
     final app = context.app;
     try {
       await app.createSuperAdmin(
-          name: _name.text, username: _user.text, password: _pass.text);
+        name: _name.text,
+        username: _user.text,
+        password: _pass.text,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -58,7 +61,8 @@ class _SetupScreenState extends State<SetupScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final fmt = context.fmt;
-    String? required(String? v) => (v ?? '').trim().isEmpty ? l.fieldRequired : null;
+    String? required(String? v) =>
+        (v ?? '').trim().isEmpty ? l.fieldRequired : null;
 
     final create = AppCard(
       padding: const EdgeInsets.all(24),
@@ -70,15 +74,27 @@ class _SetupScreenState extends State<SetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.setupStartFresh,
-                style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
+            Text(
+              l.setupStartFresh,
+              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 10),
-            Text(l.setupStartFreshDesc,
-                style: const TextStyle(fontSize: 14, color: AppColors.muted)),
+            Text(
+              l.setupStartFreshDesc,
+              style: const TextStyle(fontSize: 14, color: AppColors.muted),
+            ),
             const SizedBox(height: 14),
-            LabeledField(label: l.fullName, controller: _name, validator: required),
+            LabeledField(
+              label: l.fullName,
+              controller: _name,
+              validator: required,
+            ),
             const SizedBox(height: 12),
-            LabeledField(label: l.username, controller: _user, validator: required),
+            LabeledField(
+              label: l.username,
+              controller: _user,
+              validator: required,
+            ),
             const SizedBox(height: 12),
             LabeledField(
               label: l.password,
@@ -87,7 +103,9 @@ class _SetupScreenState extends State<SetupScreen> {
               validator: (v) {
                 if ((v ?? '').isEmpty) return l.fieldRequired;
                 if (PasswordHasher.isTooShort(v!)) {
-                  return l.passwordTooShort(fmt.integer(PasswordHasher.minLength));
+                  return l.passwordTooShort(
+                    fmt.integer(PasswordHasher.minLength),
+                  );
                 }
                 if (PasswordHasher.isTooLong(v)) return l.passwordTooLong;
                 return null;
@@ -121,26 +139,39 @@ class _SetupScreenState extends State<SetupScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l.setupRestoreTitle,
-              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
+          Text(
+            l.setupRestoreTitle,
+            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 10),
-          Text(l.setupRestoreDesc,
-              style: const TextStyle(fontSize: 14, color: AppColors.muted)),
+          Text(
+            l.setupRestoreDesc,
+            style: const TextStyle(fontSize: 14, color: AppColors.muted),
+          ),
           const SizedBox(height: 14),
-          for (final (i, s) in [l.setupRestoreStep1, l.setupRestoreStep2, l.setupRestoreStep3].indexed)
+          for (final (i, s) in [
+            l.setupRestoreStep1,
+            l.setupRestoreStep2,
+            l.setupRestoreStep3,
+          ].indexed)
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
-              child: Text('${fmt.integer(i + 1)}. $s',
-                  style: const TextStyle(fontSize: 14)),
+              child: Text(
+                '${fmt.integer(i + 1)}. $s',
+                style: const TextStyle(fontSize: 14),
+              ),
             ),
           const SizedBox(height: 14),
           OutlinedButton(
             onPressed: () => openRestoreFlow(context),
             style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primary)),
-            child: Text(l.connectGoogle,
-                style: const TextStyle(fontWeight: FontWeight.w600)),
+              foregroundColor: AppColors.primary,
+              side: const BorderSide(color: AppColors.primary),
+            ),
+            child: Text(
+              l.connectGoogle,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -156,31 +187,50 @@ class _SetupScreenState extends State<SetupScreen> {
               child: Column(
                 children: [
                   const Align(
-                      alignment: Alignment.centerRight, child: LanguageSwitch()),
+                    alignment: Alignment.centerRight,
+                    child: LanguageSwitch(),
+                  ),
                   const SizedBox(height: 16),
                   const LogoMark(size: 56),
                   const SizedBox(height: 10),
-                  Text(l.setupWelcome,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.w600)),
+                  Text(
+                    l.setupWelcome,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Text(l.setupChoose,
-                      style: const TextStyle(fontSize: 15, color: AppColors.muted)),
+                  Text(
+                    l.setupChoose,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColors.muted,
+                    ),
+                  ),
                   const SizedBox(height: 24),
-                  LayoutBuilder(builder: (context, c) {
-                    if (c.maxWidth < 700) {
-                      return Column(children: [create, const SizedBox(height: 20), restore]);
-                    }
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: create),
-                        const SizedBox(width: 20),
-                        Expanded(child: restore),
-                      ],
-                    );
-                  }),
+                  LayoutBuilder(
+                    builder: (context, c) {
+                      if (c.maxWidth < 700) {
+                        return Column(
+                          children: [
+                            create,
+                            const SizedBox(height: 20),
+                            restore,
+                          ],
+                        );
+                      }
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: create),
+                          const SizedBox(width: 20),
+                          Expanded(child: restore),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

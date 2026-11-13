@@ -22,17 +22,32 @@ void main() {
       expect(r.month, 2);
     });
     test('31/04 and 30/02 and Bangla 31/02 are refused', () {
-      expect(parseTypedDate('31/04/2026').problem, DateParseProblem.dayNotInMonth);
-      expect(parseTypedDate('30/02/2024').problem, DateParseProblem.dayNotInMonth);
-      expect(parseTypedDate('৩১/০২/২০২৬').problem, DateParseProblem.dayNotInMonth);
+      expect(
+        parseTypedDate('31/04/2026').problem,
+        DateParseProblem.dayNotInMonth,
+      );
+      expect(
+        parseTypedDate('30/02/2024').problem,
+        DateParseProblem.dayNotInMonth,
+      );
+      expect(
+        parseTypedDate('৩১/০২/২০২৬').problem,
+        DateParseProblem.dayNotInMonth,
+      );
     });
     test('leap day', () {
       expect(parseTypedDate('29/02/2024').date, DateTime(2024, 2, 29));
-      expect(parseTypedDate('29/02/2026').problem, DateParseProblem.dayNotInMonth);
+      expect(
+        parseTypedDate('29/02/2026').problem,
+        DateParseProblem.dayNotInMonth,
+      );
     });
     test('month 13, day 0, bad shapes, empty', () {
       expect(parseTypedDate('10/13/2026').problem, DateParseProblem.month);
-      expect(parseTypedDate('00/10/2026').problem, DateParseProblem.dayNotInMonth);
+      expect(
+        parseTypedDate('00/10/2026').problem,
+        DateParseProblem.dayNotInMonth,
+      );
       expect(parseTypedDate('13/11/26').problem, DateParseProblem.format);
       expect(parseTypedDate('hello').problem, DateParseProblem.format);
       expect(parseTypedDate('').problem, DateParseProblem.empty);

@@ -38,14 +38,13 @@ class PeriodChoice {
     bool clearFrom = false,
     DateTime? to,
     bool clearTo = false,
-  }) =>
-      PeriodChoice(
-        mode: mode ?? this.mode,
-        unit: unit ?? this.unit,
-        anchor: clearAnchor ? null : (anchor ?? this.anchor),
-        from: clearFrom ? null : (from ?? this.from),
-        to: clearTo ? null : (to ?? this.to),
-      );
+  }) => PeriodChoice(
+    mode: mode ?? this.mode,
+    unit: unit ?? this.unit,
+    anchor: clearAnchor ? null : (anchor ?? this.anchor),
+    from: clearFrom ? null : (from ?? this.from),
+    to: clearTo ? null : (to ?? this.to),
+  );
 
   /// The dates this choice stands for, or null while it is incomplete or
   /// wrong (a range with a missing end, or an end before the start).

@@ -898,4 +898,227 @@ class AppLocalizationsEn extends AppLocalizations {
   String entriesCountPhotos(String n) {
     return '$n';
   }
+
+  @override
+  String get currentBalance => 'Current balance';
+
+  @override
+  String balanceFormulaLine(String opening, String date) {
+    return 'Opening balance $opening ($date) + all income − all expense · cancelled entries not counted';
+  }
+
+  @override
+  String get balanceNoOpening =>
+      'No opening balance set · all income − all expense · cancelled entries not counted';
+
+  @override
+  String get viewSummary => 'View summary';
+
+  @override
+  String get incomeToday => 'Income today';
+
+  @override
+  String get expenseToday => 'Expense today';
+
+  @override
+  String get incomeThisMonth => 'Income this month';
+
+  @override
+  String get expenseThisMonth => 'Expense this month';
+
+  @override
+  String get statusBackup => 'Last backup (every 4 hours)';
+
+  @override
+  String get statusExcel => 'Daily Excel upload';
+
+  @override
+  String get statusSync => 'Last phone sync';
+
+  @override
+  String get statusNotYet => 'Not yet';
+
+  @override
+  String statusOkAt(String when) {
+    return '$when · OK';
+  }
+
+  @override
+  String statusFailedAt(String when) {
+    return 'Failed · last OK: $when';
+  }
+
+  @override
+  String get recentEntries => 'Recent entries';
+
+  @override
+  String get seeAll => 'See all';
+
+  @override
+  String get colType => 'Type';
+
+  @override
+  String get colNameOrPurpose => 'Name / purpose';
+
+  @override
+  String get makePdf => 'Make a PDF';
+
+  @override
+  String get excelUploadBtn => 'Excel upload';
+
+  @override
+  String get totalIncome => 'Total income';
+
+  @override
+  String get totalExpense => 'Total expense';
+
+  @override
+  String get incomeMinusExpense => 'Income − expense';
+
+  @override
+  String get surplusNote => 'Surplus for this period';
+
+  @override
+  String get deficitNote => 'Deficit for this period';
+
+  @override
+  String summaryNote(String balance) {
+    return 'Cancelled entries are not counted in any total. Current balance today: $balance';
+  }
+
+  @override
+  String breakdownDays(String period) {
+    return 'By day · $period';
+  }
+
+  @override
+  String breakdownWeeks(String period) {
+    return 'By week · $period';
+  }
+
+  @override
+  String breakdownMonths(String period) {
+    return 'By month · $period';
+  }
+
+  @override
+  String get rowTotal => 'Total';
+
+  @override
+  String get completePeriod => 'Complete the period above to see the figures';
+
+  @override
+  String get pdfWhatToInclude => 'What the report contains';
+
+  @override
+  String get pdfIncomeOnly => 'Income only';
+
+  @override
+  String get pdfExpenseOnly => 'Expense only';
+
+  @override
+  String get pdfBoth => 'Income and expense (with a summary)';
+
+  @override
+  String pdfLanguageNote(String lang) {
+    return 'Language: $lang. The report is made in the app\'s current language.';
+  }
+
+  @override
+  String get pdfWhereNext => 'In the next step, choose where to save the file.';
+
+  @override
+  String get pdfPreview => 'Preview (first page)';
+
+  @override
+  String get pdfGenerating => 'Making the PDF…';
+
+  @override
+  String pdfSaved(String path) {
+    return 'PDF saved: $path';
+  }
+
+  @override
+  String get pdfNotSaved => 'The PDF was not saved';
+
+  @override
+  String pdfFailed(String detail) {
+    return 'The PDF could not be made: $detail';
+  }
+
+  @override
+  String get pdfReportTitleBoth => 'Income and expense report';
+
+  @override
+  String get pdfReportTitleIncome => 'Income report';
+
+  @override
+  String get pdfReportTitleExpense => 'Expense report';
+
+  @override
+  String get pdfCancelledFootnote =>
+      'Cancelled entries are listed and marked, but are not counted in any total.';
+
+  @override
+  String pdfPageOf(String n, String total) {
+    return 'Page $n of $total';
+  }
+
+  @override
+  String pdfGeneratedOn(String when) {
+    return 'Made on $when';
+  }
+
+  @override
+  String get pdfNoEntries => 'No entries in this period';
+
+  @override
+  String get pdfEntryTitleIncome => 'Income entry';
+
+  @override
+  String get pdfEntryTitleExpense => 'Expense entry';
+
+  @override
+  String get pdfPhotosHeading => 'Photos';
+
+  @override
+  String get pdfHistoryHeading => 'History';
+
+  @override
+  String pdfAddedByShort(String who, String when) {
+    return 'Added by $who on $when';
+  }
+
+  @override
+  String pdfEditedByShort(String who, String when) {
+    return 'Edited by $who on $when';
+  }
+
+  @override
+  String pdfCancelledByShort(String who, String when) {
+    return 'Cancelled by $who on $when';
+  }
+
+  @override
+  String pdfAmountLine(String amount) {
+    return 'Amount: $amount';
+  }
+
+  @override
+  String get xlsAddedBy => 'Added by';
+
+  @override
+  String get xlsAddedAt => 'Added at';
+
+  @override
+  String get xlsEditedBy => 'Edited by';
+
+  @override
+  String get xlsEditedAt => 'Edited at';
+
+  @override
+  String get xlsCancelledBy => 'Cancelled by';
+
+  @override
+  String get xlsCancelledAt => 'Cancelled at';
 }

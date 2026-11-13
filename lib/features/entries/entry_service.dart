@@ -1,4 +1,3 @@
-
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
@@ -42,17 +41,23 @@ class EntryActionException implements Exception {
 /// One photo in a draft: either already saved ([existingId] set) or new
 /// ([bytes] set, already shrunk).
 class PhotoDraft {
-  const PhotoDraft({this.existingId, this.existingFileName, this.bytes, required this.label});
+  const PhotoDraft({
+    this.existingId,
+    this.existingFileName,
+    this.bytes,
+    required this.label,
+  });
   final String? existingId;
   final String? existingFileName;
   final Uint8List? bytes;
   final String label;
 
   PhotoDraft withLabel(String l) => PhotoDraft(
-      existingId: existingId,
-      existingFileName: existingFileName,
-      bytes: bytes,
-      label: l);
+    existingId: existingId,
+    existingFileName: existingFileName,
+    bytes: bytes,
+    label: l,
+  );
 }
 
 /// What the user typed into an income or expense form.
@@ -80,8 +85,7 @@ class EntryDraft {
 
   /// The entry's description, used to label photos (INC-10): purpose for an
   /// expense, name for an income. Empty when there is none.
-  String get description =>
-      (type == EntryType.expense ? purpose : name).trim();
+  String get description => (type == EntryType.expense ? purpose : name).trim();
 }
 
 class EntryWithPhotos {
@@ -91,11 +95,12 @@ class EntryWithPhotos {
 }
 
 class EntryQuery {
-  const EntryQuery(
-      {required this.type,
-      this.period,
-      this.text = '',
-      this.onlyDuplicates = false});
+  const EntryQuery({
+    required this.type,
+    this.period,
+    this.text = '',
+    this.onlyDuplicates = false,
+  });
   final EntryType type;
   final Period? period;
 
@@ -130,8 +135,12 @@ class EntryPage {
 /// Add, find, edit and cancel entries (INC, EXP, FND, DET, EDT, USR-8).
 /// Role rules are enforced here.
 class EntryService {
-  EntryService(this._db, this._photos, this.deviceId,
-      {this.now = DateTime.now});
+  EntryService(
+    this._db,
+    this._photos,
+    this.deviceId, {
+    this.now = DateTime.now,
+  });
 
   final AppDatabase _db;
   final PhotoStorage _photos;
@@ -161,8 +170,11 @@ class EntryService {
   }
 
   /// INC-5: the other entry already using this receipt number, if any.
-  Future<Entry?> findDuplicate(EntryType type, int receiptNo,
-      {String? exceptId}) async {
+  Future<Entry?> findDuplicate(
+    EntryType type,
+    int receiptNo, {
+    String? exceptId,
+  }) async {
     final q = _db.select(_db.entries)
       ..where((e) => e.type.equalsValue(type) & e.receiptNo.equals(receiptNo))
       ..orderBy([(e) => OrderingTerm.asc(e.createdAt)]);
@@ -174,9 +186,9 @@ class EntryService {
 
   /// FND-1: entries with this receipt number (normally one).
   Future<List<Entry>> findByReceipt(EntryType type, int receiptNo) =>
-      (_db.select(_db.entries)
-            ..where((e) =>
-                e.type.equalsValue(type) & e.receiptNo.equals(receiptNo)))
+      (_db.select(_db.entries)..where(
+            (e) => e.type.equalsValue(type) & e.receiptNo.equals(receiptNo),
+          ))
           .get();
 
   /// How many entries of this type are flagged as duplicates (SYN-8).
@@ -184,15 +196,19 @@ class EntryService {
     final cnt = _db.entries.id.count();
     final q = _db.selectOnly(_db.entries)
       ..addColumns([cnt])
-      ..where(_db.entries.type.equalsValue(type) &
-          _db.entries.isDuplicate.equals(true));
+      ..where(
+        _db.entries.type.equalsValue(type) &
+            _db.entries.isDuplicate.equals(true),
+      );
     return (await q.getSingle()).read(cnt) ?? 0;
   }
 
   // ------------------------------------------------------------- validation
 
-  Future<Map<EntryField, EntryProblem>> validate(EntryDraft d,
-      {String? existingApprover}) async {
+  Future<Map<EntryField, EntryProblem>> validate(
+    EntryDraft d, {
+    String? existingApprover,
+  }) async {
     final errors = <EntryField, EntryProblem>{};
     if (d.receiptNo == null || d.receiptNo! < 1) {
       errors[EntryField.receiptNo] = EntryProblem.required;
@@ -204,7 +220,8 @@ class EntryService {
       errors[EntryField.amount] = EntryProblem.notPositive;
     }
     if (d.type == EntryType.expense) {
-      if (d.name.trim().isEmpty) errors[EntryField.name] = EntryProblem.required;
+      if (d.name.trim().isEmpty)
+        errors[EntryField.name] = EntryProblem.required;
       if (d.purpose.trim().isEmpty) {
         errors[EntryField.purpose] = EntryProblem.required;
       }
@@ -212,10 +229,13 @@ class EntryService {
       if (approver.isEmpty) {
         errors[EntryField.approver] = EntryProblem.required;
       } else if (approver != existingApprover) {
-        final ok = await (_db.select(_db.approvers)
-              ..where((a) => a.name.equals(approver) & a.isActive.equals(true)))
-            .get();
-        if (ok.isEmpty) errors[EntryField.approver] = EntryProblem.notInApproverList;
+        final ok =
+            await (_db.select(_db.approvers)..where(
+                  (a) => a.name.equals(approver) & a.isActive.equals(true),
+                ))
+                .get();
+        if (ok.isEmpty)
+          errors[EntryField.approver] = EntryProblem.notInApproverList;
       }
     }
     if (d.photos.length > maxPhotosPerEntry) {
@@ -242,28 +262,44 @@ class EntryService {
         savedFiles['$i'] = await _photos.save(id, draft.photos[i].bytes!);
       }
       await _db.transaction(() async {
-        await _db.into(_db.entries).insert(EntriesCompanion.insert(
-              id: id,
-              type: draft.type,
-              receiptNo: draft.receiptNo!,
-              entryDate: dayKey(draft.date!),
-              name: Value(draft.name.trim()),
-              purpose: Value(_nullIfEmpty(draft.type == EntryType.expense ? draft.purpose : '')),
-              approverName: Value(_nullIfEmpty(draft.type == EntryType.expense ? draft.approverName : '')),
-              amount: draft.amount!,
-              address: Value(_nullIfEmpty(draft.address)),
-              createdBy: live.id,
-              createdAt: now(),
-              deviceId: deviceId,
-            ));
+        await _db
+            .into(_db.entries)
+            .insert(
+              EntriesCompanion.insert(
+                id: id,
+                type: draft.type,
+                receiptNo: draft.receiptNo!,
+                entryDate: dayKey(draft.date!),
+                name: Value(draft.name.trim()),
+                purpose: Value(
+                  _nullIfEmpty(
+                    draft.type == EntryType.expense ? draft.purpose : '',
+                  ),
+                ),
+                approverName: Value(
+                  _nullIfEmpty(
+                    draft.type == EntryType.expense ? draft.approverName : '',
+                  ),
+                ),
+                amount: draft.amount!,
+                address: Value(_nullIfEmpty(draft.address)),
+                createdBy: live.id,
+                createdAt: now(),
+                deviceId: deviceId,
+              ),
+            );
         for (var i = 0; i < draft.photos.length; i++) {
-          await _db.into(_db.photos).insert(PhotosCompanion.insert(
-                id: _uuid.v4(),
-                entryId: id,
-                fileName: savedFiles['$i']!,
-                label: draft.photos[i].label.trim(),
-                position: i,
-              ));
+          await _db
+              .into(_db.photos)
+              .insert(
+                PhotosCompanion.insert(
+                  id: _uuid.v4(),
+                  entryId: id,
+                  fileName: savedFiles['$i']!,
+                  label: draft.photos[i].label.trim(),
+                  position: i,
+                ),
+              );
         }
       });
     } catch (_) {
@@ -283,8 +319,12 @@ class EntryService {
   /// Admin's on-the-spot approval ([approver], from
   /// `UserService.authorizeApprover`). The editor recorded is the one who had
   /// the authority. Cancelled entries cannot be edited.
-  Future<EntryWithPhotos> update(User actor, String entryId, EntryDraft draft,
-      {User? approver}) async {
+  Future<EntryWithPhotos> update(
+    User actor,
+    String entryId,
+    EntryDraft draft, {
+    User? approver,
+  }) async {
     final editor = await _authority(actor, approver, Permission.editEntry);
     final existing = await _entry(entryId);
     if (existing.status == EntryStatus.cancelled) {
@@ -293,7 +333,10 @@ class EntryService {
     if (existing.type != draft.type) {
       throw ArgumentError('An entry cannot change between income and expense.');
     }
-    final errors = await validate(draft, existingApprover: existing.approverName);
+    final errors = await validate(
+      draft,
+      existingApprover: existing.approverName,
+    );
     if (errors.isNotEmpty) throw EntryValidationException(errors);
 
     final current = await photosOf(entryId);
@@ -309,13 +352,23 @@ class EntryService {
         }
       }
       await _db.transaction(() async {
-        await (_db.update(_db.entries)..where((e) => e.id.equals(entryId))).write(
+        await (_db.update(
+          _db.entries,
+        )..where((e) => e.id.equals(entryId))).write(
           EntriesCompanion(
             receiptNo: Value(draft.receiptNo!),
             entryDate: Value(dayKey(draft.date!)),
             name: Value(draft.name.trim()),
-            purpose: Value(_nullIfEmpty(draft.type == EntryType.expense ? draft.purpose : '')),
-            approverName: Value(_nullIfEmpty(draft.type == EntryType.expense ? draft.approverName : '')),
+            purpose: Value(
+              _nullIfEmpty(
+                draft.type == EntryType.expense ? draft.purpose : '',
+              ),
+            ),
+            approverName: Value(
+              _nullIfEmpty(
+                draft.type == EntryType.expense ? draft.approverName : '',
+              ),
+            ),
             amount: Value(draft.amount!),
             address: Value(_nullIfEmpty(draft.address)),
             editedBy: Value(editor.id),
@@ -323,26 +376,40 @@ class EntryService {
           ),
         );
         // Removing a photo only removes its row; the file stays on disk.
-        final keep = {for (final p in draft.photos) if (p.existingId != null) p.existingId!};
+        final keep = {
+          for (final p in draft.photos)
+            if (p.existingId != null) p.existingId!,
+        };
         for (final p in current) {
           if (!keep.contains(p.id)) {
-            await (_db.delete(_db.photos)..where((x) => x.id.equals(p.id))).go();
+            await (_db.delete(
+              _db.photos,
+            )..where((x) => x.id.equals(p.id))).go();
           }
         }
         for (var i = 0; i < draft.photos.length; i++) {
           final ph = draft.photos[i];
           if (ph.existingId != null) {
-            await (_db.update(_db.photos)..where((x) => x.id.equals(ph.existingId!)))
-                .write(PhotosCompanion(
-                    label: Value(ph.label.trim()), position: Value(i)));
+            await (_db.update(
+              _db.photos,
+            )..where((x) => x.id.equals(ph.existingId!))).write(
+              PhotosCompanion(
+                label: Value(ph.label.trim()),
+                position: Value(i),
+              ),
+            );
           } else {
-            await _db.into(_db.photos).insert(PhotosCompanion.insert(
-                  id: _uuid.v4(),
-                  entryId: entryId,
-                  fileName: newFiles[i]!,
-                  label: ph.label.trim(),
-                  position: i,
-                ));
+            await _db
+                .into(_db.photos)
+                .insert(
+                  PhotosCompanion.insert(
+                    id: _uuid.v4(),
+                    entryId: entryId,
+                    fileName: newFiles[i]!,
+                    label: ph.label.trim(),
+                    position: i,
+                  ),
+                );
           }
         }
       });
@@ -362,8 +429,12 @@ class EntryService {
   /// approval) cancels, and a reason is required. Nothing is deleted. A
   /// cancelled entry stays in the records and is left out of every total
   /// (EDT-4).
-  Future<Entry> cancel(User actor, String entryId, String reason,
-      {User? approver}) async {
+  Future<Entry> cancel(
+    User actor,
+    String entryId,
+    String reason, {
+    User? approver,
+  }) async {
     final who = await _authority(actor, approver, Permission.cancelEntry);
     final clean = reason.trim();
     if (clean.isEmpty) {
@@ -389,19 +460,22 @@ class EntryService {
   Future<void> clearDuplicateFlag(User actor, String entryId) async {
     final live = await _liveActor(actor);
     requirePermission(live.role, Permission.editEntry);
-    await (_db.update(_db.entries)..where((e) => e.id.equals(entryId)))
-        .write(const EntriesCompanion(isDuplicate: Value(false)));
+    await (_db.update(_db.entries)..where((e) => e.id.equals(entryId))).write(
+      const EntriesCompanion(isDuplicate: Value(false)),
+    );
   }
 
   // ------------------------------------------------------------------- read
 
-  Future<Entry?> getById(String id) =>
-      (_db.select(_db.entries)..where((e) => e.id.equals(id))).getSingleOrNull();
+  Future<Entry?> getById(String id) => (_db.select(
+    _db.entries,
+  )..where((e) => e.id.equals(id))).getSingleOrNull();
 
-  Future<List<Photo>> photosOf(String entryId) => (_db.select(_db.photos)
-        ..where((p) => p.entryId.equals(entryId))
-        ..orderBy([(p) => OrderingTerm.asc(p.position)]))
-      .get();
+  Future<List<Photo>> photosOf(String entryId) =>
+      (_db.select(_db.photos)
+            ..where((p) => p.entryId.equals(entryId))
+            ..orderBy([(p) => OrderingTerm.asc(p.position)]))
+          .get();
 
   Future<EntryWithPhotos?> getWithPhotos(String id) async {
     final e = await getById(id);
@@ -462,7 +536,8 @@ class EntryService {
     Expression<bool> cond = e.type.equalsValue(q.type);
     final p = q.period;
     if (p != null) {
-      cond = cond &
+      cond =
+          cond &
           e.entryDate.isBiggerOrEqualValue(dayKey(p.from)) &
           e.entryDate.isSmallerOrEqualValue(dayKey(p.to));
     }
@@ -471,19 +546,34 @@ class EntryService {
     if (text.isNotEmpty) {
       final asNumber = int.tryParse(toEnglishDigits(text));
       final byName = e.name.like('%${_escapeLike(text)}%', escapeChar: r'\');
-      cond = cond & (asNumber == null ? byName : (byName | e.receiptNo.equals(asNumber)));
+      cond =
+          cond &
+          (asNumber == null ? byName : (byName | e.receiptNo.equals(asNumber)));
     }
     return cond;
+  }
+
+  /// The newest entries of both types, for the dashboard.
+  Future<List<Entry>> recent({int limit = 5}) {
+    final q = _db.select(_db.entries)
+      ..orderBy([
+        (e) => OrderingTerm.desc(e.entryDate),
+        (e) => OrderingTerm.desc(e.createdAt),
+      ])
+      ..limit(limit);
+    return q.get();
   }
 
   /// All entries (any status) inside a period, both types; used by reports
   /// and Excel. Oldest first.
   Future<List<Entry>> inPeriod(Period period, {EntryType? type}) {
     final q = _db.select(_db.entries)
-      ..where((e) =>
-          e.entryDate.isBiggerOrEqualValue(dayKey(period.from)) &
-          e.entryDate.isSmallerOrEqualValue(dayKey(period.to)) &
-          (type == null ? const Constant(true) : e.type.equalsValue(type)))
+      ..where(
+        (e) =>
+            e.entryDate.isBiggerOrEqualValue(dayKey(period.from)) &
+            e.entryDate.isSmallerOrEqualValue(dayKey(period.to)) &
+            (type == null ? const Constant(true) : e.type.equalsValue(type)),
+      )
       ..orderBy([
         (e) => OrderingTerm.asc(e.entryDate),
         (e) => OrderingTerm.asc(e.receiptNo),
@@ -502,8 +592,9 @@ class EntryService {
 
   /// The actor as stored now: a role change or disabling applies at once.
   Future<User> _liveActor(User actor) async {
-    final live = await (_db.select(_db.users)..where((u) => u.id.equals(actor.id)))
-        .getSingleOrNull();
+    final live = await (_db.select(
+      _db.users,
+    )..where((u) => u.id.equals(actor.id))).getSingleOrNull();
     if (live == null) throw UserException(UserProblem.notFound);
     if (!live.isActive) throw UserException(UserProblem.accountDisabled);
     return live;
@@ -511,7 +602,11 @@ class EntryService {
 
   /// Who has the authority for [permission]: the actor, or else an approver
   /// (EDT-2).
-  Future<User> _authority(User actor, User? approver, Permission permission) async {
+  Future<User> _authority(
+    User actor,
+    User? approver,
+    Permission permission,
+  ) async {
     final live = await _liveActor(actor);
     if (can(live.role, permission)) return live;
     if (approver != null) {
@@ -522,10 +617,8 @@ class EntryService {
   }
 
   /// Makes `%` and `_` in what the user typed match themselves.
-  static String _escapeLike(String s) => s
-      .replaceAll(r'\', r'\\')
-      .replaceAll('%', r'\%')
-      .replaceAll('_', r'\_');
+  static String _escapeLike(String s) =>
+      s.replaceAll(r'\', r'\\').replaceAll('%', r'\%').replaceAll('_', r'\_');
 
   static String? _nullIfEmpty(String s) {
     final t = s.trim();
@@ -536,20 +629,33 @@ class EntryService {
 /// INC-10: a photo left without a label is named after the entry's
 /// description and its number, e.g. "সিলেট বালু ২ ট্রলি ১". [unknownName] is
 /// used when an income has no name.
-String defaultPhotoLabel(String description, int number, Fmt fmt,
-    {required String unknownName}) {
+String defaultPhotoLabel(
+  String description,
+  int number,
+  Fmt fmt, {
+  required String unknownName,
+}) {
   final d = description.trim().isEmpty ? unknownName : description.trim();
   return '$d ${fmt.integer(number)}';
 }
 
 /// Fills in blank photo labels by INC-10, numbering by position.
-List<PhotoDraft> withDefaultLabels(EntryDraft draft, Fmt fmt,
-    {required String unknownName}) {
+List<PhotoDraft> withDefaultLabels(
+  EntryDraft draft,
+  Fmt fmt, {
+  required String unknownName,
+}) {
   return [
     for (var i = 0; i < draft.photos.length; i++)
       draft.photos[i].label.trim().isEmpty
-          ? draft.photos[i].withLabel(defaultPhotoLabel(
-              draft.description, i + 1, fmt, unknownName: unknownName))
+          ? draft.photos[i].withLabel(
+              defaultPhotoLabel(
+                draft.description,
+                i + 1,
+                fmt,
+                unknownName: unknownName,
+              ),
+            )
           : draft.photos[i],
   ];
 }

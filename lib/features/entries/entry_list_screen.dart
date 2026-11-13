@@ -71,10 +71,11 @@ class _EntryListScreenState extends State<EntryListScreen> {
     if (period != null) {
       page = await svc.list(
         EntryQuery(
-            type: widget.type,
-            period: period,
-            text: _search.text,
-            onlyDuplicates: _onlyDuplicates),
+          type: widget.type,
+          period: period,
+          text: _search.text,
+          onlyDuplicates: _onlyDuplicates,
+        ),
         limit: _pageSize,
         offset: _pageIndex * _pageSize,
       );
@@ -109,7 +110,9 @@ class _EntryListScreenState extends State<EntryListScreen> {
       final picked = await showDialog<Entry>(
         context: context,
         builder: (ctx) => SimpleDialog(
-          title: Text('${receiptNoLabel(l, widget.type)} ${context.fmt.integer(no)}'),
+          title: Text(
+            '${receiptNoLabel(l, widget.type)} ${context.fmt.integer(no)}',
+          ),
           children: [
             for (final m in matches)
               SimpleDialogOption(
@@ -126,7 +129,8 @@ class _EntryListScreenState extends State<EntryListScreen> {
   void _open(Entry e) {
     // FND-9: selecting an entry opens its details.
     Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => EntryDetailsScreen(entryId: e.id)));
+      MaterialPageRoute(builder: (_) => EntryDetailsScreen(entryId: e.id)),
+    );
   }
 
   @override
@@ -141,117 +145,174 @@ class _EntryListScreenState extends State<EntryListScreen> {
       title: entryTitle(l, widget.type),
       actions: [
         FilledButton(
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => EntryFormScreen(type: widget.type))),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => EntryFormScreen(type: widget.type),
+            ),
+          ),
           child: Text(_isIncome ? l.newIncome : l.newExpense),
         ),
       ],
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        if (_duplicates > 0) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-                color: AppColors.warnBg, borderRadius: BorderRadius.circular(10)),
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                const Icon(Icons.warning_amber_rounded,
-                    size: 18, color: AppColors.warnText),
-                Text(l.duplicatesBanner(fmt.integer(_duplicates)),
-                    style: const TextStyle(fontSize: 14, color: AppColors.warnText)),
-                OutlinedButton(
-                  onPressed: () {
-                    _onlyDuplicates = !_onlyDuplicates;
-                    _reset();
-                  },
-                  style: OutlinedButton.styleFrom(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_duplicates > 0) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.warnBg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    size: 18,
+                    color: AppColors.warnText,
+                  ),
+                  Text(
+                    l.duplicatesBanner(fmt.integer(_duplicates)),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.warnText,
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () {
+                      _onlyDuplicates = !_onlyDuplicates;
+                      _reset();
+                    },
+                    style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 34),
                       foregroundColor: AppColors.warnText,
-                      side: const BorderSide(color: AppColors.warnBorder)),
-                  child: Text(_onlyDuplicates ? l.showAll : l.showDuplicatesOnly),
+                      side: const BorderSide(color: AppColors.warnBorder),
+                    ),
+                    child: Text(
+                      _onlyDuplicates ? l.showAll : l.showDuplicatesOnly,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+          ],
+          AppCard(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PeriodSelector(
+                  value: _choice,
+                  today: _today,
+                  onChanged: (c) {
+                    setState(() => _choice = c);
+                    _reset();
+                  },
+                ),
+                const SizedBox(height: 14),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: LabeledField(
+                    label: l.searchLabel,
+                    controller: _search,
+                    hint: _isIncome ? l.searchHintReceipt : l.searchHintVoucher,
+                    onChanged: (_) {
+                      _debounce?.cancel();
+                      _debounce = Timer(
+                        const Duration(milliseconds: 250),
+                        _reset,
+                      );
+                    },
+                    onSubmitted: _openByNumber,
+                    textInputAction: TextInputAction.search,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 14),
-        ],
-        AppCard(
-          padding: const EdgeInsets.all(18),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            PeriodSelector(
-              value: _choice,
-              today: _today,
-              onChanged: (c) {
-                setState(() => _choice = c);
-                _reset();
-              },
-            ),
-            const SizedBox(height: 14),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: LabeledField(
-                label: l.searchLabel,
-                controller: _search,
-                hint: _isIncome ? l.searchHintReceipt : l.searchHintVoucher,
-                onChanged: (_) {
-                  _debounce?.cancel();
-                  _debounce = Timer(const Duration(milliseconds: 250), _reset);
-                },
-                onSubmitted: _openByNumber,
-                textInputAction: TextInputAction.search,
+          if (period != null && page != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Wrap(
+                spacing: 24,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    periodChoiceName(l, fmt, _choice, _today),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    l.entriesCount(fmt.integer(page.count)),
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: '${l.totalLabel} '),
+                        TextSpan(
+                          text: fmt.money(page.total),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: _isIncome
+                                ? AppColors.income
+                                : AppColors.expense,
+                          ),
+                        ),
+                      ],
+                    ),
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                  Text(
+                    page.cancelledCount > 0
+                        ? '${l.cancelledNotCounted} (${fmt.integer(page.cancelledCount)})'
+                        : l.cancelledNotCounted,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ]),
-        ),
-        const SizedBox(height: 14),
-        if (period != null && page != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Wrap(spacing: 24, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(periodChoiceName(l, fmt, _choice, _today),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-              Text(l.entriesCount(fmt.integer(page.count)),
-                  style: const TextStyle(fontSize: 15)),
-              Text.rich(TextSpan(children: [
-                TextSpan(text: '${l.totalLabel} '),
-                TextSpan(
-                    text: fmt.money(page.total),
-                    style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: _isIncome ? AppColors.income : AppColors.expense)),
-              ]), style: const TextStyle(fontSize: 15)),
-              Text(
-                  page.cancelledCount > 0
-                      ? '${l.cancelledNotCounted} (${fmt.integer(page.cancelledCount)})'
-                      : l.cancelledNotCounted,
-                  style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-            ]),
-          ),
-        const SizedBox(height: 10),
-        AppCard(
-          padding: EdgeInsets.zero,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: !_loadedOnce
-                ? const Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Center(child: CircularProgressIndicator()))
-                : (page == null || page.rows.isEmpty)
-                    ? Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Center(
-                            child: Text(l.noEntries,
-                                style: const TextStyle(color: AppColors.muted))),
-                      )
-                    : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const SizedBox(height: 10),
+          AppCard(
+            padding: EdgeInsets.zero,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: !_loadedOnce
+                  ? const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : (page == null || page.rows.isEmpty)
+                  ? Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Center(
+                        child: Text(
+                          l.noEntries,
+                          style: const TextStyle(color: AppColors.muted),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                         _table(l, fmt, page),
                         _pager(l, fmt, page, from),
-                      ]),
+                      ],
+                    ),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
@@ -284,70 +345,99 @@ class _EntryListScreenState extends State<EntryListScreen> {
           : SizedBox(width: size, child: child);
     }
 
-    Widget rowOf(List<Widget> cells,
-        {Color? bg, VoidCallback? onTap, bool header = false, bool border = true}) {
+    Widget rowOf(
+      List<Widget> cells, {
+      Color? bg,
+      VoidCallback? onTap,
+      bool header = false,
+      bool border = true,
+    }) {
       final row = Container(
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: header ? 10 : 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: header ? 10 : 12,
+        ),
         decoration: BoxDecoration(
           color: header ? AppColors.background : bg,
           border: border && !header
               ? const Border(top: BorderSide(color: AppColors.divider))
               : null,
         ),
-        child: Row(children: [
-          for (var i = 0; i < cells.length; i++) ...[
-            cell(i, cells[i]),
-            if (i < cells.length - 1) const SizedBox(width: 12),
+        child: Row(
+          children: [
+            for (var i = 0; i < cells.length; i++) ...[
+              cell(i, cells[i]),
+              if (i < cells.length - 1) const SizedBox(width: 12),
+            ],
           ],
-        ]),
+        ),
       );
       return onTap == null ? row : InkWell(onTap: onTap, child: row);
     }
 
     TextStyle headStyle() => const TextStyle(
-        fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.muted);
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: AppColors.muted,
+    );
 
-    return LayoutBuilder(builder: (context, c) {
-      final width = c.maxWidth < 800 ? 800.0 : c.maxWidth;
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: width,
-          child: Column(children: [
-            rowOf([
-              for (var i = 0; i < cols.length; i++)
-                Text(
-                    i == cols.length - 1 ? l.colStatus : cols[i].$1,
-                    style: headStyle(),
-                    textAlign: i == cols.length - 2 ? TextAlign.right : TextAlign.left),
-            ], header: true),
-            for (final e in page.rows)
-              rowOf(
-                _cells(l, fmt, e, page.photoCounts[e.id] ?? 0),
-                onTap: () => _open(e),
-              ),
-          ]),
-        ),
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, c) {
+        final width = c.maxWidth < 800 ? 800.0 : c.maxWidth;
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: width,
+            child: Column(
+              children: [
+                rowOf([
+                  for (var i = 0; i < cols.length; i++)
+                    Text(
+                      i == cols.length - 1 ? l.colStatus : cols[i].$1,
+                      style: headStyle(),
+                      textAlign: i == cols.length - 2
+                          ? TextAlign.right
+                          : TextAlign.left,
+                    ),
+                ], header: true),
+                for (final e in page.rows)
+                  rowOf(
+                    _cells(l, fmt, e, page.photoCounts[e.id] ?? 0),
+                    onTap: () => _open(e),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   List<Widget> _cells(AppLocalizations l, Fmt fmt, Entry e, int photos) {
     final cancelled = e.status == EntryStatus.cancelled;
-    final amount = Text(fmt.money(e.amount),
-        textAlign: TextAlign.right,
-        style: TextStyle(
-            fontWeight: cancelled ? FontWeight.w400 : FontWeight.w600,
-            color: cancelled ? AppColors.muted : AppColors.text,
-            decoration: cancelled ? TextDecoration.lineThrough : null));
-    final status = Wrap(spacing: 4, runSpacing: 4, children: [
-      if (cancelled) StatusPill.cancelled(l.statusCancelled),
-      if (e.isDuplicate) StatusPill.warn(l.statusDuplicate),
-    ]);
-    Text t(String s, {FontWeight? w, Color? c}) => Text(s,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 14, fontWeight: w, color: c));
+    final amount = Text(
+      fmt.money(e.amount),
+      textAlign: TextAlign.right,
+      style: TextStyle(
+        fontWeight: cancelled ? FontWeight.w400 : FontWeight.w600,
+        color: cancelled ? AppColors.muted : AppColors.text,
+        decoration: cancelled ? TextDecoration.lineThrough : null,
+      ),
+    );
+    final status = Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        if (cancelled) StatusPill.cancelled(l.statusCancelled),
+        if (e.isDuplicate) StatusPill.warn(l.statusDuplicate),
+      ],
+    );
+    Text t(String s, {FontWeight? w, Color? c}) => Text(
+      s,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(fontSize: 14, fontWeight: w, color: c),
+    );
     final date = t(fmt.date(parseDayKey(e.entryDate)));
     final no = t(fmt.integer(e.receiptNo), w: FontWeight.w600);
     if (_isIncome) {
@@ -377,37 +467,45 @@ class _EntryListScreenState extends State<EntryListScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.divider))),
+        border: Border(top: BorderSide(color: AppColors.divider)),
+      ),
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
         runSpacing: 8,
         children: [
           Text(
-              l.showingRange(fmt.integer(from + 1), fmt.integer(to), fmt.integer(page.count))
-                 ,
-              style: const TextStyle(fontSize: 14, color: AppColors.muted)),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            OutlinedButton(
-              onPressed: _pageIndex == 0
-                  ? null
-                  : () {
-                      _pageIndex--;
-                      _load();
-                    },
-              child: Text(l.prevPage),
+            l.showingRange(
+              fmt.integer(from + 1),
+              fmt.integer(to),
+              fmt.integer(page.count),
             ),
-            const SizedBox(width: 8),
-            OutlinedButton(
-              onPressed: to >= page.count
-                  ? null
-                  : () {
-                      _pageIndex++;
-                      _load();
-                    },
-              child: Text(l.nextPage),
-            ),
-          ]),
+            style: const TextStyle(fontSize: 14, color: AppColors.muted),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              OutlinedButton(
+                onPressed: _pageIndex == 0
+                    ? null
+                    : () {
+                        _pageIndex--;
+                        _load();
+                      },
+                child: Text(l.prevPage),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton(
+                onPressed: to >= page.count
+                    ? null
+                    : () {
+                        _pageIndex++;
+                        _load();
+                      },
+                child: Text(l.nextPage),
+              ),
+            ],
+          ),
         ],
       ),
     );

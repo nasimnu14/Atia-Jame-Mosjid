@@ -129,9 +129,13 @@ class DateFormFieldState extends State<DateFormField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(widget.label,
-            style: TextStyle(
-                fontSize: widget.compact ? 13 : 14, fontWeight: FontWeight.w600)),
+        Text(
+          widget.label,
+          style: TextStyle(
+            fontSize: widget.compact ? 13 : 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 6),
         TextField(
           controller: _controller,
@@ -156,7 +160,8 @@ class DateFormFieldState extends State<DateFormField> {
                   backgroundColor: AppColors.incomeSoft,
                   foregroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
                 icon: const Icon(Icons.calendar_month_outlined, size: 20),
               ),

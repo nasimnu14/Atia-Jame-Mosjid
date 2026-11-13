@@ -588,5 +588,195 @@
         "type": "String"
       }
     }
-  }
+  },
+  "currentBalance": "Current balance",
+  "balanceFormulaLine": "Opening balance {opening} ({date}) + all income − all expense · cancelled entries not counted",
+  "@balanceFormulaLine": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceNoOpening": "No opening balance set · all income − all expense · cancelled entries not counted",
+  "viewSummary": "View summary",
+  "incomeToday": "Income today",
+  "expenseToday": "Expense today",
+  "incomeThisMonth": "Income this month",
+  "expenseThisMonth": "Expense this month",
+  "statusBackup": "Last backup (every 4 hours)",
+  "statusExcel": "Daily Excel upload",
+  "statusSync": "Last phone sync",
+  "statusNotYet": "Not yet",
+  "statusOkAt": "{when} · OK",
+  "@statusOkAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "statusFailedAt": "Failed · last OK: {when}",
+  "@statusFailedAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "recentEntries": "Recent entries",
+  "seeAll": "See all",
+  "colType": "Type",
+  "colNameOrPurpose": "Name / purpose",
+  "makePdf": "Make a PDF",
+  "excelUploadBtn": "Excel upload",
+  "totalIncome": "Total income",
+  "totalExpense": "Total expense",
+  "incomeMinusExpense": "Income − expense",
+  "surplusNote": "Surplus for this period",
+  "deficitNote": "Deficit for this period",
+  "summaryNote": "Cancelled entries are not counted in any total. Current balance today: {balance}",
+  "@summaryNote": {
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "breakdownDays": "By day · {period}",
+  "@breakdownDays": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "breakdownWeeks": "By week · {period}",
+  "@breakdownWeeks": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "breakdownMonths": "By month · {period}",
+  "@breakdownMonths": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "rowTotal": "Total",
+  "completePeriod": "Complete the period above to see the figures",
+  "pdfWhatToInclude": "What the report contains",
+  "pdfIncomeOnly": "Income only",
+  "pdfExpenseOnly": "Expense only",
+  "pdfBoth": "Income and expense (with a summary)",
+  "pdfLanguageNote": "Language: {lang}. The report is made in the app's current language.",
+  "@pdfLanguageNote": {
+    "placeholders": {
+      "lang": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfWhereNext": "In the next step, choose where to save the file.",
+  "pdfPreview": "Preview (first page)",
+  "pdfGenerating": "Making the PDF…",
+  "pdfSaved": "PDF saved: {path}",
+  "@pdfSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfNotSaved": "The PDF was not saved",
+  "pdfFailed": "The PDF could not be made: {detail}",
+  "@pdfFailed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfReportTitleBoth": "Income and expense report",
+  "pdfReportTitleIncome": "Income report",
+  "pdfReportTitleExpense": "Expense report",
+  "pdfCancelledFootnote": "Cancelled entries are listed and marked, but are not counted in any total.",
+  "pdfPageOf": "Page {n} of {total}",
+  "@pdfPageOf": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfGeneratedOn": "Made on {when}",
+  "@pdfGeneratedOn": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfNoEntries": "No entries in this period",
+  "pdfEntryTitleIncome": "Income entry",
+  "pdfEntryTitleExpense": "Expense entry",
+  "pdfPhotosHeading": "Photos",
+  "pdfHistoryHeading": "History",
+  "pdfAddedByShort": "Added by {who} on {when}",
+  "@pdfAddedByShort": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfEditedByShort": "Edited by {who} on {when}",
+  "@pdfEditedByShort": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfCancelledByShort": "Cancelled by {who} on {when}",
+  "@pdfCancelledByShort": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfAmountLine": "Amount: {amount}",
+  "@pdfAmountLine": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "xlsAddedBy": "Added by",
+  "xlsAddedAt": "Added at",
+  "xlsEditedBy": "Edited by",
+  "xlsEditedAt": "Edited at",
+  "xlsCancelledBy": "Cancelled by",
+  "xlsCancelledAt": "Cancelled at"
 }

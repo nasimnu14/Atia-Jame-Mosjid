@@ -34,17 +34,23 @@ class AppState extends ChangeNotifier {
   Future<void> setLanguage(bool toBangla) async {
     bangla = toBangla;
     notifyListeners();
-    await services.settingsRepo
-        .set(SettingKey.language, toBangla ? 'bn' : 'en');
+    await services.settingsRepo.set(
+      SettingKey.language,
+      toBangla ? 'bn' : 'en',
+    );
   }
 
   /// First launch: create the Super Admin and sign in as them.
-  Future<void> createSuperAdmin(
-      {required String name,
-      required String username,
-      required String password}) async {
+  Future<void> createSuperAdmin({
+    required String name,
+    required String username,
+    required String password,
+  }) async {
     final u = await services.users.createSuperAdmin(
-        name: name, username: username, password: password);
+      name: name,
+      username: username,
+      password: password,
+    );
     hasUsers = true;
     user = await services.users.signIn(u.username, password);
     notifyListeners();

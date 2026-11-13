@@ -24,7 +24,8 @@ class PasswordHasher {
   Future<String> hash(String password) {
     final rounds = logRounds;
     return Isolate.run(
-        () => BCrypt.hashpw(password, BCrypt.gensalt(logRounds: rounds)));
+      () => BCrypt.hashpw(password, BCrypt.gensalt(logRounds: rounds)),
+    );
   }
 
   Future<bool> verify(String password, String hash) {

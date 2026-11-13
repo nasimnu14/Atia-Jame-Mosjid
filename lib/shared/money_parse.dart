@@ -21,7 +21,8 @@ AmountParseResult parseAmount(String input) {
   if (!RegExp(r'^\d+$').hasMatch(t)) {
     return const AmountParseResult.error(AmountProblem.notWholeNumber);
   }
-  if (t.length > 12) return const AmountParseResult.error(AmountProblem.tooLarge);
+  if (t.length > 12)
+    return const AmountParseResult.error(AmountProblem.tooLarge);
   final n = int.parse(t);
   if (n <= 0) return const AmountParseResult.error(AmountProblem.notPositive);
   return AmountParseResult.ok(n);

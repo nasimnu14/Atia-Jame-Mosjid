@@ -50,10 +50,10 @@ class Period {
 
   /// Resolves a quick period for "today" (FND-4).
   static Period forKind(PeriodKind kind, DateTime anchor) => switch (kind) {
-        PeriodKind.today || PeriodKind.day => day(anchor),
-        PeriodKind.thisWeek || PeriodKind.week => weekOf(anchor),
-        PeriodKind.thisMonth || PeriodKind.month => monthOf(anchor),
-        PeriodKind.thisYear || PeriodKind.year => yearOf(anchor),
-        PeriodKind.range => day(anchor),
-      };
+    PeriodKind.today || PeriodKind.day => day(anchor),
+    PeriodKind.thisWeek || PeriodKind.week => weekOf(anchor),
+    PeriodKind.thisMonth || PeriodKind.month => monthOf(anchor),
+    PeriodKind.thisYear || PeriodKind.year => yearOf(anchor),
+    PeriodKind.range => day(anchor),
+  };
 }

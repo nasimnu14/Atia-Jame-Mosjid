@@ -16,10 +16,14 @@ class PhotoStorage {
 
   /// Writes the bytes (already shrunk, INC-9) and returns the file name.
   /// Written to a temp name then renamed, so a crash never leaves half a photo.
-  Future<String> save(String entryId, Uint8List bytes,
-      {String extension = 'jpg'}) async {
+  Future<String> save(
+    String entryId,
+    Uint8List bytes, {
+    String extension = 'jpg',
+  }) async {
     final name = '${_uuid.v4()}.$extension';
-    final folder = Directory(p.join(dir.path, entryId))..createSync(recursive: true);
+    final folder = Directory(p.join(dir.path, entryId))
+      ..createSync(recursive: true);
     final tmp = File(p.join(folder.path, '$name.part'));
     await tmp.writeAsBytes(bytes, flush: true);
     await tmp.rename(p.join(folder.path, name));
@@ -28,7 +32,8 @@ class PhotoStorage {
 
   /// Saves a photo under a known name (used by restore and sync).
   Future<void> saveAs(String entryId, String fileName, Uint8List bytes) async {
-    final folder = Directory(p.join(dir.path, entryId))..createSync(recursive: true);
+    final folder = Directory(p.join(dir.path, entryId))
+      ..createSync(recursive: true);
     final tmp = File(p.join(folder.path, '$fileName.part'));
     await tmp.writeAsBytes(bytes, flush: true);
     await tmp.rename(p.join(folder.path, fileName));

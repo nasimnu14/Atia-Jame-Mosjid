@@ -12,7 +12,11 @@ class PhotoUnreadableException implements Exception {
 /// to read a receipt but takes less space in backups and syncs. Applies on the
 /// desktop and the phone alike.
 class PhotoShrinker {
-  const PhotoShrinker({this.maxSide = 1600, this.quality = 82, this.keepBelowBytes = 400 * 1024});
+  const PhotoShrinker({
+    this.maxSide = 1600,
+    this.quality = 82,
+    this.keepBelowBytes = 400 * 1024,
+  });
 
   /// Longest side in pixels after shrinking.
   final int maxSide;
@@ -39,8 +43,16 @@ Uint8List _shrink(Uint8List bytes, int maxSide, int quality, int keepBelow) {
   if (longest <= maxSide && bytes.length <= keepBelow) return bytes;
   if (longest > maxSide) {
     image = image.width >= image.height
-        ? img.copyResize(image, width: maxSide, interpolation: img.Interpolation.average)
-        : img.copyResize(image, height: maxSide, interpolation: img.Interpolation.average);
+        ? img.copyResize(
+            image,
+            width: maxSide,
+            interpolation: img.Interpolation.average,
+          )
+        : img.copyResize(
+            image,
+            height: maxSide,
+            interpolation: img.Interpolation.average,
+          );
   }
   final out = Uint8List.fromList(img.encodeJpg(image, quality: quality));
   // Never make a small, already-compressed photo bigger.

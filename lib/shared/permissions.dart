@@ -38,11 +38,10 @@ const _superPerms = {
 };
 
 bool can(Role role, Permission permission) => switch (role) {
-      Role.user => _userPerms,
-      Role.admin => _adminPerms,
-      Role.superAdmin => _superPerms,
-    }
-        .contains(permission);
+  Role.user => _userPerms,
+  Role.admin => _adminPerms,
+  Role.superAdmin => _superPerms,
+}.contains(permission);
 
 class PermissionDeniedException implements Exception {
   PermissionDeniedException(this.permission);

@@ -70,19 +70,31 @@ class _SignInScreenState extends State<SignInScreen> {
                       const Center(child: LogoMark()),
                       const SizedBox(height: 6),
                       Center(
-                        child: Text(l.appName,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)),
+                        child: Text(
+                          l.appName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                       Center(
-                        child: Text(l.mosquePlace,
-                            style: const TextStyle(
-                                fontSize: 13, color: AppColors.muted)),
+                        child: Text(
+                          l.mosquePlace,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.muted,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 14),
-                      Text(l.signInTitle,
-                          style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w600)),
+                      Text(
+                        l.signInTitle,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       LabeledField(
                         label: l.username,
@@ -113,14 +125,21 @@ class _SignInScreenState extends State<SignInScreen> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Colors.white))
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
                             : Text(l.signIn),
                       ),
                       const SizedBox(height: 16),
-                      Text(l.forgotPasswordHint,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 13, color: AppColors.muted)),
+                      Text(
+                        l.forgotPasswordHint,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       const Center(child: LanguageSwitch()),
                     ],

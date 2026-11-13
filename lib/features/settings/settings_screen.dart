@@ -32,15 +32,19 @@ class SettingsScreen extends StatelessWidget {
     ];
     return PageScaffold(
       title: l.settingsTitle,
-      child: LayoutBuilder(builder: (context, c) {
-        final cols = c.maxWidth >= 760 ? 2 : 1;
-        final w = (c.maxWidth - (cols - 1) * 18) / cols;
-        return Wrap(
-          spacing: 18,
-          runSpacing: 18,
-          children: [for (final card in cards) SizedBox(width: w, child: card)],
-        );
-      }),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final cols = c.maxWidth >= 760 ? 2 : 1;
+          final w = (c.maxWidth - (cols - 1) * 18) / cols;
+          return Wrap(
+            spacing: 18,
+            runSpacing: 18,
+            children: [
+              for (final card in cards) SizedBox(width: w, child: card),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -52,14 +56,16 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Wrap(
-        spacing: 8,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(title,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-          if (chip != null) StatusPill.neutral(chip!),
-        ],
-      );
+    spacing: 8,
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+      ),
+      if (chip != null) StatusPill.neutral(chip!),
+    ],
+  );
 }
 
 class _LanguageCard extends StatelessWidget {
@@ -68,15 +74,20 @@ class _LanguageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppCard(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _SectionTitle(l.language),
-          const SizedBox(height: 6),
-          Text(l.languageDesc,
-              style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-          const SizedBox(height: 12),
-          const LanguageSwitch(),
-        ]),
-      );
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(l.language),
+        const SizedBox(height: 6),
+        Text(
+          l.languageDesc,
+          style: const TextStyle(fontSize: 13, color: AppColors.muted),
+        ),
+        const SizedBox(height: 12),
+        const LanguageSwitch(),
+      ],
+    ),
+  );
 }
 
 class _OpeningBalanceCard extends StatefulWidget {
@@ -125,16 +136,22 @@ class _OpeningBalanceCardState extends State<_OpeningBalanceCard> {
     final messenger = ScaffoldMessenger.of(context);
     final parsed = parseAmountAllowZero(_amount.text);
     final dateError = _dateKey.currentState?.validate();
-    setState(() => _amountError =
-        parsed.isOk ? null : amountProblemText(l, parsed.problem!));
+    setState(
+      () => _amountError = parsed.isOk
+          ? null
+          : amountProblemText(l, parsed.problem!),
+    );
     if (!parsed.isOk || dateError != null || _date == null) return;
     try {
       await svc.setOpeningBalance(me, parsed.taka!, _date!);
       messenger.showSnackBar(SnackBar(content: Text(l.saved)));
     } catch (e) {
-      messenger.showSnackBar(SnackBar(
+      messenger.showSnackBar(
+        SnackBar(
           content: Text(errorText(l, fmt, e)),
-          backgroundColor: AppColors.cancelledText));
+          backgroundColor: AppColors.cancelledText,
+        ),
+      );
     }
   }
 
@@ -142,45 +159,63 @@ class _OpeningBalanceCardState extends State<_OpeningBalanceCard> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     return AppCard(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        _SectionTitle(l.openingBalanceTitle, chip: l.adminOnlyChip),
-        const SizedBox(height: 6),
-        Text(l.openingBalanceDesc,
-            style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-        const SizedBox(height: 12),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l.amountLabel,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _amount,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(errorText: _amountError),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionTitle(l.openingBalanceTitle, chip: l.adminOnlyChip),
+          const SizedBox(height: 6),
+          Text(
+            l.openingBalanceDesc,
+            style: const TextStyle(fontSize: 13, color: AppColors.muted),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.amountLabel,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: _amount,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(errorText: _amountError),
+                    ),
+                  ],
+                ),
               ),
-            ]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: DateFormField(
+                  key: _dateKey,
+                  label: l.dateLabel,
+                  value: _date,
+                  onChanged: (d) => setState(() => _date = d),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: DateFormField(
-              key: _dateKey,
-              label: l.dateLabel,
-              value: _date,
-              onChanged: (d) => setState(() => _date = d),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: Text(l.balanceFormula, style: const TextStyle(fontSize: 13)),
           ),
-        ]),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-              color: AppColors.background, borderRadius: BorderRadius.circular(8)),
-          child: Text(l.balanceFormula, style: const TextStyle(fontSize: 13)),
-        ),
-        const SizedBox(height: 12),
-        FilledButton(onPressed: _save, child: Text(l.save)),
-      ]),
+          const SizedBox(height: 12),
+          FilledButton(onPressed: _save, child: Text(l.save)),
+        ],
+      ),
     );
   }
 }
@@ -188,7 +223,8 @@ class _OpeningBalanceCardState extends State<_OpeningBalanceCard> {
 /// The opening balance may be 0.
 AmountParseResult parseAmountAllowZero(String input) {
   final r = parseAmount(input);
-  if (r.problem == AmountProblem.notPositive) return const AmountParseResult.ok(0);
+  if (r.problem == AmountProblem.notPositive)
+    return const AmountParseResult.ok(0);
   return r;
 }
 
@@ -228,11 +264,22 @@ class _ApproversCardState extends State<_ApproversCard> {
       builder: (ctx) => AlertDialog(
         title: Text(l.renameApprover),
         content: SizedBox(
-            width: 380,
-            child: LabeledField(label: l.approverName, controller: ctrl, autofocus: true)),
+          width: 380,
+          child: LabeledField(
+            label: l.approverName,
+            controller: ctrl,
+            autofocus: true,
+          ),
+        ),
         actions: [
-          OutlinedButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.back)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.save)),
+          OutlinedButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.back),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.save),
+          ),
         ],
       ),
     );
@@ -246,51 +293,75 @@ class _ApproversCardState extends State<_ApproversCard> {
     final svc = context.services.settings;
     final me = context.app.user!;
     return AppCard(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        _SectionTitle(l.approversTitle, chip: l.adminOnlyChip),
-        const SizedBox(height: 6),
-        Text(l.approversDesc,
-            style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-        const SizedBox(height: 12),
-        StreamBuilder<List<Approver>>(
-          stream: svc.watchApprovers(),
-          builder: (context, snap) => Column(children: [
-            for (final a in snap.data ?? const <Approver>[])
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                decoration: const BoxDecoration(
-                    border: Border(top: BorderSide(color: AppColors.divider))),
-                child: Row(children: [
-                  Expanded(
-                    child: Text(a.name,
-                        style: TextStyle(
-                            fontSize: 15,
-                            color: a.isActive ? AppColors.text : AppColors.muted)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionTitle(l.approversTitle, chip: l.adminOnlyChip),
+          const SizedBox(height: 6),
+          Text(
+            l.approversDesc,
+            style: const TextStyle(fontSize: 13, color: AppColors.muted),
+          ),
+          const SizedBox(height: 12),
+          StreamBuilder<List<Approver>>(
+            stream: svc.watchApprovers(),
+            builder: (context, snap) => Column(
+              children: [
+                for (final a in snap.data ?? const <Approver>[])
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: const BoxDecoration(
+                      border: Border(top: BorderSide(color: AppColors.divider)),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            a.name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: a.isActive
+                                  ? AppColors.text
+                                  : AppColors.muted,
+                            ),
+                          ),
+                        ),
+                        if (!a.isActive) StatusPill.neutral(l.statusDisabled),
+                        TextButton(
+                          onPressed: () => _rename(a),
+                          child: Text(l.renameApprover),
+                        ),
+                        TextButton(
+                          onPressed: () => _run(
+                            () => svc.setApproverActive(me, a.id, !a.isActive),
+                          ),
+                          child: Text(
+                            a.isActive ? l.disableUser : l.enableUser,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  if (!a.isActive) StatusPill.neutral(l.statusDisabled),
-                  TextButton(onPressed: () => _rename(a), child: Text(l.renameApprover)),
-                  TextButton(
-                    onPressed: () =>
-                        _run(() => svc.setApproverActive(me, a.id, !a.isActive)),
-                    child: Text(a.isActive ? l.disableUser : l.enableUser),
-                  ),
-                ]),
-              ),
-          ]),
-        ),
-        const SizedBox(height: 12),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(
-            child: TextField(
-              controller: _name,
-              decoration: InputDecoration(hintText: l.approverName),
-              onSubmitted: (_) => _add(),
+              ],
             ),
           ),
-          const SizedBox(width: 10),
-          FilledButton(onPressed: _add, child: Text(l.addApprover)),
-        ]),
-      ]),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _name,
+                  decoration: InputDecoration(hintText: l.approverName),
+                  onSubmitted: (_) => _add(),
+                ),
+              ),
+              const SizedBox(width: 10),
+              FilledButton(onPressed: _add, child: Text(l.addApprover)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -332,8 +403,11 @@ class _PasswordCardState extends State<_PasswordCard> {
     final app = context.app;
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await app.services.users
-          .changeOwnPassword(app.user!, _cur.text, _new.text);
+      await app.services.users.changeOwnPassword(
+        app.user!,
+        _cur.text,
+        _new.text,
+      );
       for (final c in [_cur, _new, _new2]) {
         c.clear();
       }
@@ -351,43 +425,48 @@ class _PasswordCardState extends State<_PasswordCard> {
     return AppCard(
       child: Form(
         key: _form,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _SectionTitle(l.myPassword),
-          const SizedBox(height: 12),
-          LabeledField(
-            label: l.currentPassword,
-            controller: _cur,
-            obscure: true,
-            validator: (v) => (v ?? '').isEmpty ? l.fieldRequired : null,
-          ),
-          const SizedBox(height: 12),
-          LabeledField(
-            label: l.newPassword,
-            controller: _new,
-            obscure: true,
-            validator: (v) {
-              if ((v ?? '').isEmpty) return l.fieldRequired;
-              if (PasswordHasher.isTooShort(v!)) {
-                return l.passwordTooShort(fmt.integer(PasswordHasher.minLength));
-              }
-              if (PasswordHasher.isTooLong(v)) return l.passwordTooLong;
-              return null;
-            },
-          ),
-          const SizedBox(height: 12),
-          LabeledField(
-            label: l.confirmNewPassword,
-            controller: _new2,
-            obscure: true,
-            validator: (v) => v != _new.text ? l.passwordsDontMatch : null,
-          ),
-          if (_error != null) ...[
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionTitle(l.myPassword),
             const SizedBox(height: 12),
-            MessageBanner(_error!, kind: BannerKind.error),
+            LabeledField(
+              label: l.currentPassword,
+              controller: _cur,
+              obscure: true,
+              validator: (v) => (v ?? '').isEmpty ? l.fieldRequired : null,
+            ),
+            const SizedBox(height: 12),
+            LabeledField(
+              label: l.newPassword,
+              controller: _new,
+              obscure: true,
+              validator: (v) {
+                if ((v ?? '').isEmpty) return l.fieldRequired;
+                if (PasswordHasher.isTooShort(v!)) {
+                  return l.passwordTooShort(
+                    fmt.integer(PasswordHasher.minLength),
+                  );
+                }
+                if (PasswordHasher.isTooLong(v)) return l.passwordTooLong;
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            LabeledField(
+              label: l.confirmNewPassword,
+              controller: _new2,
+              obscure: true,
+              validator: (v) => v != _new.text ? l.passwordsDontMatch : null,
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              MessageBanner(_error!, kind: BannerKind.error),
+            ],
+            const SizedBox(height: 12),
+            FilledButton(onPressed: _save, child: Text(l.changePassword)),
           ],
-          const SizedBox(height: 12),
-          FilledButton(onPressed: _save, child: Text(l.changePassword)),
-        ]),
+        ),
       ),
     );
   }

@@ -9,7 +9,8 @@ abstract final class SettingKey {
   static const lastBackupAt = 'last_backup_at'; // ISO-8601
   static const lastBackupError = 'last_backup_error';
   static const lastExcelUploadAt = 'last_excel_upload_at';
-  static const lastExcelDay = 'last_excel_day'; // yyyy-MM-dd of last daily upload
+  static const lastExcelDay =
+      'last_excel_day'; // yyyy-MM-dd of last daily upload
   static const lastExcelError = 'last_excel_error';
   static const deviceId = 'device_id';
   static const deviceName = 'device_name';
@@ -22,9 +23,9 @@ class SettingsRepository {
   final AppDatabase _db;
 
   Future<String?> get(String key) async {
-    final row = await (_db.select(_db.settings)
-          ..where((t) => t.key.equals(key)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.settings,
+    )..where((t) => t.key.equals(key))).getSingleOrNull();
     return row?.value;
   }
 
@@ -35,10 +36,9 @@ class SettingsRepository {
   Future<void> remove(String key) =>
       (_db.delete(_db.settings)..where((t) => t.key.equals(key))).go();
 
-  Stream<String?> watch(String key) => (_db.select(_db.settings)
-        ..where((t) => t.key.equals(key)))
-      .watchSingleOrNull()
-      .map((r) => r?.value);
+  Stream<String?> watch(String key) => (_db.select(
+    _db.settings,
+  )..where((t) => t.key.equals(key))).watchSingleOrNull().map((r) => r?.value);
 
   Future<int?> getInt(String key) async {
     final v = await get(key);

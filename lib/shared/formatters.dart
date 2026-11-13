@@ -10,10 +10,22 @@ const _enMonths = [
 ];
 // Index = DateTime.weekday - 1 (Monday = 0).
 const _bnWeekdays = [
-  'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার', 'রবিবার',
+  'সোমবার',
+  'মঙ্গলবার',
+  'বুধবার',
+  'বৃহস্পতিবার',
+  'শুক্রবার',
+  'শনিবার',
+  'রবিবার',
 ];
 const _enWeekdays = [
-  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
 ];
 
 /// The one place that decides how numbers, money and dates look.
@@ -54,20 +66,20 @@ class Fmt {
   }
 
   /// "৳ ৫,০০০"
-  String money(int taka) => taka < 0
-      ? '−৳ ${number(-taka)}'
-      : '৳ ${number(taka)}';
+  String money(int taka) =>
+      taka < 0 ? '−৳ ${number(-taka)}' : '৳ ${number(taka)}';
 
   /// Signed money for income − expense: "+ ৳ ৫০০" / "− ৳ ৫০০".
   String signedMoney(int taka) => taka < 0
       ? '− ৳ ${number(-taka)}'
       : taka == 0
-          ? '৳ ${number(0)}'
-          : '+ ৳ ${number(taka)}';
+      ? '৳ ${number(0)}'
+      : '+ ৳ ${number(taka)}';
 
   /// DD/MM/YYYY (GEN-7).
   String date(DateTime d) => digits(
-      '${_two(d.day)}/${_two(d.month)}/${d.year.toString().padLeft(4, '0')}');
+    '${_two(d.day)}/${_two(d.month)}/${d.year.toString().padLeft(4, '0')}',
+  );
 
   String time(DateTime d) {
     final h12 = d.hour % 12 == 0 ? 12 : d.hour % 12;
@@ -77,16 +89,16 @@ class Fmt {
       final part = d.hour < 4
           ? 'রাত'
           : d.hour < 6
-              ? 'ভোর'
-              : d.hour < 12
-                  ? 'সকাল'
-                  : d.hour < 15
-                      ? 'দুপুর'
-                      : d.hour < 18
-                          ? 'বিকাল'
-                          : d.hour < 20
-                              ? 'সন্ধ্যা'
-                              : 'রাত';
+          ? 'ভোর'
+          : d.hour < 12
+          ? 'সকাল'
+          : d.hour < 15
+          ? 'দুপুর'
+          : d.hour < 18
+          ? 'বিকাল'
+          : d.hour < 20
+          ? 'সন্ধ্যা'
+          : 'রাত';
       return '$part ${digits('$h12:$mm')}';
     }
     return '$h12:$mm ${pm ? 'PM' : 'AM'}';
@@ -94,10 +106,10 @@ class Fmt {
 
   String dateTime(DateTime d) => '${date(d)}, ${time(d)}';
 
-  String monthName(int month) =>
-      (bangla ? _bnMonths : _enMonths)[month - 1];
+  String monthName(int month) => (bangla ? _bnMonths : _enMonths)[month - 1];
 
-  String monthYear(DateTime d) => '${monthName(d.month)} ${digits('${d.year}')}';
+  String monthYear(DateTime d) =>
+      '${monthName(d.month)} ${digits('${d.year}')}';
 
   String weekday(DateTime d) =>
       (bangla ? _bnWeekdays : _enWeekdays)[d.weekday - 1];

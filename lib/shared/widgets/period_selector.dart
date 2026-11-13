@@ -36,83 +36,126 @@ class PeriodSelector extends StatelessWidget {
       if (showSpecific) (PeriodMode.specific, l.periodSpecific),
       (PeriodMode.range, l.periodRange),
     ];
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Semantics(
-        container: true,
-        label: l.periodLabel,
-        child: Wrap(spacing: 8, runSpacing: 8, children: [
-          for (final (mode, label) in modes)
-            _Chip(
-              label: label,
-              on: value.mode == mode,
-              onTap: () => onChanged(_select(mode)),
-            ),
-        ]),
-      ),
-      if (value.mode == PeriodMode.specific) ...[
-        const SizedBox(height: 12),
-        Wrap(spacing: 12, runSpacing: 12, children: [
-          SizedBox(
-            width: 220,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l.periodSpecific,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 6),
-              DropdownButtonFormField<SpecificUnit>(
-                initialValue: value.unit,
-                items: [
-                  DropdownMenuItem(value: SpecificUnit.day, child: Text(l.unitDay)),
-                  DropdownMenuItem(value: SpecificUnit.week, child: Text(l.unitWeek)),
-                  DropdownMenuItem(value: SpecificUnit.month, child: Text(l.unitMonth)),
-                  DropdownMenuItem(value: SpecificUnit.year, child: Text(l.unitYear)),
-                ],
-                onChanged: (u) => onChanged(value.copyWith(unit: u)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          container: true,
+          label: l.periodLabel,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final (mode, label) in modes)
+                _Chip(
+                  label: label,
+                  on: value.mode == mode,
+                  onTap: () => onChanged(_select(mode)),
+                ),
+            ],
+          ),
+        ),
+        if (value.mode == PeriodMode.specific) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              SizedBox(
+                width: 220,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.periodSpecific,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    DropdownButtonFormField<SpecificUnit>(
+                      initialValue: value.unit,
+                      items: [
+                        DropdownMenuItem(
+                          value: SpecificUnit.day,
+                          child: Text(l.unitDay),
+                        ),
+                        DropdownMenuItem(
+                          value: SpecificUnit.week,
+                          child: Text(l.unitWeek),
+                        ),
+                        DropdownMenuItem(
+                          value: SpecificUnit.month,
+                          child: Text(l.unitMonth),
+                        ),
+                        DropdownMenuItem(
+                          value: SpecificUnit.year,
+                          child: Text(l.unitYear),
+                        ),
+                      ],
+                      onChanged: (u) => onChanged(value.copyWith(unit: u)),
+                    ),
+                  ],
+                ),
               ),
-            ]),
+              SizedBox(
+                width: 240,
+                child: DateFormField(
+                  label: l.pickAnyDate,
+                  compact: true,
+                  value: value.anchor,
+                  onChanged: (d) => onChanged(
+                    d == null
+                        ? value.copyWith(clearAnchor: true)
+                        : value.copyWith(anchor: d),
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(
-            width: 240,
-            child: DateFormField(
-              label: l.pickAnyDate,
-              compact: true,
-              value: value.anchor,
-              onChanged: (d) => onChanged(d == null
-                  ? value.copyWith(clearAnchor: true)
-                  : value.copyWith(anchor: d)),
-            ),
+        ],
+        if (value.mode == PeriodMode.range) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              SizedBox(
+                width: 240,
+                child: DateFormField(
+                  label: l.dateFrom,
+                  compact: true,
+                  value: value.from,
+                  onChanged: (d) => onChanged(
+                    d == null
+                        ? value.copyWith(clearFrom: true)
+                        : value.copyWith(from: d),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 240,
+                child: DateFormField(
+                  label: l.dateTo,
+                  compact: true,
+                  value: value.to,
+                  onChanged: (d) => onChanged(
+                    d == null
+                        ? value.copyWith(clearTo: true)
+                        : value.copyWith(to: d),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ]),
-      ],
-      if (value.mode == PeriodMode.range) ...[
-        const SizedBox(height: 12),
-        Wrap(spacing: 12, runSpacing: 12, children: [
-          SizedBox(
-            width: 240,
-            child: DateFormField(
-              label: l.dateFrom,
-              compact: true,
-              value: value.from,
-              onChanged: (d) => onChanged(
-                  d == null ? value.copyWith(clearFrom: true) : value.copyWith(from: d)),
-            ),
-          ),
-          SizedBox(
-            width: 240,
-            child: DateFormField(
-              label: l.dateTo,
-              compact: true,
-              value: value.to,
-              onChanged: (d) => onChanged(
-                  d == null ? value.copyWith(clearTo: true) : value.copyWith(to: d)),
-            ),
-          ),
-        ]),
-        if (value.rangeReversed) ...[
-          const SizedBox(height: 8),
-          MessageBanner(l.rangeInvalid, kind: BannerKind.error),
+          if (value.rangeReversed) ...[
+            const SizedBox(height: 8),
+            MessageBanner(l.rangeInvalid, kind: BannerKind.error),
+          ],
         ],
       ],
-    ]);
+    );
   }
 
   /// Switching mode keeps sensible dates: a chosen day starts at today, a range
@@ -138,35 +181,44 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-        button: true,
-        selected: on,
-        child: Material(
-          color: on ? AppColors.primary : Colors.white,
-          shape: StadiumBorder(
-              side: BorderSide(color: on ? AppColors.primary : AppColors.inputBorder)),
-          child: InkWell(
-            customBorder: const StadiumBorder(),
-            onTap: onTap,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 38),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Center(
-                  widthFactor: 1,
-                  child: Text(label,
-                      style: TextStyle(
-                          fontSize: 14, color: on ? Colors.white : AppColors.text)),
+    button: true,
+    selected: on,
+    child: Material(
+      color: on ? AppColors.primary : Colors.white,
+      shape: StadiumBorder(
+        side: BorderSide(color: on ? AppColors.primary : AppColors.inputBorder),
+      ),
+      child: InkWell(
+        customBorder: const StadiumBorder(),
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 38),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Center(
+              widthFactor: 1,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: on ? Colors.white : AppColors.text,
                 ),
               ),
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 /// A readable name for a choice: "মাস: নভেম্বর ২০২৬", "০১/১১/২০২৬ – ৩০/১১/২০২৬".
 String periodChoiceName(
-    AppLocalizations l, Fmt fmt, PeriodChoice c, DateTime today) {
+  AppLocalizations l,
+  Fmt fmt,
+  PeriodChoice c,
+  DateTime today,
+) {
   final p = c.resolve(today);
   if (p == null) return '';
   switch (c.mode) {

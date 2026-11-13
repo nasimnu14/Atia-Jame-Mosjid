@@ -1668,6 +1668,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n}'**
   String entriesCountPhotos(String n);
+
+  /// No description provided for @currentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance'**
+  String get currentBalance;
+
+  /// No description provided for @balanceFormulaLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance {opening} ({date}) + all income − all expense · cancelled entries not counted'**
+  String balanceFormulaLine(String opening, String date);
+
+  /// No description provided for @balanceNoOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'No opening balance set · all income − all expense · cancelled entries not counted'**
+  String get balanceNoOpening;
+
+  /// No description provided for @viewSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'View summary'**
+  String get viewSummary;
+
+  /// No description provided for @incomeToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Income today'**
+  String get incomeToday;
+
+  /// No description provided for @expenseToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense today'**
+  String get expenseToday;
+
+  /// No description provided for @incomeThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Income this month'**
+  String get incomeThisMonth;
+
+  /// No description provided for @expenseThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense this month'**
+  String get expenseThisMonth;
+
+  /// No description provided for @statusBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup (every 4 hours)'**
+  String get statusBackup;
+
+  /// No description provided for @statusExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Excel upload'**
+  String get statusExcel;
+
+  /// No description provided for @statusSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Last phone sync'**
+  String get statusSync;
+
+  /// No description provided for @statusNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get statusNotYet;
+
+  /// No description provided for @statusOkAt.
+  ///
+  /// In en, this message translates to:
+  /// **'{when} · OK'**
+  String statusOkAt(String when);
+
+  /// No description provided for @statusFailedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed · last OK: {when}'**
+  String statusFailedAt(String when);
+
+  /// No description provided for @recentEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent entries'**
+  String get recentEntries;
+
+  /// No description provided for @seeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get seeAll;
+
+  /// No description provided for @colType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get colType;
+
+  /// No description provided for @colNameOrPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Name / purpose'**
+  String get colNameOrPurpose;
+
+  /// No description provided for @makePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a PDF'**
+  String get makePdf;
+
+  /// No description provided for @excelUploadBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel upload'**
+  String get excelUploadBtn;
+
+  /// No description provided for @totalIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Total income'**
+  String get totalIncome;
+
+  /// No description provided for @totalExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Total expense'**
+  String get totalExpense;
+
+  /// No description provided for @incomeMinusExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Income − expense'**
+  String get incomeMinusExpense;
+
+  /// No description provided for @surplusNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Surplus for this period'**
+  String get surplusNote;
+
+  /// No description provided for @deficitNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Deficit for this period'**
+  String get deficitNote;
+
+  /// No description provided for @summaryNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled entries are not counted in any total. Current balance today: {balance}'**
+  String summaryNote(String balance);
+
+  /// No description provided for @breakdownDays.
+  ///
+  /// In en, this message translates to:
+  /// **'By day · {period}'**
+  String breakdownDays(String period);
+
+  /// No description provided for @breakdownWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'By week · {period}'**
+  String breakdownWeeks(String period);
+
+  /// No description provided for @breakdownMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'By month · {period}'**
+  String breakdownMonths(String period);
+
+  /// No description provided for @rowTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get rowTotal;
+
+  /// No description provided for @completePeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the period above to see the figures'**
+  String get completePeriod;
+
+  /// No description provided for @pdfWhatToInclude.
+  ///
+  /// In en, this message translates to:
+  /// **'What the report contains'**
+  String get pdfWhatToInclude;
+
+  /// No description provided for @pdfIncomeOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Income only'**
+  String get pdfIncomeOnly;
+
+  /// No description provided for @pdfExpenseOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense only'**
+  String get pdfExpenseOnly;
+
+  /// No description provided for @pdfBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Income and expense (with a summary)'**
+  String get pdfBoth;
+
+  /// No description provided for @pdfLanguageNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Language: {lang}. The report is made in the app\'s current language.'**
+  String pdfLanguageNote(String lang);
+
+  /// No description provided for @pdfWhereNext.
+  ///
+  /// In en, this message translates to:
+  /// **'In the next step, choose where to save the file.'**
+  String get pdfWhereNext;
+
+  /// No description provided for @pdfPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview (first page)'**
+  String get pdfPreview;
+
+  /// No description provided for @pdfGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Making the PDF…'**
+  String get pdfGenerating;
+
+  /// No description provided for @pdfSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF saved: {path}'**
+  String pdfSaved(String path);
+
+  /// No description provided for @pdfNotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'The PDF was not saved'**
+  String get pdfNotSaved;
+
+  /// No description provided for @pdfFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The PDF could not be made: {detail}'**
+  String pdfFailed(String detail);
+
+  /// No description provided for @pdfReportTitleBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Income and expense report'**
+  String get pdfReportTitleBoth;
+
+  /// No description provided for @pdfReportTitleIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income report'**
+  String get pdfReportTitleIncome;
+
+  /// No description provided for @pdfReportTitleExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense report'**
+  String get pdfReportTitleExpense;
+
+  /// No description provided for @pdfCancelledFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled entries are listed and marked, but are not counted in any total.'**
+  String get pdfCancelledFootnote;
+
+  /// No description provided for @pdfPageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {n} of {total}'**
+  String pdfPageOf(String n, String total);
+
+  /// No description provided for @pdfGeneratedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Made on {when}'**
+  String pdfGeneratedOn(String when);
+
+  /// No description provided for @pdfNoEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries in this period'**
+  String get pdfNoEntries;
+
+  /// No description provided for @pdfEntryTitleIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income entry'**
+  String get pdfEntryTitleIncome;
+
+  /// No description provided for @pdfEntryTitleExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense entry'**
+  String get pdfEntryTitleExpense;
+
+  /// No description provided for @pdfPhotosHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get pdfPhotosHeading;
+
+  /// No description provided for @pdfHistoryHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get pdfHistoryHeading;
+
+  /// No description provided for @pdfAddedByShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by {who} on {when}'**
+  String pdfAddedByShort(String who, String when);
+
+  /// No description provided for @pdfEditedByShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited by {who} on {when}'**
+  String pdfEditedByShort(String who, String when);
+
+  /// No description provided for @pdfCancelledByShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled by {who} on {when}'**
+  String pdfCancelledByShort(String who, String when);
+
+  /// No description provided for @pdfAmountLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount: {amount}'**
+  String pdfAmountLine(String amount);
+
+  /// No description provided for @xlsAddedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by'**
+  String get xlsAddedBy;
+
+  /// No description provided for @xlsAddedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Added at'**
+  String get xlsAddedAt;
+
+  /// No description provided for @xlsEditedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited by'**
+  String get xlsEditedBy;
+
+  /// No description provided for @xlsEditedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited at'**
+  String get xlsEditedAt;
+
+  /// No description provided for @xlsCancelledBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled by'**
+  String get xlsCancelledBy;
+
+  /// No description provided for @xlsCancelledAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled at'**
+  String get xlsCancelledAt;
 }
 
 class _AppLocalizationsDelegate

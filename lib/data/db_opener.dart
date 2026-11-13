@@ -24,7 +24,8 @@ class MigrationFailedException implements Exception {
   final Object cause;
   final File restoredFrom;
   @override
-  String toString() => 'Database upgrade failed ($cause). '
+  String toString() =>
+      'Database upgrade failed ($cause). '
       'Restored the copy ${restoredFrom.path}.';
 }
 
@@ -44,7 +45,8 @@ Future<AppDatabase> openAppDatabase(
 }) async {
   dataDir.createSync(recursive: true);
   final file = File(p.join(dataDir.path, dbFileName));
-  final make = factory ?? (f) => AppDatabase(NativeDatabase.createInBackground(f));
+  final make =
+      factory ?? (f) => AppDatabase(NativeDatabase.createInBackground(f));
   final target = targetVersion;
 
   File? backup;

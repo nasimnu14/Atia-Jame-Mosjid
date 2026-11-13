@@ -895,4 +895,228 @@ class AppLocalizationsBn extends AppLocalizations {
   String entriesCountPhotos(String n) {
     return '$nটি';
   }
+
+  @override
+  String get currentBalance => 'বর্তমান ব্যালেন্স';
+
+  @override
+  String balanceFormulaLine(String opening, String date) {
+    return 'প্রারম্ভিক ব্যালেন্স $opening ($date) + সব আয় − সব ব্যয় · বাতিল এন্ট্রি ধরা হয়নি';
+  }
+
+  @override
+  String get balanceNoOpening =>
+      'প্রারম্ভিক ব্যালেন্স দেওয়া হয়নি · সব আয় − সব ব্যয় · বাতিল এন্ট্রি ধরা হয়নি';
+
+  @override
+  String get viewSummary => 'সারাংশ দেখুন';
+
+  @override
+  String get incomeToday => 'আজকের আয়';
+
+  @override
+  String get expenseToday => 'আজকের ব্যয়';
+
+  @override
+  String get incomeThisMonth => 'এই মাসের আয়';
+
+  @override
+  String get expenseThisMonth => 'এই মাসের ব্যয়';
+
+  @override
+  String get statusBackup => 'শেষ ব্যাকআপ (প্রতি ৪ ঘণ্টা)';
+
+  @override
+  String get statusExcel => 'দৈনিক এক্সেল আপলোড';
+
+  @override
+  String get statusSync => 'শেষ ফোন সিঙ্ক';
+
+  @override
+  String get statusNotYet => 'এখনো হয়নি';
+
+  @override
+  String statusOkAt(String when) {
+    return '$when · সফল';
+  }
+
+  @override
+  String statusFailedAt(String when) {
+    return 'ব্যর্থ · শেষ সফল: $when';
+  }
+
+  @override
+  String get recentEntries => 'সাম্প্রতিক এন্ট্রি';
+
+  @override
+  String get seeAll => 'সব দেখুন';
+
+  @override
+  String get colType => 'ধরন';
+
+  @override
+  String get colNameOrPurpose => 'নাম / খরচ বাবদ';
+
+  @override
+  String get makePdf => 'পিডিএফ তৈরি করুন';
+
+  @override
+  String get excelUploadBtn => 'এক্সেল আপলোড';
+
+  @override
+  String get totalIncome => 'মোট আয়';
+
+  @override
+  String get totalExpense => 'মোট ব্যয়';
+
+  @override
+  String get incomeMinusExpense => 'আয় − ব্যয়';
+
+  @override
+  String get surplusNote => 'এই সময়ে উদ্বৃত্ত';
+
+  @override
+  String get deficitNote => 'এই সময়ে ঘাটতি';
+
+  @override
+  String summaryNote(String balance) {
+    return 'বাতিল এন্ট্রি কোনো মোটে ধরা হয়নি। আজকের বর্তমান ব্যালেন্স: $balance';
+  }
+
+  @override
+  String breakdownDays(String period) {
+    return 'দিন অনুযায়ী · $period';
+  }
+
+  @override
+  String breakdownWeeks(String period) {
+    return 'সপ্তাহ অনুযায়ী · $period';
+  }
+
+  @override
+  String breakdownMonths(String period) {
+    return 'মাস অনুযায়ী · $period';
+  }
+
+  @override
+  String get rowTotal => 'মোট';
+
+  @override
+  String get completePeriod => 'সংখ্যা দেখতে উপরের সময়কাল সম্পূর্ণ করুন';
+
+  @override
+  String get pdfWhatToInclude => 'রিপোর্টে কী থাকবে';
+
+  @override
+  String get pdfIncomeOnly => 'শুধু আয়';
+
+  @override
+  String get pdfExpenseOnly => 'শুধু ব্যয়';
+
+  @override
+  String get pdfBoth => 'আয় ও ব্যয় (সারাংশসহ)';
+
+  @override
+  String pdfLanguageNote(String lang) {
+    return 'ভাষা: $lang — রিপোর্ট অ্যাপের বর্তমান ভাষায় তৈরি হবে।';
+  }
+
+  @override
+  String get pdfWhereNext =>
+      'পরের ধাপে ফাইলটি কোথায় সংরক্ষণ করবেন তা বেছে নিন।';
+
+  @override
+  String get pdfPreview => 'নমুনা (প্রথম পাতা)';
+
+  @override
+  String get pdfGenerating => 'পিডিএফ তৈরি হচ্ছে…';
+
+  @override
+  String pdfSaved(String path) {
+    return 'পিডিএফ সংরক্ষিত হয়েছে: $path';
+  }
+
+  @override
+  String get pdfNotSaved => 'পিডিএফ সংরক্ষণ করা হয়নি';
+
+  @override
+  String pdfFailed(String detail) {
+    return 'পিডিএফ তৈরি করা যায়নি: $detail';
+  }
+
+  @override
+  String get pdfReportTitleBoth => 'আয়-ব্যয় রিপোর্ট';
+
+  @override
+  String get pdfReportTitleIncome => 'আয়ের রিপোর্ট';
+
+  @override
+  String get pdfReportTitleExpense => 'ব্যয়ের রিপোর্ট';
+
+  @override
+  String get pdfCancelledFootnote =>
+      'বাতিল এন্ট্রি তালিকায় চিহ্নিত করে দেখানো হয়েছে, কিন্তু কোনো মোটে ধরা হয়নি।';
+
+  @override
+  String pdfPageOf(String n, String total) {
+    return 'পাতা $n / $total';
+  }
+
+  @override
+  String pdfGeneratedOn(String when) {
+    return 'তৈরি: $when';
+  }
+
+  @override
+  String get pdfNoEntries => 'এই সময়ে কোনো এন্ট্রি নেই';
+
+  @override
+  String get pdfEntryTitleIncome => 'আয়ের এন্ট্রি';
+
+  @override
+  String get pdfEntryTitleExpense => 'ব্যয়ের এন্ট্রি';
+
+  @override
+  String get pdfPhotosHeading => 'ছবি';
+
+  @override
+  String get pdfHistoryHeading => 'ইতিহাস';
+
+  @override
+  String pdfAddedByShort(String who, String when) {
+    return 'যোগ করেছেন $who, $when';
+  }
+
+  @override
+  String pdfEditedByShort(String who, String when) {
+    return 'সম্পাদনা করেছেন $who, $when';
+  }
+
+  @override
+  String pdfCancelledByShort(String who, String when) {
+    return 'বাতিল করেছেন $who, $when';
+  }
+
+  @override
+  String pdfAmountLine(String amount) {
+    return 'টাকা: $amount';
+  }
+
+  @override
+  String get xlsAddedBy => 'যোগ করেছেন';
+
+  @override
+  String get xlsAddedAt => 'যোগের সময়';
+
+  @override
+  String get xlsEditedBy => 'সম্পাদনা করেছেন';
+
+  @override
+  String get xlsEditedAt => 'সম্পাদনার সময়';
+
+  @override
+  String get xlsCancelledBy => 'বাতিল করেছেন';
+
+  @override
+  String get xlsCancelledAt => 'বাতিলের সময়';
 }

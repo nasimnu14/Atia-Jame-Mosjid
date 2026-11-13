@@ -11,7 +11,7 @@ class SectionPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageScaffold(
-        title: sectionLabel(context.l10n, section),
-        child: Text(context.l10n.loading),
-      );
+    title: sectionLabel(context.l10n, section),
+    child: Text(context.l10n.loading),
+  );
 }

@@ -19,13 +19,16 @@ enum DateParseProblem {
 
 class DateParseResult {
   const DateParseResult.ok(DateTime this.date)
-      : problem = null,
-        maxDay = null,
-        month = null,
-        year = null;
-  const DateParseResult.error(DateParseProblem this.problem,
-      {this.maxDay, this.month, this.year})
-      : date = null;
+    : problem = null,
+      maxDay = null,
+      month = null,
+      year = null;
+  const DateParseResult.error(
+    DateParseProblem this.problem, {
+    this.maxDay,
+    this.month,
+    this.year,
+  }) : date = null;
 
   final DateTime? date;
   final DateParseProblem? problem;
@@ -47,8 +50,9 @@ int daysInMonth(int year, int month) => DateTime(year, month + 1, 0).day;
 DateParseResult parseTypedDate(String input) {
   final text = toEnglishDigits(input.trim());
   if (text.isEmpty) return const DateParseResult.error(DateParseProblem.empty);
-  final m = RegExp(r'^(\d{1,2})\s*[/\-.\s]\s*(\d{1,2})\s*[/\-.\s]\s*(\d{4})$')
-      .firstMatch(text);
+  final m = RegExp(
+    r'^(\d{1,2})\s*[/\-.\s]\s*(\d{1,2})\s*[/\-.\s]\s*(\d{4})$',
+  ).firstMatch(text);
   if (m == null) return const DateParseResult.error(DateParseProblem.format);
   final d = int.parse(m[1]!);
   final mo = int.parse(m[2]!);
@@ -61,8 +65,12 @@ DateParseResult parseTypedDate(String input) {
   }
   final max = daysInMonth(y, mo);
   if (d < 1 || d > max) {
-    return DateParseResult.error(DateParseProblem.dayNotInMonth,
-        maxDay: max, month: mo, year: y);
+    return DateParseResult.error(
+      DateParseProblem.dayNotInMonth,
+      maxDay: max,
+      month: mo,
+      year: y,
+    );
   }
   return DateParseResult.ok(DateTime(y, mo, d));
 }

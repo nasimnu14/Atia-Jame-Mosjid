@@ -5,6 +5,7 @@ import 'package:atia_masjid_accounts/app/app.dart';
 import 'package:atia_masjid_accounts/app/app_services.dart';
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/features/entries/photo_picker.dart';
+import 'package:atia_masjid_accounts/shared/file_saver.dart';
 import 'package:atia_masjid_accounts/shared/password_hasher.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
@@ -21,20 +22,28 @@ class AppHarness {
   final AppServices services;
   final Directory dir;
 
-  static Future<AppHarness> start(WidgetTester tester,
-      {Size size = const Size(1400, 900),
-      PhotoPicker? picker,
-      DateTime? now}) async {
+  static Future<AppHarness> start(
+    WidgetTester tester, {
+    Size size = const Size(1400, 900),
+    PhotoPicker? picker,
+    FileSaver? saver,
+    DateTime? now,
+  }) async {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
     final dir = Directory.systemTemp.createTempSync('atia_widget_');
-    final services = (await tester.runAsync(() => AppServices.fromDatabase(
-        AppDatabase(NativeDatabase.memory()), dir,
+    final services = (await tester.runAsync(
+      () => AppServices.fromDatabase(
+        AppDatabase(NativeDatabase.memory()),
+        dir,
         hasher: const PasswordHasher(logRounds: 4),
         now: now == null ? DateTime.now : () => now,
-        photoPicker: picker ?? const PlatformPhotoPicker())))!;
+        photoPicker: picker ?? const PlatformPhotoPicker(),
+        fileSaver: saver ?? FakeFileSaver(),
+      ),
+    ))!;
     final h = AppHarness(tester, services, dir);
     addTearDown(() async {
       await tester.runAsync(() => services.close());
@@ -47,37 +56,16 @@ class AppHarness {
 
   Future<void> launch() async {
     await _loadFonts();
-    await tester.pumpWidget(RepaintBoundary(
-        key: _shotKey, child: AtiaApp(services: services)));
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: _shotKey,
+        child: AtiaApp(services: services),
+      ),
+    );
     await settle();
   }
 
-  static bool _fontsLoaded = false;
-
-  /// The bundled Bangla font and the Material icon font, so screenshots look
-  /// like the real app instead of boxes.
-  static Future<void> _loadFonts() async {
-    if (_fontsLoaded) return;
-    _fontsLoaded = true;
-    final hind = FontLoader('HindSiliguri');
-    for (final w in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
-      hind.addFont(Future.value(File('assets/fonts/HindSiliguri-$w.ttf')
-          .readAsBytesSync()
-          .buffer
-          .asByteData()));
-    }
-    await hind.load();
-    final root = Platform.environment['FLUTTER_ROOT'];
-    if (root != null) {
-      final icons = File(
-          '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
-      if (icons.existsSync()) {
-        final l = FontLoader('MaterialIcons')
-          ..addFont(Future.value(icons.readAsBytesSync().buffer.asByteData()));
-        await l.load();
-      }
-    }
-  }
+  static Future<void> _loadFonts() => loadTestFonts();
 
   /// Saves a PNG of the screen to `$SHOT_DIR/NAME.png` when SHOT_DIR is set
   /// (used to look at screens by eye; does nothing otherwise).
@@ -85,8 +73,8 @@ class AppHarness {
     final dir = Platform.environment['SHOT_DIR'];
     if (dir == null) return;
     await settle(2);
-    final boundary = _shotKey.currentContext!.findRenderObject()!
-        as RenderRepaintBoundary;
+    final boundary =
+        _shotKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
     await tester.runAsync(() async {
       final image = await boundary.toImage(pixelRatio: 1.0);
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -98,7 +86,9 @@ class AppHarness {
   /// Lets real async work finish, then renders.
   Future<void> settle([int rounds = 4]) async {
     for (var i = 0; i < rounds; i++) {
-      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 60)));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 60)),
+      );
       await tester.pump(const Duration(milliseconds: 50));
     }
   }
@@ -119,7 +109,10 @@ class AppHarness {
 
 /// Like `testWidgets`, but unmounts the app at the end and lets Drift's
 /// stream clean-up timers run, so the test does not fail on pending timers.
-void testApp(String description, Future<void> Function(WidgetTester tester) body) {
+void testApp(
+  String description,
+  Future<void> Function(WidgetTester tester) body,
+) {
   testWidgets(description, (tester) async {
     await body(tester);
     await tester.pumpWidget(const SizedBox());
@@ -132,6 +125,60 @@ class FakePhotoPicker implements PhotoPicker {
   FakePhotoPicker(this.photos);
   List<Uint8List> photos;
   @override
-  Future<List<Uint8List>> pick(BuildContext context, {required int maxCount}) async =>
-      photos.take(maxCount).toList();
+  Future<List<Uint8List>> pick(
+    BuildContext context, {
+    required int maxCount,
+  }) async => photos.take(maxCount).toList();
+}
+
+bool _fontsLoaded = false;
+
+/// The bundled Bangla font and the Material icon font, so screenshots and PDFs
+/// look like the real app instead of boxes.
+Future<void> loadTestFonts() async {
+  if (_fontsLoaded) return;
+  _fontsLoaded = true;
+  final hind = FontLoader('HindSiliguri');
+  for (final w in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
+    hind.addFont(
+      Future.value(
+        File(
+          'assets/fonts/HindSiliguri-$w.ttf',
+        ).readAsBytesSync().buffer.asByteData(),
+      ),
+    );
+  }
+  await hind.load();
+  final root = Platform.environment['FLUTTER_ROOT'];
+  if (root != null) {
+    final icons = File(
+      '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+    );
+    if (icons.existsSync()) {
+      final l = FontLoader('MaterialIcons')
+        ..addFont(Future.value(icons.readAsBytesSync().buffer.asByteData()));
+      await l.load();
+    }
+  }
+}
+
+/// A file saver for tests: remembers what would have been saved.
+class FakeFileSaver implements FileSaver {
+  final saved = <({String name, String extension, Uint8List bytes})>[];
+
+  /// When true, behaves like the user pressing Cancel in the save dialog.
+  bool cancel = false;
+
+  @override
+  Future<String?> save(
+    BuildContext context, {
+    required String suggestedName,
+    required Uint8List bytes,
+    required String extension,
+    required String mimeType,
+  }) async {
+    if (cancel) return null;
+    saved.add((name: suggestedName, extension: extension, bytes: bytes));
+    return '/fake/$suggestedName.$extension';
+  }
 }

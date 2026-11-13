@@ -11,11 +11,13 @@ import 'permissions.dart';
 String errorText(AppLocalizations l, Fmt fmt, Object e) {
   if (e is UserException) {
     return switch (e.problem) {
-      UserProblem.nameRequired || UserProblem.usernameRequired => l.fieldRequired,
+      UserProblem.nameRequired ||
+      UserProblem.usernameRequired => l.fieldRequired,
       UserProblem.usernameInvalid => l.usernameInvalid,
       UserProblem.usernameTaken => l.usernameTaken,
-      UserProblem.passwordTooShort =>
-        l.passwordTooShort(fmt.integer(PasswordHasher.minLength)),
+      UserProblem.passwordTooShort => l.passwordTooShort(
+        fmt.integer(PasswordHasher.minLength),
+      ),
       UserProblem.passwordTooLong => l.passwordTooLong,
       UserProblem.wrongCurrentPassword => l.wrongCurrentPassword,
       UserProblem.invalidCredentials => l.invalidCredentials,
@@ -24,8 +26,7 @@ String errorText(AppLocalizations l, Fmt fmt, Object e) {
       UserProblem.superAdminExists ||
       UserProblem.cannotChangeSuperAdmin ||
       UserProblem.invalidRole ||
-      UserProblem.notFound =>
-        l.permissionDenied,
+      UserProblem.notFound => l.permissionDenied,
     };
   }
   if (e is PermissionDeniedException) return l.permissionDenied;
@@ -52,14 +53,16 @@ String dateProblemText(AppLocalizations l, Fmt fmt, DateParseResult r) {
       return l.dateYearInvalid;
     case DateParseProblem.dayNotInMonth:
       return l.dateDayInvalid(
-          fmt.integer(r.maxDay!), fmt.monthName(r.month!), fmt.integer(r.year!));
+        fmt.integer(r.maxDay!),
+        fmt.monthName(r.month!),
+        fmt.integer(r.year!),
+      );
   }
 }
 
 String amountProblemText(AppLocalizations l, AmountProblem p) => switch (p) {
-      AmountProblem.empty => l.amountRequired,
-      AmountProblem.notWholeNumber => l.amountWhole,
-      AmountProblem.notPositive => l.amountPositive,
-      AmountProblem.tooLarge => l.amountTooLarge,
-    };
-
+  AmountProblem.empty => l.amountRequired,
+  AmountProblem.notWholeNumber => l.amountWhole,
+  AmountProblem.notPositive => l.amountPositive,
+  AmountProblem.tooLarge => l.amountTooLarge,
+};

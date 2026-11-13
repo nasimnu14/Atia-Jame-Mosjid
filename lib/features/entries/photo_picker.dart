@@ -19,7 +19,10 @@ class PlatformPhotoPicker implements PhotoPicker {
   const PlatformPhotoPicker();
 
   @override
-  Future<List<Uint8List>> pick(BuildContext context, {required int maxCount}) async {
+  Future<List<Uint8List>> pick(
+    BuildContext context, {
+    required int maxCount,
+  }) async {
     if (maxCount <= 0) return const [];
     if (Platform.isAndroid || Platform.isIOS) {
       final source = await showAndroidSourceChoice(context);
@@ -29,13 +32,16 @@ class PlatformPhotoPicker implements PhotoPicker {
         final f = await picker.pickImage(source: ImageSource.camera);
         return f == null ? const [] : [await f.readAsBytes()];
       }
-      final files = await picker.pickMultiImage(limit: maxCount >= 2 ? maxCount : null);
+      final files = await picker.pickMultiImage(
+        limit: maxCount >= 2 ? maxCount : null,
+      );
       return [for (final f in files.take(maxCount)) await f.readAsBytes()];
     }
     const group = XTypeGroup(
-        label: 'Images',
-        extensions: ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif'],
-        uniformTypeIdentifiers: ['public.image']);
+      label: 'Images',
+      extensions: ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif'],
+      uniformTypeIdentifiers: ['public.image'],
+    );
     final files = await openFiles(acceptedTypeGroups: [group]);
     return [for (final f in files.take(maxCount)) await f.readAsBytes()];
   }
@@ -44,24 +50,29 @@ class PlatformPhotoPicker implements PhotoPicker {
 /// Bottom sheet: camera or gallery.
 Future<ImageSource?> showAndroidSourceChoice(BuildContext context) {
   final l = AppLocalizations.of(context);
-  return showModalBottomSheetSafe<ImageSource>(
-    context,
-    [
-      (l.takePhoto, ImageSource.camera),
-      (l.pickFromGallery, ImageSource.gallery),
-    ],
-  );
+  return showModalBottomSheetSafe<ImageSource>(context, [
+    (l.takePhoto, ImageSource.camera),
+    (l.pickFromGallery, ImageSource.gallery),
+  ]);
 }
 
 Future<T?> showModalBottomSheetSafe<T>(
-    BuildContext context, List<(String, T)> options) {
+  BuildContext context,
+  List<(String, T)> options,
+) {
   return showModalBottomSheet<T>(
     context: context,
     builder: (ctx) => SafeArea(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        for (final (label, value) in options)
-          ListTile(title: Text(label), onTap: () => Navigator.pop(ctx, value)),
-      ]),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final (label, value) in options)
+            ListTile(
+              title: Text(label),
+              onTap: () => Navigator.pop(ctx, value),
+            ),
+        ],
+      ),
     ),
   );
 }

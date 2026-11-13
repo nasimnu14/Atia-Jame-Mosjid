@@ -31,19 +31,20 @@ abstract final class AppColors {
 const kFontFamily = 'HindSiliguri';
 
 ThemeData buildTheme() {
-  final base = ColorScheme.fromSeed(
-    seedColor: AppColors.primary,
-    brightness: Brightness.light,
-  ).copyWith(
-    primary: AppColors.primary,
-    onPrimary: Colors.white,
-    secondary: AppColors.expense,
-    surface: AppColors.card,
-    onSurface: AppColors.text,
-    error: AppColors.cancelledText,
-    outline: AppColors.inputBorder,
-    outlineVariant: AppColors.border,
-  );
+  final base =
+      ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        brightness: Brightness.light,
+      ).copyWith(
+        primary: AppColors.primary,
+        onPrimary: Colors.white,
+        secondary: AppColors.expense,
+        surface: AppColors.card,
+        onSurface: AppColors.text,
+        error: AppColors.cancelledText,
+        outline: AppColors.inputBorder,
+        outlineVariant: AppColors.border,
+      );
   final outline = OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
     borderSide: const BorderSide(color: AppColors.inputBorder),
@@ -55,10 +56,10 @@ ThemeData buildTheme() {
     scaffoldBackgroundColor: AppColors.background,
     dividerColor: AppColors.divider,
     textTheme: ThemeData.light().textTheme.apply(
-          fontFamily: kFontFamily,
-          bodyColor: AppColors.text,
-          displayColor: AppColors.text,
-        ),
+      fontFamily: kFontFamily,
+      bodyColor: AppColors.text,
+      displayColor: AppColors.text,
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white,
@@ -67,11 +68,14 @@ ThemeData buildTheme() {
       border: outline,
       enabledBorder: outline,
       focusedBorder: outline.copyWith(
-          borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
       errorBorder: outline.copyWith(
-          borderSide: const BorderSide(color: AppColors.cancelledText)),
+        borderSide: const BorderSide(color: AppColors.cancelledText),
+      ),
       focusedErrorBorder: outline.copyWith(
-          borderSide: const BorderSide(color: AppColors.cancelledText, width: 2)),
+        borderSide: const BorderSide(color: AppColors.cancelledText, width: 2),
+      ),
       errorMaxLines: 3,
       helperMaxLines: 3,
     ),
@@ -81,7 +85,10 @@ ThemeData buildTheme() {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         textStyle: const TextStyle(
-            fontFamily: kFontFamily, fontSize: 15, fontWeight: FontWeight.w600),
+          fontFamily: kFontFamily,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(

@@ -24,7 +24,12 @@ import 'photo_viewer.dart';
 /// For an edit, [existing] is the saved entry and [approver] is the Admin who
 /// approved a User's edit on the spot (EDT-2).
 class EntryFormScreen extends StatefulWidget {
-  const EntryFormScreen({super.key, required this.type, this.existing, this.approver});
+  const EntryFormScreen({
+    super.key,
+    required this.type,
+    this.existing,
+    this.approver,
+  });
   final EntryType type;
   final EntryWithPhotos? existing;
   final User? approver;
@@ -68,7 +73,8 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final e = widget.existing;
     final approvers = await services.settings.approvers();
     int? suggested;
-    if (e == null) suggested = await services.entries.suggestReceiptNo(widget.type);
+    if (e == null)
+      suggested = await services.entries.suggestReceiptNo(widget.type);
     if (!mounted) return;
     setState(() {
       _approvers = approvers;
@@ -83,7 +89,11 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
         _address.text = x.address ?? '';
         _photos = [
           for (final p in e.photos)
-            PhotoDraft(existingId: p.id, existingFileName: p.fileName, label: p.label)
+            PhotoDraft(
+              existingId: p.id,
+              existingFileName: p.fileName,
+              label: p.label,
+            ),
         ];
       } else {
         _suggested = suggested;
@@ -113,7 +123,11 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final svc = context.services.entries;
     final dup = no == null
         ? null
-        : await svc.findDuplicate(widget.type, no, exceptId: widget.existing?.entry.id);
+        : await svc.findDuplicate(
+            widget.type,
+            no,
+            exceptId: widget.existing?.entry.id,
+          );
     if (mounted && no == _receiptNo) setState(() => _duplicate = dup);
   }
 
@@ -141,13 +155,17 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
       if (!mounted) return;
       final label = await _askLabel();
       if (label == null) continue; // cancelled this photo
-      setState(() => _photos = [..._photos, PhotoDraft(bytes: bytes, label: label)]);
+      setState(
+        () => _photos = [..._photos, PhotoDraft(bytes: bytes, label: label)],
+      );
     }
   }
 
   /// INC-10: ask for a label; blank is allowed and gets a default at save.
-  Future<String?> _askLabel() =>
-      showDialog<String>(context: context, builder: (_) => const _PhotoLabelDialog());
+  Future<String?> _askLabel() => showDialog<String>(
+    context: context,
+    builder: (_) => const _PhotoLabelDialog(),
+  );
 
   Future<void> _save() async {
     final l = context.l10n;
@@ -159,9 +177,11 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final errors = <EntryField, String>{};
     if (_receiptNo == null) errors[EntryField.receiptNo] = l.receiptInvalid;
     final dateError = _dateKey.currentState?.validate();
-    if (dateError != null || _date == null) errors[EntryField.date] = dateError ?? l.dateEmpty;
+    if (dateError != null || _date == null)
+      errors[EntryField.date] = dateError ?? l.dateEmpty;
     final amount = parseAmount(_amount.text);
-    if (!amount.isOk) errors[EntryField.amount] = amountProblemText(l, amount.problem!);
+    if (!amount.isOk)
+      errors[EntryField.amount] = amountProblemText(l, amount.problem!);
 
     final draft = EntryDraft(
       type: widget.type,
@@ -176,8 +196,10 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     );
     draft.photos = withDefaultLabels(draft, fmt, unknownName: l.unknownDonor);
 
-    final problems = await services.entries
-        .validate(draft, existingApprover: widget.existing?.entry.approverName);
+    final problems = await services.entries.validate(
+      draft,
+      existingApprover: widget.existing?.entry.approverName,
+    );
     problems.forEach((f, p) {
       errors.putIfAbsent(f, () => entryProblemText(l, fmt, f, p));
     });
@@ -197,13 +219,23 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     try {
       final saved = widget.existing == null
           ? await services.entries.create(me, draft)
-          : await services.entries
-              .update(me, widget.existing!.entry.id, draft, approver: widget.approver);
+          : await services.entries.update(
+              me,
+              widget.existing!.entry.id,
+              draft,
+              approver: widget.approver,
+            );
       if (!mounted) return;
-      showInfo(context, widget.existing == null ? l.entrySaved : l.entryUpdated);
+      showInfo(
+        context,
+        widget.existing == null ? l.entrySaved : l.entryUpdated,
+      );
       if (widget.existing == null) {
-        nav.pushReplacement(MaterialPageRoute(
-            builder: (_) => EntryDetailsScreen(entryId: saved.entry.id)));
+        nav.pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => EntryDetailsScreen(entryId: saved.entry.id),
+          ),
+        );
       } else {
         nav.pop(true);
       }
@@ -212,7 +244,8 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
       setState(() {
         _busy = false;
         _errors = {
-          for (final x in e.errors.entries) x.key: entryProblemText(l, fmt, x.key, x.value)
+          for (final x in e.errors.entries)
+            x.key: entryProblemText(l, fmt, x.key, x.value),
         };
       });
     } catch (e) {
@@ -235,36 +268,38 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
     final approverNames = [
       for (final a in _approvers) a.name,
-      if (_approver != null && !_approvers.any((a) => a.name == _approver)) _approver!,
+      if (_approver != null && !_approvers.any((a) => a.name == _approver))
+        _approver!,
     ];
 
     Widget receiptField() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            LabeledField(
-              label: '${receiptNoLabel(l, widget.type)} *',
-              controller: _receipt,
-              keyboardType: TextInputType.number,
-              errorText: _errors[EntryField.receiptNo],
-              borderColor: _duplicate != null ? AppColors.warnBorder : null,
-              onChanged: (_) => _checkDuplicate(),
-              helper: _suggested == null
-                  ? null
-                  : (isExpense
-                      ? l.suggestedNextVoucher(fmt.integer(_suggested!))
-                      : l.suggestedNextReceipt(fmt.integer(_suggested!))),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        LabeledField(
+          label: '${receiptNoLabel(l, widget.type)} *',
+          controller: _receipt,
+          keyboardType: TextInputType.number,
+          errorText: _errors[EntryField.receiptNo],
+          borderColor: _duplicate != null ? AppColors.warnBorder : null,
+          onChanged: (_) => _checkDuplicate(),
+          helper: _suggested == null
+              ? null
+              : (isExpense
+                    ? l.suggestedNextVoucher(fmt.integer(_suggested!))
+                    : l.suggestedNextReceipt(fmt.integer(_suggested!))),
+        ),
+        if (_duplicate != null) ...[
+          const SizedBox(height: 6),
+          MessageBanner(
+            (isExpense ? l.duplicateWarningVoucher : l.duplicateWarningReceipt)(
+              fmt.date(parseDayKey(_duplicate!.entryDate)),
+              displayName(l, _duplicate!),
+              fmt.money(_duplicate!.amount),
             ),
-            if (_duplicate != null) ...[
-              const SizedBox(height: 6),
-              MessageBanner(
-                (isExpense ? l.duplicateWarningVoucher : l.duplicateWarningReceipt)(
-                    fmt.date(parseDayKey(_duplicate!.entryDate)),
-                    displayName(l, _duplicate!),
-                    fmt.money(_duplicate!.amount)),
-              ),
-            ],
-          ],
-        );
+          ),
+        ],
+      ],
+    );
 
     final dateField = DateFormField(
       key: _dateKey,
@@ -303,46 +338,60 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     return PageScaffold(
       maxWidth: 920,
       breadcrumb: Breadcrumb(
-          root: entryTitle(l, widget.type),
-          current: _isEdit ? l.editEntry : (isExpense ? l.addExpenseTitle : l.addIncomeTitle)),
+        root: entryTitle(l, widget.type),
+        current: _isEdit
+            ? l.editEntry
+            : (isExpense ? l.addExpenseTitle : l.addIncomeTitle),
+      ),
       title: title,
       child: AppCard(
         padding: const EdgeInsets.all(24),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          LayoutBuilder(builder: (context, c) {
-            final cols = c.maxWidth >= 560 ? 2 : 1;
-            final w = (c.maxWidth - (cols - 1) * 18) / cols;
-            return Wrap(
-              spacing: 18,
-              runSpacing: 18,
-              children: [for (final f in fields) SizedBox(width: w, child: f)],
-            );
-          }),
-          const SizedBox(height: 18),
-          LabeledField(
-            label: l.addressOptional,
-            controller: _address,
-            hint: l.addressHint,
-          ),
-          const SizedBox(height: 18),
-          _photoSection(l, fmt),
-          if (_formError != null) ...[
-            const SizedBox(height: 14),
-            MessageBanner(_formError!, kind: BannerKind.error),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            LayoutBuilder(
+              builder: (context, c) {
+                final cols = c.maxWidth >= 560 ? 2 : 1;
+                final w = (c.maxWidth - (cols - 1) * 18) / cols;
+                return Wrap(
+                  spacing: 18,
+                  runSpacing: 18,
+                  children: [
+                    for (final f in fields) SizedBox(width: w, child: f),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 18),
+            LabeledField(
+              label: l.addressOptional,
+              controller: _address,
+              hint: l.addressHint,
+            ),
+            const SizedBox(height: 18),
+            _photoSection(l, fmt),
+            if (_formError != null) ...[
+              const SizedBox(height: 14),
+              MessageBanner(_formError!, kind: BannerKind.error),
+            ],
+            const Divider(height: 36),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                FilledButton(
+                  onPressed: _busy ? null : _save,
+                  style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                  child: Text(l.save),
+                ),
+                OutlinedButton(
+                  onPressed: () => Navigator.maybePop(context),
+                  child: Text(l.back),
+                ),
+              ],
+            ),
           ],
-          const Divider(height: 36),
-          Wrap(spacing: 10, runSpacing: 10, children: [
-            FilledButton(
-              onPressed: _busy ? null : _save,
-              style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
-              child: Text(l.save),
-            ),
-            OutlinedButton(
-              onPressed: () => Navigator.maybePop(context),
-              child: Text(l.back),
-            ),
-          ]),
-        ]),
+        ),
       ),
     );
   }
@@ -352,15 +401,19 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('${l.approvedBy} *',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(
+          '${l.approvedBy} *',
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           key: ValueKey('approver-${names.length}-$_approver'),
           initialValue: names.contains(_approver) ? _approver : null,
           isExpanded: true,
           hint: Text(l.approverSelect),
-          items: [for (final n in names) DropdownMenuItem(value: n, child: Text(n))],
+          items: [
+            for (final n in names) DropdownMenuItem(value: n, child: Text(n)),
+          ],
           onChanged: (v) => setState(() => _approver = v),
           decoration: InputDecoration(errorText: err),
         ),
@@ -375,59 +428,87 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
 
   Widget _photoSection(AppLocalizations l, Fmt fmt) {
     final e = widget.existing;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(l.photosOptionalMany,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-      const SizedBox(height: 4),
-      Text(_isExpense ? l.photosHintExpense : l.photosHintIncome,
-          style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-      const SizedBox(height: 10),
-      Wrap(spacing: 12, runSpacing: 12, children: [
-        for (final (i, p) in _photos.indexed)
-          _PhotoTile(
-            label: p.label.trim().isEmpty
-                ? defaultPhotoLabel(_description(), i + 1, fmt, unknownName: l.unknownDonor)
-                : p.label,
-            removeLabel: l.removePhoto(p.label.trim().isEmpty ? '${i + 1}' : p.label),
-            onRemove: () => setState(() => _photos = [..._photos]..removeAt(i)),
-            child: p.bytes != null
-                ? DraftPhotoImage(bytes: p.bytes!)
-                : SavedPhotoImage(
-                    entryId: e!.entry.id,
-                    photo: e.photos.firstWhere((x) => x.id == p.existingId),
-                    cacheWidth: 300),
-          ),
-        if (_photos.length < maxPhotosPerEntry)
-          SizedBox(
-            width: 140,
-            height: 110,
-            child: OutlinedButton(
-              onPressed: _addPhotos,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: Color(0xFF9FB3AA), width: 2),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l.photosOptionalMany,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _isExpense ? l.photosHintExpense : l.photosHintIncome,
+          style: const TextStyle(fontSize: 13, color: AppColors.muted),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            for (final (i, p) in _photos.indexed)
+              _PhotoTile(
+                label: p.label.trim().isEmpty
+                    ? defaultPhotoLabel(
+                        _description(),
+                        i + 1,
+                        fmt,
+                        unknownName: l.unknownDonor,
+                      )
+                    : p.label,
+                removeLabel: l.removePhoto(
+                  p.label.trim().isEmpty ? '${i + 1}' : p.label,
+                ),
+                onRemove: () =>
+                    setState(() => _photos = [..._photos]..removeAt(i)),
+                child: p.bytes != null
+                    ? DraftPhotoImage(bytes: p.bytes!)
+                    : SavedPhotoImage(
+                        entryId: e!.entry.id,
+                        photo: e.photos.firstWhere((x) => x.id == p.existingId),
+                        cacheWidth: 300,
+                      ),
               ),
-              child: Text(l.addPhoto,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-            ),
-          ),
-      ]),
-      if (_errors[EntryField.photos] != null) ...[
-        const SizedBox(height: 8),
-        MessageBanner(_errors[EntryField.photos]!, kind: BannerKind.error),
+            if (_photos.length < maxPhotosPerEntry)
+              SizedBox(
+                width: 140,
+                height: 110,
+                child: OutlinedButton(
+                  onPressed: _addPhotos,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: Color(0xFF9FB3AA), width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    l.addPhoto,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        if (_errors[EntryField.photos] != null) ...[
+          const SizedBox(height: 8),
+          MessageBanner(_errors[EntryField.photos]!, kind: BannerKind.error),
+        ],
       ],
-    ]);
+    );
   }
 }
 
 class _PhotoTile extends StatelessWidget {
-  const _PhotoTile(
-      {required this.child,
-      required this.label,
-      required this.removeLabel,
-      required this.onRemove});
+  const _PhotoTile({
+    required this.child,
+    required this.label,
+    required this.removeLabel,
+    required this.onRemove,
+  });
   final Widget child;
   final String label;
   final String removeLabel;
@@ -435,9 +516,12 @@ class _PhotoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: 140,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Stack(children: [
+    width: 140,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Stack(
+          children: [
             Container(
               width: 140,
               height: 110,
@@ -456,21 +540,26 @@ class _PhotoTile extends StatelessWidget {
                 tooltip: removeLabel,
                 onPressed: onRemove,
                 style: IconButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.text,
-                    minimumSize: const Size(28, 28),
-                    padding: EdgeInsets.zero),
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.text,
+                  minimumSize: const Size(28, 28),
+                  padding: EdgeInsets.zero,
+                ),
                 icon: const Icon(Icons.close, size: 14),
               ),
             ),
-          ]),
-          const SizedBox(height: 4),
-          Text(label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13, color: AppColors.mutedStrong)),
-        ]),
-      );
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 13, color: AppColors.mutedStrong),
+        ),
+      ],
+    ),
+  );
 }
 
 class _PhotoLabelDialog extends StatefulWidget {
@@ -505,10 +594,14 @@ class _PhotoLabelDialogState extends State<_PhotoLabelDialog> {
         ),
       ),
       actions: [
-        OutlinedButton(onPressed: () => Navigator.pop(context), child: Text(l.back)),
+        OutlinedButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.back),
+        ),
         FilledButton(
-            onPressed: () => Navigator.pop(context, _ctrl.text.trim()),
-            child: Text(l.add)),
+          onPressed: () => Navigator.pop(context, _ctrl.text.trim()),
+          child: Text(l.add),
+        ),
       ],
     );
   }

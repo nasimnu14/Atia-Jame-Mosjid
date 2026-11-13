@@ -20,7 +20,10 @@ class Authority {
 /// an Admin or the Super Admin approve on the spot with their own username
 /// and password. Returns null if the user backs out.
 Future<Authority?> requireAuthority(
-    BuildContext context, Entry entry, Permission permission) async {
+  BuildContext context,
+  Entry entry,
+  Permission permission,
+) async {
   final me = context.app.user!;
   if (can(me.role, permission)) return const Authority.own();
   final approver = await showDialog<User>(
@@ -89,25 +92,37 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l.approvalTitle,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                Text(
+                  l.approvalTitle,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Text(l.approvalBody, style: const TextStyle(fontSize: 14)),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                      color: const Color(0xFFF4F6F3),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Text(entrySummaryLine(l, fmt, widget.entry),
-                      style: const TextStyle(fontSize: 14)),
+                    color: const Color(0xFFF4F6F3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    entrySummaryLine(l, fmt, widget.entry),
+                    style: const TextStyle(fontSize: 14),
+                  ),
                 ),
                 const SizedBox(height: 14),
                 LabeledField(
                   label: l.adminUsername,
                   controller: _user,
                   autofocus: true,
-                  validator: (v) => (v ?? '').trim().isEmpty ? l.fieldRequired : null,
+                  validator: (v) =>
+                      (v ?? '').trim().isEmpty ? l.fieldRequired : null,
                 ),
                 const SizedBox(height: 12),
                 LabeledField(
@@ -118,20 +133,32 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
                   validator: (v) => (v ?? '').isEmpty ? l.fieldRequired : null,
                 ),
                 const SizedBox(height: 8),
-                Text(l.approvalNote,
-                    style: const TextStyle(fontSize: 13, color: Color(0xFF5B6B65))),
+                Text(
+                  l.approvalNote,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF5B6B65),
+                  ),
+                ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
                   MessageBanner(_error!, kind: BannerKind.error),
                 ],
                 const SizedBox(height: 16),
-                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  OutlinedButton(
-                      onPressed: () => Navigator.pop(context), child: Text(l.back)),
-                  const SizedBox(width: 10),
-                  FilledButton(
-                      onPressed: _busy ? null : _approve, child: Text(l.approve)),
-                ]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(l.back),
+                    ),
+                    const SizedBox(width: 10),
+                    FilledButton(
+                      onPressed: _busy ? null : _approve,
+                      child: Text(l.approve),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

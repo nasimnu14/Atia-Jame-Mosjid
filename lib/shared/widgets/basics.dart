@@ -23,53 +23,69 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(radius),
-          border: Border.all(color: borderColor, width: borderWidth),
-        ),
-        child: child,
-      );
+    padding: padding,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(color: borderColor, width: borderWidth),
+    ),
+    child: child,
+  );
 }
 
 /// Small rounded label such as "বাতিল" or "সক্রিয়".
 class StatusPill extends StatelessWidget {
-  const StatusPill(this.text,
-      {super.key, this.background = AppColors.incomeSoft, this.foreground = AppColors.income});
+  const StatusPill(
+    this.text, {
+    super.key,
+    this.background = AppColors.incomeSoft,
+    this.foreground = AppColors.income,
+  });
   final String text;
   final Color background;
   final Color foreground;
 
   const StatusPill.cancelled(this.text, {super.key})
-      : background = AppColors.cancelledBg,
-        foreground = AppColors.cancelledText;
+    : background = AppColors.cancelledBg,
+      foreground = AppColors.cancelledText;
   const StatusPill.neutral(this.text, {super.key})
-      : background = AppColors.neutralPill,
-        foreground = AppColors.mutedStrong;
+    : background = AppColors.neutralPill,
+      foreground = AppColors.mutedStrong;
   const StatusPill.warn(this.text, {super.key})
-      : background = AppColors.warnBg,
-        foreground = AppColors.warnText;
+    : background = AppColors.warnBg,
+      foreground = AppColors.warnText;
   const StatusPill.expense(this.text, {super.key})
-      : background = AppColors.expenseSoft,
-        foreground = AppColors.expense;
+    : background = AppColors.expenseSoft,
+      foreground = AppColors.expense;
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-        decoration: BoxDecoration(
-            color: background, borderRadius: BorderRadius.circular(999)),
-        child: Text(text,
-            style: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w600, color: foreground)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+    decoration: BoxDecoration(
+      color: background,
+      borderRadius: BorderRadius.circular(999),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: foreground,
+      ),
+    ),
+  );
 }
 
 enum BannerKind { warn, error, info }
 
 /// A coloured message box (duplicate warning, errors, "this phone only").
 class MessageBanner extends StatelessWidget {
-  const MessageBanner(this.text, {super.key, this.kind = BannerKind.warn, this.icon});
+  const MessageBanner(
+    this.text, {
+    super.key,
+    this.kind = BannerKind.warn,
+    this.icon,
+  });
   final String text;
   final BannerKind kind;
   final IconData? icon;
@@ -77,22 +93,40 @@ class MessageBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (bg, fg, ic) = switch (kind) {
-      BannerKind.warn => (AppColors.warnBg, AppColors.warnText, Icons.warning_amber_rounded),
-      BannerKind.error => (AppColors.cancelledBg, AppColors.cancelledText, Icons.error_outline),
-      BannerKind.info => (AppColors.incomeSoft, AppColors.income, Icons.info_outline),
+      BannerKind.warn => (
+        AppColors.warnBg,
+        AppColors.warnText,
+        Icons.warning_amber_rounded,
+      ),
+      BannerKind.error => (
+        AppColors.cancelledBg,
+        AppColors.cancelledText,
+        Icons.error_outline,
+      ),
+      BannerKind.info => (
+        AppColors.incomeSoft,
+        AppColors.income,
+        Icons.info_outline,
+      ),
     };
     return Semantics(
       liveRegion: true,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration:
-            BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(icon ?? ic, size: 18, color: fg),
-          const SizedBox(width: 8),
-          Expanded(
-              child: Text(text, style: TextStyle(fontSize: 13, color: fg))),
-        ]),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon ?? ic, size: 18, color: fg),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(text, style: TextStyle(fontSize: 13, color: fg)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -148,8 +182,10 @@ class LabeledField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
@@ -174,7 +210,8 @@ class LabeledField extends StatelessWidget {
                 ? null
                 : OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: borderColor!, width: 2)),
+                    borderSide: BorderSide(color: borderColor!, width: 2),
+                  ),
           ),
         ),
       ],
@@ -211,25 +248,39 @@ class PageScaffold extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (breadcrumb != null) ...[breadcrumb!, const SizedBox(height: 4)],
+              if (breadcrumb != null) ...[
+                breadcrumb!,
+                const SizedBox(height: 4),
+              ],
               Wrap(
                 spacing: 16,
                 runSpacing: 12,
                 alignment: WrapAlignment.spaceBetween,
                 crossAxisAlignment: WrapCrossAlignment.end,
                 children: [
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(title,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
                         style: const TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.w600)),
-                    if (subtitle != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(subtitle!,
-                            style: const TextStyle(
-                                fontSize: 14, color: AppColors.muted)),
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                  ]),
+                      if (subtitle != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            subtitle!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.muted,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                   if (actions.isNotEmpty)
                     Wrap(spacing: 10, runSpacing: 8, children: actions),
                 ],
@@ -248,8 +299,12 @@ class PageScaffold extends StatelessWidget {
 void showError(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(
-        content: Text(message), backgroundColor: AppColors.cancelledText));
+    ..showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.cancelledText,
+      ),
+    );
 }
 
 void showInfo(BuildContext context, String message) {
@@ -265,13 +320,20 @@ class Breadcrumb extends StatelessWidget {
   final String current;
 
   @override
-  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
-        InkWell(
-          onTap: () => Navigator.maybePop(context),
-          child: Text(root,
-              style: const TextStyle(fontSize: 14, color: AppColors.primary)),
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      InkWell(
+        onTap: () => Navigator.maybePop(context),
+        child: Text(
+          root,
+          style: const TextStyle(fontSize: 14, color: AppColors.primary),
         ),
-        Text(' › $current',
-            style: const TextStyle(fontSize: 14, color: AppColors.muted)),
-      ]);
+      ),
+      Text(
+        ' › $current',
+        style: const TextStyle(fontSize: 14, color: AppColors.muted),
+      ),
+    ],
+  );
 }
