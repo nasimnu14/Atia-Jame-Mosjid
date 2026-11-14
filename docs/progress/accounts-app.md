@@ -2,15 +2,17 @@
 
 ## RESUME HERE
 
-- **Last updated:** 2026-11-14 (Phase 5 finished)
-- **Current phase / step:** Phase 6, step 6.1: sync server/client (desktop + phone) then Android UI
-- **Exact next action:** Build Phase 6 in this order, committing after each. (1) Sync core, pure Dart + tests first: `lib/features/sync/`: `SyncKey` (one-time key + token in the QR payload `atia-sync://host:port?k=<key>&t=<token>`), `SyncCrypto` (AES-GCM via `cryptography`, already proven in test/proof/sync_loopback_proof_test.dart), `SyncServer` (shelf, runs only while the Sync screen is open; endpoints: POST /session (token, single use), POST /entries (batch: encrypted JSON of entries + photos with ids; idempotent insert-or-ignore by entry id; flag duplicates by receipt no (SYN-8); write sync_log; reply with saved ids), GET /accounts (users + approvers, encrypted; SYN-10)), `SyncClient` (phone: send only `synced=false` entries, mark synced ONLY after the desktop confirms, per-entry or per-batch confirm so an interrupted transfer loses nothing and resending saves once (SYN-5), then lock them read-only (SYN-7), then fetch accounts and approvers). Tests: sent twice saves once; interrupted mid-transfer; wrong/reused QR token refused; wrong key rejected; duplicate receipt flagged; users and approvers reach the phone; password change works after next sync. (2) Desktop Sync screen (board SyncQR; `qr_flutter`; local IP via NetworkInterface; received count). (3) Android UI: pair screen (MOB-5), sign in (MOB-4), home with the phone-only note (MOB-3), lists, forms with camera/gallery (MOB-2), details read-only when synced (SYN-7), summary, PDF (FileSaver share), scan screen (`mobile_scanner`), sync done, More. Read boards MPair, MSignIn, MHome, MIncomeList, MIncomeForm, MDetails, MPhoto, MApproval, MSummary, MPdf, MSyncScan, MSyncDone, MMore, MBottomNav, MTopBar, SyncQR first. Choose mobile vs desktop shell in `RootGate` by platform (`Platform.isAndroid`). Test on the Android emulator (emulator-5554) and between emulator and desktop via the host loopback `10.0.2.2`.
-- **Half-done / broken:** nothing broken. `lib/app/section_placeholder.dart` and `lib/features/google_drive/restore_launcher.dart` are deliberate stubs to be replaced (Phase 2/3 and Phase 4). `UpdateCard` only shows the version (update check = Phase 5).
+- **Last updated:** 2026-11-14 (Phase 6 done and committed; review cycles next)
+- **Current phase / step:** Review cycles (none run yet)
+- **Exact next action:** Run at least 3 review->fix cycles over the whole code base against the requirement IDs, the 5 data-safety rules, role permissions, Bangla rendering (UI + PDFs), error handling; log each in 'Review cycles'; notify at the start and end of each; stop after a cycle that finds nothing. Things to look at: scheduler/AppState listener cleanup in `app.dart`; `context.read<ShellController>()` in SummaryScreen on the phone (provided by MobileShell); GEN-1/2/4 completeness; Windows config (cannot be built here); unused code. Then the final report (built per phase, tests, NOT verified list, manual checks) and the final notification. Do not push.
+- **Half-done / broken:** nothing broken.
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
   - `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter gen-l10n`
   - `flutter analyze` (expect: No issues found)
-  - `flutter test` (expect: all pass; ~200 at end of Phase 4; run `flutter test --concurrency=3`, more parallelism gets processes killed)
+  - `flutter test` (expect: all pass; 261 at end of Phase 6; run `flutter test --concurrency=3`, more parallelism gets processes killed)
+  - `flutter test integration_test -d macos` (2 tests: UI flow; sync over real sockets)
+  - Manual phone sync without the desktop app: `dart run tool/sync_host.dart 10.0.2.2 /tmp/sync_code.txt`, then on the emulator choose 'type the code' and paste the file's text
   - run: `flutter run -d macos` / `flutter run -d emulator-5554`
   - Screenshots without screen-capture permission: `SHOT_DIR=<dir> flutter test test/widget/screens_shot_test.dart`, then view the PNGs.
 - **Working notes:** widget tests must use `testApp(...)`, and `h.run(() => <real async write>)` (NOT bare `tester.runAsync`) whenever a screen that listens for changes is open: a listener's reload starts inside the fake clock and would hold Drift's lock while the test waits, so the test hangs forever. `TestEnv.create(onDisk: true)` in a widget test must itself run inside `tester.runAsync`. Per-test timeout is 90 s. Widget tests must use `testApp(...)` (test/helpers/app_harness.dart) and `tester.runAsync` for real async (Drift, bcrypt isolates). Add translations with `tool/l10n_add.py` (keeps both ARB files identical) then `flutter gen-l10n`; multi-placeholder args are generated in alphabetical order. Tests folder is un-ignored in `.gitignore` because the user's global gitignore ignores `test/`.
@@ -25,7 +27,7 @@
 | 3 | Balance, summary, PDF | done | 2026-11-13 |
 | 4 | Google Drive: backup and Excel | done (real Google not verified) | 2026-11-14 |
 | 5 | Updates and installers | done (Windows installer/updater not run) | 2026-11-14 |
-| 6 | Android app and sync | in progress | |
+| 6 | Android app and sync | done (code and tests; real phone not used) | 2026-11-14 |
 | Review | 3+ review/fix cycles | not started | |
 
 ### Phase 0 results (risk checks)
@@ -43,7 +45,7 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 <!-- REQ-TABLE-START -->
 | ID | Status | Implemented in | Covered by |
 |---|---|---|---|
-| GEN-1 | partial | macOS+Android builds OK; Windows folder generated, not built | flutter build macos/apk |
+| GEN-1 | done | macOS and Android build and run; Windows folder/config present, NOT built or run (needs Windows) | flutter build macos/apk; integration_test on macOS |
 | GEN-2 | partial | lib/l10n/*.arb (all screens built so far) | test/l10n_test.dart |
 | GEN-3 | done | lib/app/app_state.dart, lib/features/sign_in/language_switch.dart | test/widget/sign_in_flow_test.dart |
 | GEN-4 | partial | all screens through Phase 3 use Fmt | shared_utils_test.dart, reports_flow_test.dart (English/Bangla dashboard) |
@@ -51,7 +53,7 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 | GEN-6 | done | lib/features/entries/{entry_service,entry_form_screen,photo_shrinker,photo_picker}.dart | test/features/entry_service_test.dart, photo_shrinker_test.dart, test/widget/entries_flow_test.dart |
 | GEN-7 | done | lib/shared/widgets/date_form_field.dart, lib/shared/date_parse.dart | test/shared/date_parse_test.dart, test/widget/date_field_test.dart |
 | GEN-8 | done | lib/shared/widgets/date_form_field.dart, lib/shared/date_parse.dart | test/shared/date_parse_test.dart, test/widget/date_field_test.dart |
-| USR-1 | partial | sign_in_screen.dart, user_service.dart (desktop done; phone in Phase 6) | test/widget/sign_in_flow_test.dart |
+| USR-1 | done | sign_in_screen.dart (desktop and phone) | test/widget/sign_in_flow_test.dart, sync_screens_test.dart |
 | USR-2 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
 | USR-3 | done | lib/features/google_drive/{restore_service,restore_panel,restore_launcher}.dart, lib/app/{app_host,app}.dart | test/features/drive_backup_test.dart, test/widget/drive_screens_test.dart (first-launch restore end to end) |
 | USR-4 | done | lib/features/users/user_service.dart, users_screen.dart, lib/shared/permissions.dart | test/features/user_service_test.dart, test/widget/users_settings_test.dart, test/shared/shared_utils_test.dart |
@@ -127,21 +129,21 @@ Statuses: todo / partial / done / blocked. Update with `python3 tool/progress_se
 | UPD-4 | done | lib/data/db_opener.dart (copy before upgrade, restore on failure), windows/installer/atia.iss (never touches %APPDATA%), pre-update copy in update_dialog.dart | test/data/db_opener_test.dart, test/data/migration_test.dart |
 | UPD-5 | done | lib/data/db_opener.dart (copy before upgrade, restore on failure), windows/installer/atia.iss (never touches %APPDATA%), pre-update copy in update_dialog.dart | test/data/db_opener_test.dart, test/data/migration_test.dart |
 | UPD-6 | partial | APK flow + PLAY_STORE_BUILD flag done; the Google Play build itself is out of scope | test/features/update_test.dart |
-| MOB-1 | todo |  |  |
-| MOB-2 | todo |  |  |
-| MOB-3 | todo |  |  |
-| MOB-4 | todo |  |  |
-| MOB-5 | todo |  |  |
-| SYN-1 | todo |  |  |
-| SYN-2 | todo |  |  |
-| SYN-3 | todo |  |  |
-| SYN-4 | todo |  |  |
-| SYN-5 | todo |  |  |
-| SYN-6 | todo |  |  |
-| SYN-7 | todo |  |  |
-| SYN-8 | partial | duplicate flag + banner + filter + mark checked done; the flagging on import comes in Phase 6 | test/widget/entries_flow_test.dart |
-| SYN-9 | todo |  |  |
-| SYN-10 | todo |  |  |
+| MOB-1 | done | lib/app/mobile_shell.dart, lib/features/mobile/*, lib/features/sync/{pair,sync_scan,sync_done}_screen.dart, entry_list_screen.dart (cards), photo_picker.dart (camera/gallery) | test/widget/sync_screens_test.dart (typed code instead of camera) |
+| MOB-2 | done | lib/app/mobile_shell.dart, lib/features/mobile/*, lib/features/sync/{pair,sync_scan,sync_done}_screen.dart, entry_list_screen.dart (cards), photo_picker.dart (camera/gallery) | test/widget/sync_screens_test.dart (typed code instead of camera) |
+| MOB-3 | done | lib/app/mobile_shell.dart, lib/features/mobile/*, lib/features/sync/{pair,sync_scan,sync_done}_screen.dart, entry_list_screen.dart (cards), photo_picker.dart (camera/gallery) | test/widget/sync_screens_test.dart (typed code instead of camera) |
+| MOB-4 | done | lib/app/mobile_shell.dart, lib/features/mobile/*, lib/features/sync/{pair,sync_scan,sync_done}_screen.dart, entry_list_screen.dart (cards), photo_picker.dart (camera/gallery) | test/widget/sync_screens_test.dart (typed code instead of camera) |
+| MOB-5 | done | lib/app/mobile_shell.dart, lib/features/mobile/*, lib/features/sync/{pair,sync_scan,sync_done}_screen.dart, entry_list_screen.dart (cards), photo_picker.dart (camera/gallery) | test/widget/sync_screens_test.dart (typed code instead of camera) |
+| SYN-1 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-2 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-3 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-4 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-5 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-6 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-7 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-8 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-9 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
+| SYN-10 | done | lib/features/sync/{sync_crypto,sync_offer,sync_receiver,sync_server,sync_client,sync_screen,local_address}.dart, entry_service.dart (isPhone rules) | test/features/sync_test.dart (real sockets), test/widget/sync_screens_test.dart, integration_test/app_flow_test.dart |
 <!-- REQ-TABLE-END -->
 
 ## Screen tracker
@@ -165,28 +167,30 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 | Summary | Desktop | 3 | done |
 | PDF report | Desktop | 3 | done |
 | Excel upload | Desktop | 4 | done |
-| Phone sync QR | Desktop | 6 | todo |
+| Phone sync QR | Desktop | 6 | done |
 | Users | Desktop | 1 | done |
 | Add user | Desktop | 1 | done |
 | Backup and restore | Desktop | 4 | done |
 | Settings (language, opening balance, approvers, password, update) | Desktop | 1 | done (update check: Phase 5) |
 | Update available dialog | Desktop | 5 | done |
-| Pair with desktop | Android | 6 | todo |
-| Sign in | Android | 6 | todo |
-| Home (this phone only) | Android | 6 | todo |
-| Income list / Expense list | Android | 6 | todo |
-| Add income / Add expense | Android | 6 | todo |
-| Details (synced read-only) | Android | 6 | todo |
-| Photo viewer | Android | 6 | todo |
-| Admin approval sheet | Android | 6 | todo |
-| Summary (this phone only) | Android | 6 | todo |
-| PDF report | Android | 6 | todo |
-| Scan desktop QR | Android | 6 | todo |
-| Sync finished | Android | 6 | todo |
-| More (language, password, sign out) | Android | 6 | todo |
+| Pair with desktop | Android | 6 | done |
+| Sign in | Android | 6 | done |
+| Home (this phone only) | Android | 6 | done |
+| Income list / Expense list | Android | 6 | done |
+| Add income / Add expense | Android | 6 | done |
+| Details (synced read-only) | Android | 6 | done |
+| Photo viewer | Android | 6 | done |
+| Admin approval sheet | Android | 6 | done (shared dialog) |
+| Summary (this phone only) | Android | 6 | done |
+| PDF report | Android | 6 | done |
+| Scan desktop QR | Android | 6 | done |
+| Sync finished | Android | 6 | done |
+| More (language, password, sign out) | Android | 6 | done |
 
 ## Log (newest first)
 
+- 2026-11-14: Phase 6 emulator check (Android API 36, camera permission, Bangla UI) against a headless desktop (`tool/sync_host.dart`): pairing, account sync, sign-in on the phone, add income, sync it, entry becomes view-only: all worked. Three real bugs found and fixed: (1) closing pages on sign-out ran on every state change while nobody was signed in, so pairing a new phone closed the scan/done screens; now only when a signed-in user signs out (the widget tests for pairing caught it too); (2) an unexpected error during sync left the screen on 'syncing' forever; now shown as a message with the code field usable again (test added); (3) an entry made on the phone said 'from computer' in its details and entry PDF (test added).
+- 2026-11-14: Phase 6 done. Sync: AES-256-GCM sealed messages (one-time key + single-use token in the QR), shelf server in the desktop app (runs only on the Sync page), `SyncClient` on the phone (accounts first, then entries one by one, marked synced only after the desktop confirms), idempotent receiver (sent twice saves once), duplicate receipt flagged, sync log updated as entries arrive. Phone rules: new entries unsynced, synced ones read-only, phone balance without opening balance. Android UI: shell with bottom bar, Home, lists as cards, forms with camera/gallery picker, details, Summary (phone-only note, no Excel), PDF via share sheet, pair/scan/done screens, More. Desktop Sync page with QR. Integration tests (macOS): full UI flow and sync over real sockets. Real bugs found: sync log missed entries of an interrupted session (now logged as they arrive), Summary table overflow on phone width, hidden ripple on code expander.
 - 2026-11-14: Phase 5 done. `UpdateService` (GitHub latest release, semver compare, per-platform asset, bn/en notes, daily check, Play-build switch), `PlatformUpdateInstaller` (download, SHA-256 check, Windows installer launch / Android APK / macOS release page), update dialog (backs up first), Settings card, dashboard banner. Inno Setup script, CI and release GitHub workflows, Android release signing via `android/key.properties`. Deviation: no `auto_updater` (see setup notes section 3). One inconsistency found by a test and fixed: the dialog's "you are running" version came from a different source than the update check.
 - 2026-11-14: Phase 4 done (against a fake Drive; the real Google connection is written but NOT verified). Drive interfaces, `GoogleDriveAuth/Client` (googleapis, drive.file), `DriveService`, `BackupService` (VACUUM INTO snapshot, gzip, photos uploaded once per account, 1-year retention keeping the newest, no backup of an empty installation), `RestoreService` (download, verify, copy current aside, replace, fetch missing photos), `ExcelUploadService` + `buildEntriesWorkbook` (real numbers/dates), `DriveScheduler` (4 h, at start if overdue, retry every 2 min after failure, daily Excel with catch-up), screens Backup / Excel / first-launch Restore, `AppHost` to replace the data after a restore. Schema v2 (drive_uploaded_photos, drive_log) with a real migration test (drift_dev schema dump/generate, `test/data/migration_test.dart`). Bugs found by tests and fixed: missing `onUpgrade` (migration test), notice banner not shown after restore, test-harness deadlocks (see Working notes). macOS entitlements (network client/server, file save) and Android minSdk 31 + permissions set. docs/setup-notes.md written.
 - 2026-11-13: Phase 3 done. Dashboard, Summary (day/week/month breakdown), PDF report screen with preview, entry PDF, PDF engine (pages painted with Flutter's text engine, embedded as images; header repeated on continued pages), FileSaver interface. Visually checked: Bangla conjuncts, digits, cancelled strike-through, photos with labels. Limitation: PDF text is an image (not selectable). Bug found and fixed by tests: RadioListTile ink hidden by coloured card.
@@ -209,12 +213,17 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 
 ## Known gaps / needs a human
 
-- Windows: not run (cannot build on a Mac).
-- Google Drive: not verified against real Google (no credentials).
-- Windows auto-updater: cannot be proven here.
+- Windows: never built or run (this is a Mac). Windows config (`windows/`, Inno Setup script `windows/installer/atia.iss`) is written but unproven.
+- Google Drive: only tested against a fake. Real sign-in, upload, restore and the OAuth consent screen are unverified (no credentials here). Needs the Google Cloud steps in `docs/setup-notes.md`.
+- Windows installer and in-app update (download, SHA-256 check, installer launch): not run.
+- Android: tested on an emulator only (API 36, virtual camera), not on a real phone. QR scanning of a real code and real Wi-Fi sync between two devices are unverified (the emulator used the typed-code path).
+- PDF text is an image (Flutter text engine used to get correct Bangla), so it cannot be selected or searched.
+- Android release signing key must be created by the owner (`android/key.properties`, see setup notes).
+- Phase 7 and Google Play were skipped by instruction.
+- Status bar icons on the phone's pairing/sign-in screens are light on a light background (cosmetic, not changed).
 
 ## Environment
 
 - Flutter 3.44.5, Dart 3.12.2, Xcode 26.2, macOS 26.5.1.
-- Android emulator `emulator-5554` (API 36) running. AVDs: Managed_Test, Phone_1, Phone_2. Android SDK licences status "unknown" in `flutter doctor`.
+- Android emulator `emulator-5554` (API 36). AVDs: Managed_Test, Phone_1, Phone_2. Android SDK licences status "unknown" in `flutter doctor`.
 - Packages: see pubspec.yaml.

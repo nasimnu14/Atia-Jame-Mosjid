@@ -25,7 +25,15 @@ import 'package:flutter_test/flutter_test.dart';
 /// An in-memory database with every service wired up, a fixed clock, and a
 /// temp folder for photos. Passwords hash with a low cost to keep tests fast.
 class TestEnv {
-  TestEnv._(this.db, this.photoDir, this.dataDir);
+  TestEnv._(
+    this.db,
+    this.photoDir,
+    this.dataDir, {
+    this.isPhone = false,
+    this.deviceId = 'desktop-1',
+  });
+  final bool isPhone;
+  final String deviceId;
   final AppDatabase db;
   final Directory photoDir;
 
@@ -44,10 +52,15 @@ class TestEnv {
   late final EntryService entries = EntryService(
     db,
     PhotoStorage(photoDir),
-    'desktop-1',
+    deviceId,
     now: () => clock,
+    isPhone: isPhone,
   );
-  late final BalanceService balance = BalanceService(db, settings);
+  late final BalanceService balance = BalanceService(
+    db,
+    settings,
+    isPhone: isPhone,
+  );
 
   // Google Drive pieces, wired to a fake Drive that can be shared between
   // two "computers" (pass the same [FakeDrive] to both).
@@ -96,6 +109,9 @@ class TestEnv {
     bool seedUsers = true,
     FakeDrive? drive,
     bool connected = false,
+
+    /// A phone: new entries start unsynced and synced ones are read-only.
+    bool isPhone = false,
   }) async {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     final dir = Directory.systemTemp.createTempSync('atia_test_');
@@ -106,7 +122,14 @@ class TestEnv {
     final photoDir = Directory(
       onDisk ? p.join(dataDir.path, 'photos') : dir.path,
     );
-    final env = TestEnv._(db, photoDir, dataDir);
+    final env = TestEnv._(
+      db,
+      photoDir,
+      dataDir,
+      isPhone: isPhone,
+      deviceId: isPhone ? 'phone-1' : 'desktop-1',
+    );
+    await env.settingsRepo.set(SettingKey.deviceId, env.deviceId);
     env.fakeDrive = drive ?? FakeDrive();
     env.fakeDrive.clock = () => env.clock;
     env.auth = FakeDriveAuth(env.fakeDrive);

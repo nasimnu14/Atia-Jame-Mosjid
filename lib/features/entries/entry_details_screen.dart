@@ -104,11 +104,15 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
     }
     final e = data.entry;
     final cancelled = e.status == EntryStatus.cancelled;
+    // SYN-7: on the phone a synced entry can only be viewed.
+    final lockedHere = context.services.isPhone && e.synced;
     final isIncome = e.type == EntryType.income;
     final me = context.appWatch.user!;
-    final deviceLabel = e.deviceId == context.services.deviceId
-        ? l.fromComputer
-        : l.fromPhone;
+    // "From computer / phone" is about where the entry was made: this device is
+    // the computer on the desktop and the phone on the phone.
+    final madeHere = e.deviceId == context.services.deviceId;
+    final madeOnPhone = madeHere == context.services.isPhone;
+    final deviceLabel = madeOnPhone ? l.fromPhone : l.fromComputer;
 
     final fields = <(String, String)>[
       (receiptNoLabel(l, e.type), fmt.integer(e.receiptNo)),
@@ -137,7 +141,7 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
       subtitle: null,
       actions: [
         EntryPdfButton(entry: e),
-        if (!cancelled) ...[
+        if (!cancelled && !lockedHere) ...[
           OutlinedButton(onPressed: () => _edit(e), child: Text(l.editEntry)),
           OutlinedButton(
             onPressed: () => _cancel(e),
@@ -164,6 +168,15 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
             ],
           ),
           const SizedBox(height: 14),
+          if (lockedHere) ...[
+            MessageBanner(
+              l.syncedReadOnlyBanner(
+                e.syncedAt == null ? '' : fmt.date(e.syncedAt!),
+              ),
+              kind: BannerKind.info,
+            ),
+            const SizedBox(height: 14),
+          ],
           if (cancelled) ...[
             Container(
               width: double.infinity,

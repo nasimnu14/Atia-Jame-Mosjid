@@ -1415,4 +1415,266 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get checking => 'দেখা হচ্ছে…';
+
+  @override
+  String get syncedReadOnlyNote =>
+      'এই এন্ট্রি কম্পিউটারে সিঙ্ক হয়ে গেছে, তাই ফোনে আর বদলানো যায় না। কম্পিউটারে ঠিক করুন।';
+
+  @override
+  String get syncScanInstruction =>
+      'অ্যান্ড্রয়েড অ্যাপে ‘সিঙ্ক’ খুলে এই কোডটি স্ক্যান করুন';
+
+  @override
+  String get waitingForPhone => 'ফোনের অপেক্ষায়…';
+
+  @override
+  String phoneConnected(String phone) {
+    return '$phone যুক্ত হয়েছে — তথ্য আসছে…';
+  }
+
+  @override
+  String receivedProgress(String n) {
+    return '$nটি এন্ট্রি পাওয়া গেছে';
+  }
+
+  @override
+  String get codeOnce => 'এই কোড শুধু একবার ব্যবহার করা যাবে';
+
+  @override
+  String get sameWifi => 'ফোন ও কম্পিউটার একই ওয়াই-ফাই নেটওয়ার্কে থাকতে হবে';
+
+  @override
+  String get newCode => 'নতুন কোড তৈরি করুন';
+
+  @override
+  String lastSyncDone(String n) {
+    return 'শেষ সিঙ্ক সম্পন্ন: $nটি এন্ট্রি পাওয়া গেছে';
+  }
+
+  @override
+  String syncBreakdown(String income, String expense, String photos) {
+    return 'আয় $incomeটি · ব্যয় $expenseটি · ছবি $photosটি';
+  }
+
+  @override
+  String syncDuplicateNote(String n) {
+    return '$nটি এন্ট্রির নম্বর আগে থেকেই ছিল — সংরক্ষণ করে যাচাইয়ের জন্য চিহ্নিত করা হয়েছে।';
+  }
+
+  @override
+  String get whatIsExchanged => 'কী আদান-প্রদান হয়';
+
+  @override
+  String get phoneToComputer => 'ফোন → কম্পিউটার';
+
+  @override
+  String get phoneToComputerDesc =>
+      'শুধু যে এন্ট্রিগুলো এখনো সিঙ্ক হয়নি, সব ছবিসহ';
+
+  @override
+  String get computerToPhone => 'কম্পিউটার → ফোন';
+
+  @override
+  String get computerToPhoneDesc =>
+      'শুধু ব্যবহারকারীর অ্যাকাউন্ট ও অনুমোদনকারীর তালিকা, যাতে ফোনে সাইন ইন করা যায়। কোনো এন্ট্রি যায় না।';
+
+  @override
+  String get previousSyncs => 'আগের সিঙ্ক';
+
+  @override
+  String get noSyncsYet => 'এখনো কোনো সিঙ্ক হয়নি';
+
+  @override
+  String get syncCodeLabel => 'কোড (স্ক্যান না করা গেলে ফোনে লিখুন)';
+
+  @override
+  String get copyCode => 'কপি';
+
+  @override
+  String get codeCopied => 'কোড কপি হয়েছে';
+
+  @override
+  String get syncNoNetwork => 'কম্পিউটার কোনো নেটওয়ার্কে যুক্ত নেই';
+
+  @override
+  String syncServerFailed(String detail) {
+    return 'সিঙ্ক চালু করা যায়নি: $detail';
+  }
+
+  @override
+  String get mobilePairTitle => 'ফোনটি কম্পিউটারের সাথে যুক্ত করুন';
+
+  @override
+  String get mobilePairSub =>
+      'যুক্ত না করা পর্যন্ত এই ফোনে কেউ সাইন ইন করতে পারবেন না।';
+
+  @override
+  String get pairStep1 => 'কম্পিউটারের অ্যাপে ‘ফোন সিঙ্ক’ পাতা খুলুন';
+
+  @override
+  String get pairStep2 => 'নিচের বোতাম চেপে পর্দার কিউআর কোড স্ক্যান করুন';
+
+  @override
+  String get pairStep3 =>
+      'এরপর কম্পিউটারের একই ইউজারনেম ও পাসওয়ার্ড দিয়ে সাইন ইন করুন';
+
+  @override
+  String get sameWifiNote =>
+      'ফোন ও কম্পিউটার একই ওয়াই-ফাই নেটওয়ার্কে থাকতে হবে।';
+
+  @override
+  String get scanQr => 'কিউআর কোড স্ক্যান করুন';
+
+  @override
+  String get scanTitle => 'কম্পিউটারের সাথে সিঙ্ক';
+
+  @override
+  String get scanHint =>
+      'কম্পিউটারের ‘ফোন সিঙ্ক’ পাতায় দেখানো কিউআর কোডটি ফ্রেমের মধ্যে রাখুন';
+
+  @override
+  String get willSend => 'যা পাঠানো হবে';
+
+  @override
+  String willSendLine(String n, String photos) {
+    return 'সিঙ্ক বাকি $nটি এন্ট্রি ও $photosটি ছবি';
+  }
+
+  @override
+  String get enterCodeInstead => 'স্ক্যান না করে কোড লিখুন';
+
+  @override
+  String get codeFieldLabel => 'কোড';
+
+  @override
+  String get connectBtn => 'যুক্ত হন';
+
+  @override
+  String get invalidCode => 'এটি সিঙ্ক কোড নয়';
+
+  @override
+  String get cameraDenied => 'ক্যামেরা ব্যবহার করা যায়নি। কোড লিখে দিন।';
+
+  @override
+  String syncing(String sent, String total) {
+    return 'সিঙ্ক হচ্ছে… $sent/$total';
+  }
+
+  @override
+  String get syncDoneTitle => 'সিঙ্ক সম্পন্ন';
+
+  @override
+  String get syncDoneSub =>
+      'কম্পিউটার সব তথ্য সংরক্ষণ করেছে বলে নিশ্চিত করেছে।';
+
+  @override
+  String syncDoneSent(String n, String photos) {
+    return '$nটি এন্ট্রি ও $photosটি ছবি পাঠানো হয়েছে';
+  }
+
+  @override
+  String syncDoneKinds(String income, String expense) {
+    return 'আয় $incomeটি, ব্যয় $expenseটি';
+  }
+
+  @override
+  String get syncDoneReadOnly => 'এই এন্ট্রিগুলো এখন শুধু দেখা যাবে';
+
+  @override
+  String get syncDoneReadOnlyNote => 'ভুল থাকলে কম্পিউটারে ঠিক করুন';
+
+  @override
+  String get syncDoneAccounts => 'ব্যবহারকারীর অ্যাকাউন্ট হালনাগাদ হয়েছে';
+
+  @override
+  String get syncDoneAccountsNote =>
+      'নতুন ব্যবহারকারী বা পাসওয়ার্ড পরিবর্তন এখন এই ফোনেও কাজ করবে';
+
+  @override
+  String get backHome => 'হোমে ফিরে যান';
+
+  @override
+  String get syncFailedTitle => 'সিঙ্ক শেষ হয়নি';
+
+  @override
+  String syncPartial(String sent, String left) {
+    return '$sentটি এন্ট্রি পাঠানো হয়েছে, $leftটি বাকি আছে। আবার নতুন কোড স্ক্যান করলে বাকিগুলো যাবে।';
+  }
+
+  @override
+  String get syncUnauthorised =>
+      'কোডটি নেওয়া হয়নি। কম্পিউটারে নতুন কোড দেখিয়ে আবার চেষ্টা করুন।';
+
+  @override
+  String get syncOffline =>
+      'কম্পিউটারের সাথে যোগাযোগ করা যায়নি। দুটোই একই ওয়াই-ফাইতে আছে কিনা দেখুন।';
+
+  @override
+  String syncRejected(String detail) {
+    return 'কম্পিউটার একটি এন্ট্রি নেয়নি: $detail';
+  }
+
+  @override
+  String get phoneOnlyNote =>
+      'এখানের হিসাব শুধু এই ফোনে যোগ করা এন্ট্রির। মসজিদের আসল ব্যালেন্স কম্পিউটারে দেখুন।';
+
+  @override
+  String get phoneBalance => 'এই ফোনের এন্ট্রির ব্যালেন্স';
+
+  @override
+  String phoneIncomeExpense(String income, String expense) {
+    return 'আয় $income · ব্যয় $expense';
+  }
+
+  @override
+  String syncPending(String n) {
+    return 'সিঙ্ক বাকি: $nটি এন্ট্রি';
+  }
+
+  @override
+  String lastSyncLine(String when) {
+    return 'শেষ সিঙ্ক: $when';
+  }
+
+  @override
+  String get syncNowBtn => 'সিঙ্ক করুন';
+
+  @override
+  String get syncedPill => 'সিঙ্ক হয়েছে';
+
+  @override
+  String get pendingPill => 'সিঙ্ক বাকি';
+
+  @override
+  String syncedReadOnlyBanner(String when) {
+    return 'সিঙ্ক হয়েছে $when-এ। সিঙ্ক হওয়া এন্ট্রি ফোনে বদলানো যায় না, শুধু দেখা যায়। ভুল থাকলে কম্পিউটারে ঠিক করুন।';
+  }
+
+  @override
+  String get navHome => 'হোম';
+
+  @override
+  String get navMore => 'আরও';
+
+  @override
+  String accountsLastReceived(String when) {
+    return 'অ্যাকাউন্টের তথ্য শেষবার এসেছে: $when-এর সিঙ্কে। নতুন অ্যাকাউন্ট বা পাসওয়ার্ড পরিবর্তন পরের সিঙ্কে আসবে।';
+  }
+
+  @override
+  String get signInPhoneHint =>
+      'কম্পিউটারের অ্যাপের একই ইউজারনেম ও পাসওয়ার্ড দিন।';
+
+  @override
+  String pendingLeft(String n) {
+    return '$nটি বাকি';
+  }
+
+  @override
+  String get appVersionLabel => 'অ্যাপ সংস্করণ';
+
+  @override
+  String syncPhoneOf(String name) {
+    return '$name-এর ফোন';
+  }
 }

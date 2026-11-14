@@ -305,7 +305,9 @@ class _EntryListScreenState extends State<EntryListScreen> {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _table(l, fmt, page),
+                        MediaQuery.sizeOf(context).width < 640
+                            ? _cards(l, fmt, page)
+                            : _table(l, fmt, page),
                         _pager(l, fmt, page, from),
                       ],
                     ),
@@ -460,6 +462,88 @@ class _EntryListScreenState extends State<EntryListScreen> {
       amount,
       status,
     ];
+  }
+
+  /// The list on a phone: one card per entry.
+  Widget _cards(AppLocalizations l, Fmt fmt, EntryPage page) {
+    return Column(
+      children: [
+        for (final e in page.rows)
+          InkWell(
+            onTap: () => _open(e),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: AppColors.divider)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          e.type == EntryType.expense &&
+                                  (e.purpose ?? '').isNotEmpty
+                              ? '${displayName(l, e)} · ${e.purpose}'
+                              : displayName(l, e),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${receiptNoLabel(l, e.type)} ${fmt.integer(e.receiptNo)} · ${fmt.date(parseDayKey(e.entryDate))}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        fmt.money(e.amount),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: e.status == EntryStatus.cancelled
+                              ? AppColors.muted
+                              : (_isIncome
+                                    ? AppColors.income
+                                    : AppColors.expense),
+                          decoration: e.status == EntryStatus.cancelled
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 4,
+                        children: [
+                          if (e.status == EntryStatus.cancelled)
+                            StatusPill.cancelled(l.statusCancelled),
+                          if (e.isDuplicate) StatusPill.warn(l.statusDuplicate),
+                          if (context.services.isPhone)
+                            e.synced
+                                ? StatusPill(l.syncedPill)
+                                : StatusPill.warn(l.pendingPill),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _pager(AppLocalizations l, Fmt fmt, EntryPage page, int from) {

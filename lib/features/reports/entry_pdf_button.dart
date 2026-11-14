@@ -30,6 +30,7 @@ class _EntryPdfButtonState extends State<EntryPdfButton> {
         fmt,
         widget.entry.id,
         thisDeviceId: services.deviceId,
+        thisIsPhone: services.isPhone,
       );
       if (!mounted) return;
       await savePdfWithDialog(context, pdf, entryFileName(widget.entry));

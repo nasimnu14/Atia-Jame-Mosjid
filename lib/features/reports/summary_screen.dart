@@ -132,10 +132,12 @@ class _SummaryScreenState extends State<SummaryScreen> {
           onPressed: () => shell.goTo(Section.pdf),
           child: Text(l.makePdf),
         ),
-        OutlinedButton(
-          onPressed: () => shell.goTo(Section.excel),
-          child: Text(l.excelUploadBtn),
-        ),
+        // The phone does not upload Excel files (the desktop holds all the records).
+        if (!context.services.isPhone)
+          OutlinedButton(
+            onPressed: () => shell.goTo(Section.excel),
+            child: Text(l.excelUploadBtn),
+          ),
       ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,6 +154,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
             ),
           ),
           const SizedBox(height: 18),
+          // MOB-3: on the phone these figures are only for this phone's entries.
+          if (context.services.isPhone) ...[
+            MessageBanner(l.phoneOnlyNote, kind: BannerKind.warn),
+            const SizedBox(height: 14),
+          ],
           if (s == null)
             MessageBanner(l.completePeriod, kind: BannerKind.info)
           else ...[
@@ -282,56 +289,69 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 ),
               ),
             ),
-            cells([
-              Text(firstCol, style: head()),
-              right(l.navIncome, style: head()),
-              right(l.navExpense, style: head()),
-              right(l.incomeMinusExpense, style: head()),
-            ], header: true),
-            for (final r in _rows)
-              cells([
-                Text(label(r), style: const TextStyle(fontSize: 14)),
-                right(fmt.money(r.summary.incomeTotal)),
-                right(fmt.money(r.summary.expenseTotal)),
-                right(
-                  fmt.signedMoney(r.summary.net),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: netColor(r.summary.net),
+            // Scrolls sideways on a narrow screen (a phone).
+            LayoutBuilder(
+              builder: (context, c) => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: c.maxWidth < 640 ? 640 : c.maxWidth,
+                  child: Column(
+                    children: [
+                      cells([
+                        Text(firstCol, style: head()),
+                        right(l.navIncome, style: head()),
+                        right(l.navExpense, style: head()),
+                        right(l.incomeMinusExpense, style: head()),
+                      ], header: true),
+                      for (final r in _rows)
+                        cells([
+                          Text(label(r), style: const TextStyle(fontSize: 14)),
+                          right(fmt.money(r.summary.incomeTotal)),
+                          right(fmt.money(r.summary.expenseTotal)),
+                          right(
+                            fmt.signedMoney(r.summary.net),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: netColor(r.summary.net),
+                            ),
+                          ),
+                        ]),
+                      cells([
+                        Text(
+                          l.rowTotal,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        right(
+                          fmt.money(total.incomeTotal),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        right(
+                          fmt.money(total.expenseTotal),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        right(
+                          fmt.signedMoney(total.net),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: netColor(total.net),
+                          ),
+                        ),
+                      ], strongTop: true),
+                    ],
                   ),
                 ),
-              ]),
-            cells([
-              Text(
-                l.rowTotal,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
               ),
-              right(
-                fmt.money(total.incomeTotal),
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              right(
-                fmt.money(total.expenseTotal),
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              right(
-                fmt.signedMoney(total.net),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: netColor(total.net),
-                ),
-              ),
-            ], strongTop: true),
+            ),
           ],
         ),
       ),

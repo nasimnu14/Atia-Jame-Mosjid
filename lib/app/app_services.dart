@@ -19,6 +19,10 @@ import '../features/google_drive/excel_upload_service.dart';
 import '../features/google_drive/google_drive_auth.dart';
 import '../features/google_drive/restore_service.dart';
 import '../features/reports/report_pdf_service.dart';
+import '../features/sync/sync_client.dart';
+import '../features/sync/local_address.dart';
+import '../features/sync/sync_receiver.dart';
+import '../features/sync/sync_server.dart';
 import '../features/updates/update_installer.dart';
 import '../features/updates/update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -51,6 +55,11 @@ class AppServices {
     required this.scheduler,
     required this.updates,
     required this.updateInstaller,
+    required this.isPhone,
+    required this.syncReceiver,
+    required this.syncClient,
+    required this.createSyncHost,
+    required this.useCameraScanner,
   });
 
   /// App-data folder (outside the install folder, plan rule 1).
@@ -78,6 +87,18 @@ class AppServices {
   final UpdateService updates;
   final UpdateInstaller updateInstaller;
 
+  /// True on the Android app (phone), false on the desktop.
+  final bool isPhone;
+  final SyncReceiver syncReceiver;
+  final SyncClient syncClient;
+
+  /// Makes the desktop's sync server (started and stopped by the Sync screen).
+  final Future<SyncHost> Function() createSyncHost;
+
+  /// Whether the phone scans the QR code with its camera (tests turn it off and
+  /// type the code instead).
+  final bool useCameraScanner;
+
   /// Opens the database (copying it first if an upgrade is needed) and wires
   /// the services. [hasher] is only replaced in tests.
   static Future<AppServices> open(
@@ -88,6 +109,7 @@ class AppServices {
     PhotoPicker photoPicker = const PlatformPhotoPicker(),
     UpdateService Function(SettingsRepository settings)? updatesBuilder,
     UpdateInstaller? updateInstaller,
+    bool? isPhone,
   }) async {
     final db = await openAppDatabase(dataDir);
     return fromDatabase(
@@ -97,6 +119,9 @@ class AppServices {
       fileSaver: fileSaver,
       driveAuth: driveAuth,
       photoPicker: photoPicker,
+      updatesBuilder: updatesBuilder,
+      updateInstaller: updateInstaller,
+      isPhone: isPhone,
     );
   }
 
@@ -111,6 +136,15 @@ class AppServices {
     DriveAuth? driveAuth,
     UpdateService Function(SettingsRepository settings)? updatesBuilder,
     UpdateInstaller? updateInstaller,
+    bool? isPhone,
+    bool useCameraScanner = true,
+    Future<SyncHost> Function(SyncReceiver receiver)? syncHostFactory,
+    SyncClient Function(
+      AppDatabase db,
+      PhotoStorage photos,
+      SettingsRepository settings,
+    )?
+    syncClientBuilder,
   }) async {
     final repo = SettingsRepository(db);
     var deviceId = await repo.get(SettingKey.deviceId);
@@ -121,7 +155,15 @@ class AppServices {
     final photos = PhotoStorage(Directory(p.join(dataDir.path, 'photos')));
     final settings = SettingsService(db, repo);
     final users = UserService(db, hasher: hasher, now: now);
-    final entries = EntryService(db, photos, deviceId, now: now);
+    final phone = isPhone ?? Platform.isAndroid;
+    final receiver = SyncReceiver(db, photos, now: now);
+    final entries = EntryService(
+      db,
+      photos,
+      deviceId,
+      now: now,
+      isPhone: phone,
+    );
     final drive = DriveService(
       db,
       repo,
@@ -149,7 +191,7 @@ class AppServices {
       users: users,
       settings: settings,
       entries: entries,
-      balance: BalanceService(db, settings),
+      balance: BalanceService(db, settings, isPhone: phone),
       photos: photos,
       deviceId: deviceId,
       now: now,
@@ -175,8 +217,31 @@ class AppServices {
             now: now,
           ),
       updateInstaller: updateInstaller ?? PlatformUpdateInstaller(),
+      isPhone: phone,
+      useCameraScanner: useCameraScanner,
+      syncReceiver: receiver,
+      syncClient:
+          syncClientBuilder?.call(db, photos, repo) ??
+          SyncClient(db: db, photos: photos, settings: repo, now: now),
+      createSyncHost: () =>
+          (syncHostFactory ?? _defaultSyncHost(now))(receiver),
     );
   }
+
+  static Future<SyncHost> Function(SyncReceiver) _defaultSyncHost(
+    DateTime Function() now,
+  ) => (receiver) async {
+    final host = await bestLocalAddress();
+    if (host == null) {
+      throw const SocketException('No network');
+    }
+    return SyncServer(
+      receiver: receiver,
+      desktopName: Platform.localHostname,
+      hostAddress: host,
+      now: now,
+    );
+  };
 
   /// The installed version. If it cannot be read (it always can on a real
   /// device) this answers 0.0.0 rather than failing a screen.

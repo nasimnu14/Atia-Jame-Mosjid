@@ -140,13 +140,34 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        l.forgotPasswordHint,
+                        context.services.isPhone
+                            ? l.signInPhoneHint
+                            : l.forgotPasswordHint,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.muted,
                         ),
                       ),
+                      if (context.services.isPhone)
+                        FutureBuilder<DateTime?>(
+                          future: context.services.syncClient.lastSync(),
+                          builder: (context, snap) => snap.data == null
+                              ? const SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Text(
+                                    l.accountsLastReceived(
+                                      context.fmt.dateTime(snap.data!),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.muted,
+                                    ),
+                                  ),
+                                ),
+                        ),
                       const SizedBox(height: 12),
                       const Center(child: LanguageSwitch()),
                     ],

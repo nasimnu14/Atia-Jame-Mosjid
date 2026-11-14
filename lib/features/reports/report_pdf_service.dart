@@ -55,6 +55,7 @@ class ReportPdfService {
     Fmt fmt,
     String entryId, {
     required String thisDeviceId,
+    bool thisIsPhone = false,
   }) async {
     final data = await _entries.getWithPhotos(entryId);
     if (data == null) throw StateError('Entry not found');
@@ -65,7 +66,9 @@ class ReportPdfService {
       return u == null ? l.unknownUser : '${u.name} (${roleName(l, u.role)})';
     }
 
-    final device = e.deviceId == thisDeviceId ? l.fromComputer : l.fromPhone;
+    // This device is the phone on the phone and the computer on the desktop.
+    final madeOnPhone = (e.deviceId == thisDeviceId) == thisIsPhone;
+    final device = madeOnPhone ? l.fromPhone : l.fromComputer;
     final history = EntryHistoryText(
       addedBy: l.addedBy(
         await _nameOnly(l, e.createdBy),

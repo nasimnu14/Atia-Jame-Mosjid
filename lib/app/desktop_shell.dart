@@ -9,13 +9,13 @@ import '../features/reports/dashboard_screen.dart';
 import '../features/reports/pdf_report_screen.dart';
 import '../features/reports/summary_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/sync/sync_screen.dart';
 import '../features/users/users_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/context_ext.dart';
 import '../shared/permissions.dart';
 import '../shared/role_text.dart';
 import '../features/sign_in/language_switch.dart';
-import 'section_placeholder.dart';
 import 'shell_controller.dart';
 import 'theme.dart';
 
@@ -72,11 +72,11 @@ class _DesktopShellState extends State<DesktopShell> {
     Section.pdf => const PdfReportScreen(),
     Section.excel => const ExcelUploadScreen(),
     Section.backup => const BackupScreen(),
+    Section.sync => const SyncScreen(),
     Section.income => const EntryListScreen(type: EntryType.income),
     Section.expense => const EntryListScreen(type: EntryType.expense),
     Section.users => const UsersScreen(),
     Section.settings => const SettingsScreen(),
-    _ => SectionPlaceholder(section: s),
   };
 
   void _go(Section s) {

@@ -72,6 +72,7 @@ class _CancelDialogState extends State<_CancelDialog> {
           EntryActionProblem.alreadyCancelled => l.entryAlreadyCancelled,
           EntryActionProblem.notFound => l.entryNotFound,
           EntryActionProblem.reasonRequired => l.cancelReasonRequired,
+          EntryActionProblem.syncedReadOnly => l.syncedReadOnlyNote,
         };
       });
     } catch (e) {
@@ -87,7 +88,7 @@ class _CancelDialogState extends State<_CancelDialog> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final fmt = context.fmt;
-    final who = widget.approver ?? context.app.user!;
+    final who = widget.approver ?? context.appWatch.user;
     return Dialog(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
@@ -137,7 +138,7 @@ class _CancelDialogState extends State<_CancelDialog> {
               ),
               const SizedBox(height: 8),
               Text(
-                l.cancellingAs(who.name),
+                l.cancellingAs(who?.name ?? ''),
                 style: const TextStyle(fontSize: 13, color: AppColors.muted),
               ),
               if (_error != null && _error != l.cancelReasonRequired) ...[

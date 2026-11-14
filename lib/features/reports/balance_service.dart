@@ -73,14 +73,20 @@ enum BreakdownUnit { day, week, month }
 
 /// Current balance and period summaries (BAL-3, BAL-4).
 class BalanceService {
-  BalanceService(this._db, this._settings);
+  BalanceService(this._db, this._settings, {this.isPhone = false});
   final AppDatabase _db;
   final SettingsService _settings;
+
+  /// A phone only knows the entries made on that phone, so it has no opening
+  /// balance and its figures are not the mosque's balance (MOB-3).
+  final bool isPhone;
 
   /// Current balance = opening balance + all income − all expense. Cancelled
   /// entries are not counted.
   Future<int> currentBalance() async {
-    final opening = (await _settings.openingBalance())?.amount ?? 0;
+    final opening = isPhone
+        ? 0
+        : (await _settings.openingBalance())?.amount ?? 0;
     final all = await _sums(null);
     return opening + all.income - all.expense;
   }

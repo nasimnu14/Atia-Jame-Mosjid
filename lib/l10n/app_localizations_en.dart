@@ -1418,4 +1418,270 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checking => 'Checking…';
+
+  @override
+  String get syncedReadOnlyNote =>
+      'This entry was already synced to the computer, so it can no longer be changed on the phone. Correct it on the computer.';
+
+  @override
+  String get syncScanInstruction =>
+      'Open “Sync” in the Android app and scan this code';
+
+  @override
+  String get waitingForPhone => 'Waiting for a phone…';
+
+  @override
+  String phoneConnected(String phone) {
+    return '$phone connected — receiving…';
+  }
+
+  @override
+  String receivedProgress(String n) {
+    return '$n entries received';
+  }
+
+  @override
+  String get codeOnce => 'This code can be used only once';
+
+  @override
+  String get sameWifi =>
+      'The phone and the computer must be on the same Wi-Fi network';
+
+  @override
+  String get newCode => 'Make a new code';
+
+  @override
+  String lastSyncDone(String n) {
+    return 'Last sync finished: $n entries received';
+  }
+
+  @override
+  String syncBreakdown(String income, String expense, String photos) {
+    return 'Income $income · Expense $expense · Photos $photos';
+  }
+
+  @override
+  String syncDuplicateNote(String n) {
+    return '$n entries had a receipt number that already existed — they were saved and marked for checking.';
+  }
+
+  @override
+  String get whatIsExchanged => 'What is exchanged';
+
+  @override
+  String get phoneToComputer => 'Phone → computer';
+
+  @override
+  String get phoneToComputerDesc =>
+      'Only the entries not synced yet, with all their photos';
+
+  @override
+  String get computerToPhone => 'Computer → phone';
+
+  @override
+  String get computerToPhoneDesc =>
+      'Only the user accounts and the approver list, so people can sign in on the phone. No entries are sent.';
+
+  @override
+  String get previousSyncs => 'Earlier syncs';
+
+  @override
+  String get noSyncsYet => 'No sync yet';
+
+  @override
+  String get syncCodeLabel =>
+      'Code (type it on the phone if scanning does not work)';
+
+  @override
+  String get copyCode => 'Copy';
+
+  @override
+  String get codeCopied => 'Code copied';
+
+  @override
+  String get syncNoNetwork => 'This computer is not on a network';
+
+  @override
+  String syncServerFailed(String detail) {
+    return 'Could not start the sync: $detail';
+  }
+
+  @override
+  String get mobilePairTitle => 'Pair this phone with the computer';
+
+  @override
+  String get mobilePairSub =>
+      'Nobody can sign in on this phone until it is paired.';
+
+  @override
+  String get pairStep1 => 'On the computer, open the “Phone sync” page';
+
+  @override
+  String get pairStep2 =>
+      'Tap the button below and scan the QR code on the screen';
+
+  @override
+  String get pairStep3 =>
+      'Then sign in with the same username and password as on the computer';
+
+  @override
+  String get sameWifiNote =>
+      'The phone and the computer must be on the same Wi-Fi network.';
+
+  @override
+  String get scanQr => 'Scan the QR code';
+
+  @override
+  String get scanTitle => 'Sync with the computer';
+
+  @override
+  String get scanHint =>
+      'Keep the QR code from the computer\'s “Phone sync” page inside the frame';
+
+  @override
+  String get willSend => 'What will be sent';
+
+  @override
+  String willSendLine(String n, String photos) {
+    return '$n entries and $photos photos waiting to sync';
+  }
+
+  @override
+  String get enterCodeInstead => 'Type the code instead of scanning';
+
+  @override
+  String get codeFieldLabel => 'Code';
+
+  @override
+  String get connectBtn => 'Connect';
+
+  @override
+  String get invalidCode => 'This is not a sync code';
+
+  @override
+  String get cameraDenied =>
+      'The camera could not be used. Type the code instead.';
+
+  @override
+  String syncing(String sent, String total) {
+    return 'Syncing… $sent of $total';
+  }
+
+  @override
+  String get syncDoneTitle => 'Sync finished';
+
+  @override
+  String get syncDoneSub => 'The computer confirmed it saved everything.';
+
+  @override
+  String syncDoneSent(String n, String photos) {
+    return '$n entries and $photos photos sent';
+  }
+
+  @override
+  String syncDoneKinds(String income, String expense) {
+    return 'Income $income, expense $expense';
+  }
+
+  @override
+  String get syncDoneReadOnly => 'These entries are now view-only';
+
+  @override
+  String get syncDoneReadOnlyNote =>
+      'If something is wrong, correct it on the computer';
+
+  @override
+  String get syncDoneAccounts => 'User accounts were updated';
+
+  @override
+  String get syncDoneAccountsNote =>
+      'New users and password changes now work on this phone too';
+
+  @override
+  String get backHome => 'Back to Home';
+
+  @override
+  String get syncFailedTitle => 'The sync did not finish';
+
+  @override
+  String syncPartial(String sent, String left) {
+    return '$sent entries were sent, $left are still waiting. Scan a new code to send the rest.';
+  }
+
+  @override
+  String get syncUnauthorised =>
+      'The code was not accepted. Show a new code on the computer and try again.';
+
+  @override
+  String get syncOffline =>
+      'Could not reach the computer. Check that both are on the same Wi-Fi.';
+
+  @override
+  String syncRejected(String detail) {
+    return 'The computer did not accept an entry: $detail';
+  }
+
+  @override
+  String get phoneOnlyNote =>
+      'These figures are only for entries added on this phone. See the mosque\'s real balance on the computer.';
+
+  @override
+  String get phoneBalance => 'Balance of this phone\'s entries';
+
+  @override
+  String phoneIncomeExpense(String income, String expense) {
+    return 'Income $income · Expense $expense';
+  }
+
+  @override
+  String syncPending(String n) {
+    return 'Waiting to sync: $n entries';
+  }
+
+  @override
+  String lastSyncLine(String when) {
+    return 'Last sync: $when';
+  }
+
+  @override
+  String get syncNowBtn => 'Sync';
+
+  @override
+  String get syncedPill => 'Synced';
+
+  @override
+  String get pendingPill => 'Not synced';
+
+  @override
+  String syncedReadOnlyBanner(String when) {
+    return 'Synced on $when. A synced entry cannot be changed on the phone, only viewed. If something is wrong, correct it on the computer.';
+  }
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navMore => 'More';
+
+  @override
+  String accountsLastReceived(String when) {
+    return 'Account data last arrived: with the sync of $when. New accounts and password changes arrive at the next sync.';
+  }
+
+  @override
+  String get signInPhoneHint =>
+      'Use the same username and password as in the computer app.';
+
+  @override
+  String pendingLeft(String n) {
+    return '$n waiting';
+  }
+
+  @override
+  String get appVersionLabel => 'App version';
+
+  @override
+  String syncPhoneOf(String name) {
+    return '$name\'s phone';
+  }
 }

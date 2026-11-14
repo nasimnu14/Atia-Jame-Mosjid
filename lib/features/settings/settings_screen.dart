@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
       _LanguageCard(l: l),
       if (can(role, Permission.setOpeningBalance)) const _OpeningBalanceCard(),
       if (can(role, Permission.manageApprovers)) const _ApproversCard(),
-      const _PasswordCard(),
+      const PasswordCard(),
       const UpdateCard(),
     ];
     return PageScaffold(
@@ -375,14 +375,14 @@ class _ApproversCardState extends State<_ApproversCard> {
   }
 }
 
-class _PasswordCard extends StatefulWidget {
-  const _PasswordCard();
+class PasswordCard extends StatefulWidget {
+  const PasswordCard({super.key});
 
   @override
-  State<_PasswordCard> createState() => _PasswordCardState();
+  State<PasswordCard> createState() => PasswordCardState();
 }
 
-class _PasswordCardState extends State<_PasswordCard> {
+class PasswordCardState extends State<PasswordCard> {
   final _form = GlobalKey<FormState>();
   final _cur = TextEditingController();
   final _new = TextEditingController();

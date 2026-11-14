@@ -29,7 +29,15 @@ class EntryValidationException implements Exception {
   String toString() => 'EntryValidationException($errors)';
 }
 
-enum EntryActionProblem { notFound, alreadyCancelled, reasonRequired }
+enum EntryActionProblem {
+  notFound,
+  alreadyCancelled,
+  reasonRequired,
+
+  /// An entry already synced to the desktop can no longer be changed on the
+  /// phone; corrections are made on the desktop (SYN-7).
+  syncedReadOnly,
+}
 
 class EntryActionException implements Exception {
   EntryActionException(this.problem);
@@ -140,12 +148,18 @@ class EntryService {
     this._photos,
     this.deviceId, {
     this.now = DateTime.now,
+    this.isPhone = false,
   });
 
   final AppDatabase _db;
   final PhotoStorage _photos;
   final String deviceId;
   final DateTime Function() now;
+
+  /// On a phone, new entries start as not synced (SYN-1) and synced ones are
+  /// read-only (SYN-7). The desktop holds the master record, so its own
+  /// entries need no syncing.
+  final bool isPhone;
   static const _uuid = Uuid();
 
   PhotoStorage get photoStorage => _photos;
@@ -288,6 +302,7 @@ class EntryService {
                 createdBy: live.id,
                 createdAt: now(),
                 deviceId: deviceId,
+                synced: Value(!isPhone),
               ),
             );
         for (var i = 0; i < draft.photos.length; i++) {
@@ -329,6 +344,7 @@ class EntryService {
   }) async {
     final editor = await _authority(actor, approver, Permission.editEntry);
     final existing = await _entry(entryId);
+    _requireEditableHere(existing);
     if (existing.status == EntryStatus.cancelled) {
       throw EntryActionException(EntryActionProblem.alreadyCancelled);
     }
@@ -443,6 +459,7 @@ class EntryService {
       throw EntryActionException(EntryActionProblem.reasonRequired);
     }
     final existing = await _entry(entryId);
+    _requireEditableHere(existing);
     if (existing.status == EntryStatus.cancelled) {
       throw EntryActionException(EntryActionProblem.alreadyCancelled);
     }
@@ -585,6 +602,13 @@ class EntryService {
   }
 
   // ---------------------------------------------------------------- helpers
+
+  /// SYN-7: once synced, a phone entry is read-only on the phone.
+  void _requireEditableHere(Entry e) {
+    if (isPhone && e.synced) {
+      throw EntryActionException(EntryActionProblem.syncedReadOnly);
+    }
+  }
 
   Future<Entry> _entry(String id) async {
     final e = await getById(id);

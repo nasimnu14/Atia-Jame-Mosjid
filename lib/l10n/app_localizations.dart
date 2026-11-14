@@ -2532,6 +2532,426 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Checking…'**
   String get checking;
+
+  /// No description provided for @syncedReadOnlyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry was already synced to the computer, so it can no longer be changed on the phone. Correct it on the computer.'**
+  String get syncedReadOnlyNote;
+
+  /// No description provided for @syncScanInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open “Sync” in the Android app and scan this code'**
+  String get syncScanInstruction;
+
+  /// No description provided for @waitingForPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for a phone…'**
+  String get waitingForPhone;
+
+  /// No description provided for @phoneConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'{phone} connected — receiving…'**
+  String phoneConnected(String phone);
+
+  /// No description provided for @receivedProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries received'**
+  String receivedProgress(String n);
+
+  /// No description provided for @codeOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'This code can be used only once'**
+  String get codeOnce;
+
+  /// No description provided for @sameWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'The phone and the computer must be on the same Wi-Fi network'**
+  String get sameWifi;
+
+  /// No description provided for @newCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a new code'**
+  String get newCode;
+
+  /// No description provided for @lastSyncDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Last sync finished: {n} entries received'**
+  String lastSyncDone(String n);
+
+  /// No description provided for @syncBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Income {income} · Expense {expense} · Photos {photos}'**
+  String syncBreakdown(String income, String expense, String photos);
+
+  /// No description provided for @syncDuplicateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries had a receipt number that already existed — they were saved and marked for checking.'**
+  String syncDuplicateNote(String n);
+
+  /// No description provided for @whatIsExchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'What is exchanged'**
+  String get whatIsExchanged;
+
+  /// No description provided for @phoneToComputer.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone → computer'**
+  String get phoneToComputer;
+
+  /// No description provided for @phoneToComputerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the entries not synced yet, with all their photos'**
+  String get phoneToComputerDesc;
+
+  /// No description provided for @computerToPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer → phone'**
+  String get computerToPhone;
+
+  /// No description provided for @computerToPhoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the user accounts and the approver list, so people can sign in on the phone. No entries are sent.'**
+  String get computerToPhoneDesc;
+
+  /// No description provided for @previousSyncs.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier syncs'**
+  String get previousSyncs;
+
+  /// No description provided for @noSyncsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No sync yet'**
+  String get noSyncsYet;
+
+  /// No description provided for @syncCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code (type it on the phone if scanning does not work)'**
+  String get syncCodeLabel;
+
+  /// No description provided for @copyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyCode;
+
+  /// No description provided for @codeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get codeCopied;
+
+  /// No description provided for @syncNoNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer is not on a network'**
+  String get syncNoNetwork;
+
+  /// No description provided for @syncServerFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the sync: {detail}'**
+  String syncServerFailed(String detail);
+
+  /// No description provided for @mobilePairTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair this phone with the computer'**
+  String get mobilePairTitle;
+
+  /// No description provided for @mobilePairSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody can sign in on this phone until it is paired.'**
+  String get mobilePairSub;
+
+  /// No description provided for @pairStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'On the computer, open the “Phone sync” page'**
+  String get pairStep1;
+
+  /// No description provided for @pairStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the button below and scan the QR code on the screen'**
+  String get pairStep2;
+
+  /// No description provided for @pairStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Then sign in with the same username and password as on the computer'**
+  String get pairStep3;
+
+  /// No description provided for @sameWifiNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The phone and the computer must be on the same Wi-Fi network.'**
+  String get sameWifiNote;
+
+  /// No description provided for @scanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR code'**
+  String get scanQr;
+
+  /// No description provided for @scanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync with the computer'**
+  String get scanTitle;
+
+  /// No description provided for @scanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the QR code from the computer\'s “Phone sync” page inside the frame'**
+  String get scanHint;
+
+  /// No description provided for @willSend.
+  ///
+  /// In en, this message translates to:
+  /// **'What will be sent'**
+  String get willSend;
+
+  /// No description provided for @willSendLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries and {photos} photos waiting to sync'**
+  String willSendLine(String n, String photos);
+
+  /// No description provided for @enterCodeInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the code instead of scanning'**
+  String get enterCodeInstead;
+
+  /// No description provided for @codeFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get codeFieldLabel;
+
+  /// No description provided for @connectBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get connectBtn;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a sync code'**
+  String get invalidCode;
+
+  /// No description provided for @cameraDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera could not be used. Type the code instead.'**
+  String get cameraDenied;
+
+  /// No description provided for @syncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing… {sent} of {total}'**
+  String syncing(String sent, String total);
+
+  /// No description provided for @syncDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync finished'**
+  String get syncDoneTitle;
+
+  /// No description provided for @syncDoneSub.
+  ///
+  /// In en, this message translates to:
+  /// **'The computer confirmed it saved everything.'**
+  String get syncDoneSub;
+
+  /// No description provided for @syncDoneSent.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries and {photos} photos sent'**
+  String syncDoneSent(String n, String photos);
+
+  /// No description provided for @syncDoneKinds.
+  ///
+  /// In en, this message translates to:
+  /// **'Income {income}, expense {expense}'**
+  String syncDoneKinds(String income, String expense);
+
+  /// No description provided for @syncDoneReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'These entries are now view-only'**
+  String get syncDoneReadOnly;
+
+  /// No description provided for @syncDoneReadOnlyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'If something is wrong, correct it on the computer'**
+  String get syncDoneReadOnlyNote;
+
+  /// No description provided for @syncDoneAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'User accounts were updated'**
+  String get syncDoneAccounts;
+
+  /// No description provided for @syncDoneAccountsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'New users and password changes now work on this phone too'**
+  String get syncDoneAccountsNote;
+
+  /// No description provided for @backHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Home'**
+  String get backHome;
+
+  /// No description provided for @syncFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The sync did not finish'**
+  String get syncFailedTitle;
+
+  /// No description provided for @syncPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{sent} entries were sent, {left} are still waiting. Scan a new code to send the rest.'**
+  String syncPartial(String sent, String left);
+
+  /// No description provided for @syncUnauthorised.
+  ///
+  /// In en, this message translates to:
+  /// **'The code was not accepted. Show a new code on the computer and try again.'**
+  String get syncUnauthorised;
+
+  /// No description provided for @syncOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the computer. Check that both are on the same Wi-Fi.'**
+  String get syncOffline;
+
+  /// No description provided for @syncRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The computer did not accept an entry: {detail}'**
+  String syncRejected(String detail);
+
+  /// No description provided for @phoneOnlyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'These figures are only for entries added on this phone. See the mosque\'s real balance on the computer.'**
+  String get phoneOnlyNote;
+
+  /// No description provided for @phoneBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance of this phone\'s entries'**
+  String get phoneBalance;
+
+  /// No description provided for @phoneIncomeExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Income {income} · Expense {expense}'**
+  String phoneIncomeExpense(String income, String expense);
+
+  /// No description provided for @syncPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to sync: {n} entries'**
+  String syncPending(String n);
+
+  /// No description provided for @lastSyncLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Last sync: {when}'**
+  String lastSyncLine(String when);
+
+  /// No description provided for @syncNowBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get syncNowBtn;
+
+  /// No description provided for @syncedPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get syncedPill;
+
+  /// No description provided for @pendingPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced'**
+  String get pendingPill;
+
+  /// No description provided for @syncedReadOnlyBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced on {when}. A synced entry cannot be changed on the phone, only viewed. If something is wrong, correct it on the computer.'**
+  String syncedReadOnlyBanner(String when);
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get navMore;
+
+  /// No description provided for @accountsLastReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Account data last arrived: with the sync of {when}. New accounts and password changes arrive at the next sync.'**
+  String accountsLastReceived(String when);
+
+  /// No description provided for @signInPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same username and password as in the computer app.'**
+  String get signInPhoneHint;
+
+  /// No description provided for @pendingLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} waiting'**
+  String pendingLeft(String n);
+
+  /// No description provided for @appVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App version'**
+  String get appVersionLabel;
+
+  /// No description provided for @syncPhoneOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s phone'**
+  String syncPhoneOf(String name);
 }
 
 class _AppLocalizationsDelegate

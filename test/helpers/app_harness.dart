@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -5,6 +6,12 @@ import 'package:atia_masjid_accounts/app/app.dart';
 import 'package:atia_masjid_accounts/app/app_services.dart';
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/db_opener.dart';
+import 'package:atia_masjid_accounts/data/photo_storage.dart';
+import 'package:atia_masjid_accounts/features/sync/sync_client.dart';
+import 'package:atia_masjid_accounts/features/sync/sync_offer.dart';
+import 'package:atia_masjid_accounts/features/sync/sync_receiver.dart';
+import 'package:atia_masjid_accounts/features/sync/sync_server.dart';
+import 'package:shelf/shelf.dart' as shelf;
 import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
 import 'package:atia_masjid_accounts/features/google_drive/drive_client.dart';
 import 'package:atia_masjid_accounts/features/updates/update_installer.dart';
@@ -18,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 
 /// Runs the real app on an in-memory database. Real async work (database,
 /// password hashing in an isolate) happens inside `tester.runAsync`.
@@ -37,6 +45,14 @@ class AppHarness {
     DriveAuth? driveAuth,
     UpdateService Function(SettingsRepository settings)? updatesBuilder,
     UpdateInstaller? updateInstaller,
+    bool? isPhone,
+    Future<SyncHost> Function(SyncReceiver receiver)? syncHostFactory,
+    SyncClient Function(
+      AppDatabase db,
+      PhotoStorage photos,
+      SettingsRepository settings,
+    )?
+    syncClientBuilder,
 
     /// Keep the database in a real file (needed for the restore flow).
     bool onDisk = false,
@@ -63,6 +79,10 @@ class AppHarness {
       driveAuth: driveAuth,
       updatesBuilder: updatesBuilder,
       updateInstaller: updateInstaller,
+      isPhone: isPhone ?? false,
+      useCameraScanner: false,
+      syncHostFactory: syncHostFactory,
+      syncClientBuilder: syncClientBuilder,
     );
     final services = (await tester.runAsync(build))!;
     final h = AppHarness(tester, services, dir, onDisk ? build : null);
@@ -120,6 +140,8 @@ class AppHarness {
   /// before the next real-async call (otherwise they would hold the database
   /// lock and the test would wait forever).
   Future<T?> run<T>(Future<T> Function() work) async {
+    // First let any reload a screen started after the previous UI action finish.
+    await settle(3);
     final r = await tester.runAsync(work);
     await settle(4);
     return r;
@@ -250,5 +272,71 @@ class FakeUpdateInstaller implements UpdateInstaller {
     }
     installed.add(info);
     onProgress(1);
+  }
+}
+
+/// A sync server stand-in for screens: no network port; tests push events.
+class FakeSyncHost implements SyncHost {
+  FakeSyncHost() {
+    _offer = _make();
+  }
+  final _events = StreamController<SyncEvent>.broadcast();
+  late SyncOffer _offer;
+  SyncOffer get offer => _offer;
+  bool started = false;
+  bool stopped = false;
+  int made = 0;
+
+  SyncOffer _make() => SyncOffer.generate(
+    host: '192.168.1.20',
+    port: 40000 + (made++),
+    desktopName: 'PC',
+  );
+
+  @override
+  Stream<SyncEvent> get events => _events.stream;
+
+  void emit(SyncEvent e) => _events.add(e);
+
+  @override
+  Future<SyncOffer> start() async {
+    started = true;
+    return _offer;
+  }
+
+  @override
+  SyncOffer newOffer() {
+    _offer = _make();
+    _events.add(OfferChanged(_offer));
+    return _offer;
+  }
+
+  @override
+  Future<void> stop() async => stopped = true;
+}
+
+/// An HTTP client that hands requests straight to a shelf handler (no socket).
+class InProcessHttp extends http.BaseClient {
+  InProcessHttp(this.handler);
+  final shelf.Handler handler;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final body = await request.finalize().toBytes();
+    final res = await handler(
+      shelf.Request(
+        request.method,
+        request.url,
+        body: body,
+        headers: request.headers,
+      ),
+    );
+    final out = await res.read().expand((c) => c).toList();
+    return http.StreamedResponse(
+      Stream.value(out),
+      res.statusCode,
+      contentLength: out.length,
+      headers: res.headers,
+    );
   }
 }

@@ -239,8 +239,12 @@ class PageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Narrow screens (a phone) get smaller margins and a smaller title.
+    final narrow = MediaQuery.sizeOf(context).width < 640;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(32, 28, 32, 32),
+      padding: narrow
+          ? const EdgeInsets.fromLTRB(16, 16, 16, 24)
+          : const EdgeInsets.fromLTRB(32, 28, 32, 32),
       child: Align(
         alignment: Alignment.topLeft,
         child: ConstrainedBox(
@@ -263,8 +267,8 @@ class PageScaffold extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontSize: 26,
+                        style: TextStyle(
+                          fontSize: narrow ? 22 : 26,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
