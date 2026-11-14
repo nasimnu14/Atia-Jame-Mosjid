@@ -245,13 +245,15 @@ class _ApproversCardState extends State<_ApproversCard> {
     super.dispose();
   }
 
-  Future<void> _run(Future<void> Function() action) async {
+  Future<bool> _run(Future<void> Function() action) async {
     final l = context.l10n;
     final fmt = context.fmt;
     try {
       await action();
+      return true;
     } catch (e) {
       if (mounted) showError(context, errorText(l, fmt, e));
+      return false;
     }
   }
 
@@ -284,8 +286,9 @@ class _ApproversCardState extends State<_ApproversCard> {
         ],
       ),
     );
+    // Not disposed here: the dialog's field is still on screen while it
+    // closes. A controller with no listeners left costs nothing.
     if (ok == true) await _run(() => svc.renameApprover(me, a.id, ctrl.text));
-    ctrl.dispose();
   }
 
   @override
@@ -370,8 +373,9 @@ class _ApproversCardState extends State<_ApproversCard> {
     final svc = context.services.settings;
     final me = context.app.user!;
     final text = _name.text;
-    await _run(() => svc.addApprover(me, text));
-    if (mounted) _name.clear();
+    final added = await _run(() => svc.addApprover(me, text));
+    // Keep what was typed when it was refused (for example a name already used).
+    if (added && mounted) _name.clear();
   }
 }
 

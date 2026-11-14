@@ -56,7 +56,7 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
   }
 
   Future<void> _approve() async {
-    if (!_form.currentState!.validate()) return;
+    if (_busy || !_form.currentState!.validate()) return;
     final l = context.l10n;
     final fmt = context.fmt;
     final svc = context.services.users;

@@ -3,14 +3,14 @@
 ## RESUME HERE
 
 - **Last updated:** 2026-11-14 (Phase 6 done and committed; review cycles next)
-- **Current phase / step:** Review cycles (cycles 1 and 2 done and committed; cycle 3 next)
+- **Current phase / step:** Review cycles (cycles 1-3 done and committed; cycle 4 = confirmation pass of the cycle-3 changes)
 - **Exact next action:** Run at least 3 review->fix cycles over the whole code base against the requirement IDs, the 5 data-safety rules, role permissions, Bangla rendering (UI + PDFs), error handling; log each in 'Review cycles'; notify at the start and end of each; stop after a cycle that finds nothing. Things to look at: scheduler/AppState listener cleanup in `app.dart`; `context.read<ShellController>()` in SummaryScreen on the phone (provided by MobileShell); GEN-1/2/4 completeness; Windows config (cannot be built here); unused code. Then the final report (built per phase, tests, NOT verified list, manual checks) and the final notification. Do not push.
 - **Half-done / broken:** nothing broken.
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
   - `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter gen-l10n`
   - `flutter analyze` (expect: No issues found)
-  - `flutter test` (expect: all pass; 270 after review cycle 2; run `flutter test --concurrency=3`, more parallelism gets processes killed)
+  - `flutter test` (expect: all pass; 272 after review cycle 3; run `flutter test --concurrency=3`, more parallelism gets processes killed)
   - `flutter test integration_test -d macos` (2 tests: UI flow; sync over real sockets)
   - Manual phone sync without the desktop app: `dart run tool/sync_host.dart 10.0.2.2 /tmp/sync_code.txt`, then on the emulator choose 'type the code' and paste the file's text
   - run: `flutter run -d macos` / `flutter run -d emulator-5554`
@@ -241,6 +241,22 @@ Not changed (decision recorded):
 - Fresh installation has no approvers until an Admin adds them (the requirements list three as examples, not defaults).
 - Restore's "photos missing" count includes photos that were taken off (still downloaded; harmless).
 - No automated test for: role change while signed in, approver rename in the UI, very large (crore) amounts in list/PDF columns, phone sent to the background during camera capture (needs a device).
+
+### Cycle 3 (2026-11-14): reviewer of the cycle-2 diff + sync/Drive pass, and a fresh pass over the desktop screens
+
+Fixed (each with a test unless noted):
+- Phone sync used a waiting list read at the start: an entry edited or cancelled while an earlier one was being sent went with its old version and was then marked synced for good. Each entry is now read again just before it is sent and marked synced only if unchanged.
+- Drive log flooding: daily Excel and backup failures that repeat at every 2-minute retry are now logged once (they pushed real history out of the 200-row log); a lost Google sign-in is now reported for the daily Excel upload too (it was silent); the failed offline sign-in restore no longer leaves an HTTP client behind (no test).
+- "Show duplicates only" left an empty list with no way back after the last duplicate was marked reviewed (filter now drops itself; page index clamped).
+- Settings: a refused "Add approver" no longer clears the typed name; rename dialog no longer disposes its field while it closes; approval dialog ignores a second Enter while checking (no test); a PDF preview from "both" no longer stays after switching the content option (no test).
+
+Not changed (decision recorded):
+- "Today" figures, and a list/summary opened on "today/this month", are not refreshed when the app stays open past midnight (corrects itself on the next change or visit).
+- A failed `done` call at the end of a sync shows "cannot reach the computer" although every entry was confirmed (no data impact).
+- A restore that fails while fetching photos after the database was replaced says "Restore failed" (running the restore again fetches the rest).
+- Entries whose photos were swapped more than ~20 times, or whose photo bytes pass 64 MB, cannot sync (removed photo rows are kept and sent).
+- Photo counts on the done screen/desktop log include removed photos (cosmetic).
+- Enter does not submit most desktop forms (only sign-in, set-up, approval, add approver).
 
 ## Assumptions
 

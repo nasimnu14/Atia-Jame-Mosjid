@@ -67,6 +67,9 @@ class _EntryListScreenState extends State<EntryListScreen> {
     final period = _choice.resolve(_today);
     final gen = ++_generation;
     final dupes = await svc.duplicateCount(widget.type);
+    // The "duplicates only" filter has no switch once no duplicate is left
+    // (for example after the last one was marked reviewed): drop it.
+    if (dupes == 0 && _onlyDuplicates) _onlyDuplicates = false;
     EntryPage? page;
     if (period != null) {
       page = await svc.list(
@@ -81,6 +84,11 @@ class _EntryListScreenState extends State<EntryListScreen> {
       );
     }
     if (!mounted || gen != _generation) return;
+    // Fewer entries than before: do not stay on a page that no longer exists.
+    if (page != null && page.rows.isEmpty && _pageIndex > 0) {
+      _pageIndex = 0;
+      return _load();
+    }
     setState(() {
       _page = page;
       _duplicates = dupes;

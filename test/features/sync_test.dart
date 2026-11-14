@@ -384,6 +384,44 @@ void main() {
       },
     );
 
+    test(
+      'an entry edited while an earlier one is being sent goes with its newest version',
+      () async {
+        final r = await makeRig();
+        await r.sync();
+        final a = await r.phoneIncome(1, 100, name: 'এক');
+        final b = await r.phoneIncome(2, 200, name: 'দুই');
+        r.server.newOffer();
+        final hook = _HookClient(r.http);
+        var entryCalls = 0;
+        hook.after = (req) async {
+          if (req.url.path == '/entry' && ++entryCalls == 1) {
+            // The first entry has just been confirmed; the user now edits the
+            // second one, which was already in the waiting list.
+            await (r.phone.db.update(
+              r.phone.db.entries,
+            )..where((x) => x.id.equals(b.id))).write(
+              EntriesCompanion(
+                amount: const Value(999),
+                editedAt: Value(DateTime(2026, 11, 14)),
+              ),
+            );
+          }
+        };
+        final client = SyncClient(
+          db: r.phone.db,
+          photos: PhotoStorage(r.phone.photoDir),
+          settings: r.phone.settingsRepo,
+          client: hook,
+          now: () => r.phone.clock,
+        );
+        await client.sync(r.server.offer, phoneName: 'ফোন');
+        final got = {for (final e in await r.desktopEntries()) e.id: e};
+        expect(got[a.id]!.amount, 100);
+        expect(got[b.id]!.amount, 999); // the edited version, not the old one
+      },
+    );
+
     test('a second sync sends nothing again', () async {
       final r = await makeRig();
       await r.sync();
@@ -942,4 +980,19 @@ void main() {
       },
     );
   });
+}
+
+/// Runs something after each request has been answered (before the phone sees
+/// the answer), to make things happen "during" a sync.
+class _HookClient extends http.BaseClient {
+  _HookClient(this._inner);
+  final http.Client _inner;
+  Future<void> Function(http.BaseRequest request)? after;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final res = await _inner.send(request);
+    await after?.call(request);
+    return res;
+  }
 }

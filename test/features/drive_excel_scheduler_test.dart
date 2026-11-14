@@ -1,4 +1,5 @@
 import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
+import 'package:atia_masjid_accounts/features/google_drive/drive_client.dart';
 import 'package:atia_masjid_accounts/features/google_drive/drive_service.dart';
 import 'package:atia_masjid_accounts/features/google_drive/excel_builder.dart';
 import 'package:atia_masjid_accounts/shared/period.dart';
@@ -9,6 +10,32 @@ import '../helpers/test_env.dart';
 
 void main() {
   group('Excel upload (XLS-1 to XLS-9)', () {
+    test(
+      'a daily upload that keeps failing is logged once, and a lost sign-in is reported',
+      () async {
+        final env = await TestEnv.create();
+        await env.settingsRepo.set(SettingKey.googleAccount, 'a@example.com');
+        // Offline: the same failure on every retry.
+        env.auth.restoreError = DriveException(
+          'No internet connection',
+          offline: true,
+        );
+        for (var i = 0; i < 3; i++) {
+          final r = await env.excel.uploadDaily();
+          expect(r.ok, isFalse);
+          expect(r.error, 'No internet connection');
+        }
+        expect(await env.driveService.recentLog(['excel_daily']), hasLength(1));
+        // Back online but Google no longer accepts the sign-in: reported, not
+        // "not connected".
+        env.auth.restoreError = null;
+        env.auth.stored = null;
+        final r = await env.excel.uploadDaily();
+        expect(r.notConnected, isFalse);
+        expect(r.error, contains('sign-in expired'));
+      },
+    );
+
     test(
       'XLS-1 / XLS-9: the daily file has all entries and is named with the date',
       () async {

@@ -529,6 +529,12 @@ void main() {
         () => h.services.entries.duplicateCount(EntryType.income),
       );
       expect(after, 0);
+      // Back in the list the "duplicates only" filter is gone with the last
+      // duplicate: every entry of the period is shown again.
+      await h.tapText('আয়'); // the breadcrumb goes back
+      await h.settle(6);
+      expect(find.text('প্রথম'), findsOneWidget);
+      expect(find.text('ফোনের এন্ট্রি'), findsWidgets);
     },
   );
 }

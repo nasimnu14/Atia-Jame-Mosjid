@@ -174,17 +174,9 @@ class BackupService {
       await drive.log('backup', '$reason · $newPhotos', ok: true);
       return BackupResult(BackupOutcome.done, newPhotos: newPhotos);
     } on DriveException catch (e) {
-      await settings.set(SettingKey.lastBackupError, e.message);
-      await drive.log('backup', reason, ok: false, error: e.message);
-      return BackupResult(
-        BackupOutcome.failed,
-        error: e.message,
-        offline: e.offline,
-      );
+      return _failedOnce(reason, e.message, offline: e.offline);
     } catch (e) {
-      await settings.set(SettingKey.lastBackupError, '$e');
-      await drive.log('backup', reason, ok: false, error: '$e');
-      return BackupResult(BackupOutcome.failed, error: '$e');
+      return _failedOnce(reason, '$e');
     } finally {
       if (snapshot.existsSync()) snapshot.deleteSync();
     }

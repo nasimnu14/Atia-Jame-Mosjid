@@ -157,7 +157,17 @@ class SyncClient {
               ..orderBy([(e) => OrderingTerm.asc(e.createdAt)]))
             .get();
     report.remaining = pending.length;
-    for (final e in pending) {
+    for (final queued in pending) {
+      // The entry as it is now: it may have been edited or cancelled since the
+      // list was read, and the desktop must get that version.
+      final e =
+          await (db.select(db.entries)
+                ..where((x) => x.id.equals(queued.id) & x.synced.equals(false)))
+              .getSingleOrNull();
+      if (e == null) {
+        report.remaining--;
+        continue;
+      }
       final rows =
           await (db.select(db.photos)
                 ..where((p) => p.entryId.equals(e.id))
@@ -182,9 +192,27 @@ class SyncClient {
           report,
         );
       }
-      await (db.update(db.entries)..where((x) => x.id.equals(e.id))).write(
-        EntriesCompanion(synced: const Value(true), syncedAt: Value(now())),
-      );
+      // Marked synced only if it is still the version that was sent; if it
+      // changed while the desktop was answering, it stays waiting.
+      final marked =
+          await (db.update(db.entries)..where(
+                (x) =>
+                    x.id.equals(e.id) &
+                    x.status.equalsValue(e.status) &
+                    (e.editedAt == null
+                        ? x.editedAt.isNull()
+                        : x.editedAt.equals(e.editedAt!)),
+              ))
+              .write(
+                EntriesCompanion(
+                  synced: const Value(true),
+                  syncedAt: Value(now()),
+                ),
+              );
+      if (marked == 0) {
+        report.remaining--;
+        continue;
+      }
       report.entriesSent++;
       report.photosSent += withData.length;
       report.remaining--;

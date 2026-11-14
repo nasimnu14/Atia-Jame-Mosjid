@@ -50,20 +50,23 @@ class GoogleDriveAuth implements DriveAuth {
   @override
   Future<DriveClient?> restore() async {
     if (!isConfigured) return null;
+    AutoRefreshingAuthClient? client;
     try {
       final raw = await _storage.read(key: _key);
       if (raw == null) return null;
       final creds = AccessCredentials.fromJson(
         jsonDecode(raw) as Map<String, dynamic>,
       );
-      final client = autoRefreshingClient(_id, creds, http.Client());
+      client = autoRefreshingClient(_id, creds, http.Client());
       client.credentialUpdates.listen(_save);
       return await _wrap(client);
     } on DriveException catch (e) {
+      client?.close(); // do not leave a client behind at every retry
       // No internet is not a lost sign-in: say so, so it is tried again later.
       if (e.offline) rethrow;
       return null;
     } catch (_) {
+      client?.close();
       return null; // revoked or expired: the user connects again
     }
   }

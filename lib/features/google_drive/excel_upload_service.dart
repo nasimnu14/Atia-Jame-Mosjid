@@ -116,10 +116,19 @@ class ExcelUploadService {
     try {
       client = await drive.client();
     } on DriveException catch (e) {
-      await drive.log(kind, description, ok: false, error: e.message);
+      await _logFailure(kind, description, e.message);
       return ExcelResult(ok: false, error: e.message);
     }
-    if (client == null) return const ExcelResult(ok: false, notConnected: true);
+    if (client == null) {
+      // A saved account whose sign-in no longer works is a failure to report
+      // (like backups, BAK-5), not "not connected".
+      if (await drive.accountEmail() != null) {
+        const msg = 'Google sign-in expired. Connect the account again.';
+        await _logFailure(kind, description, msg);
+        return const ExcelResult(ok: false, error: msg);
+      }
+      return const ExcelResult(ok: false, notConnected: true);
+    }
     try {
       final rows = await entries.inPeriod(
         period,
@@ -147,12 +156,26 @@ class ExcelUploadService {
       await drive.log(kind, description, ok: true);
       return ExcelResult(ok: true, fileName: name);
     } on DriveException catch (e) {
-      await drive.log(kind, description, ok: false, error: e.message);
+      await _logFailure(kind, description, e.message);
       return ExcelResult(ok: false, error: e.message);
     } catch (e) {
-      await drive.log(kind, description, ok: false, error: '$e');
+      await _logFailure(kind, description, '$e');
       return ExcelResult(ok: false, error: '$e');
     }
+  }
+
+  /// The daily upload retries every few minutes: the same failure is written
+  /// to the log once, not at every retry (it would push out the real history).
+  Future<void> _logFailure(
+    String kind,
+    String description,
+    String message,
+  ) async {
+    if (kind == 'excel_daily' &&
+        await settings.get(SettingKey.lastExcelError) == message) {
+      return;
+    }
+    await drive.log(kind, description, ok: false, error: message);
   }
 
   /// XLS-9: never replace an earlier file. If a file with this name is already

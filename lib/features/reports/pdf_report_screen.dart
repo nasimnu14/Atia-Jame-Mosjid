@@ -73,7 +73,10 @@ class _PdfReportScreenState extends State<PdfReportScreen> {
           const SizedBox(height: 10),
           RadioGroup<ReportContent>(
             groupValue: _content,
-            onChanged: (v) => setState(() => _content = v!),
+            onChanged: (v) => setState(() {
+              _content = v!;
+              _last = null;
+            }),
             child: Column(
               children: [
                 for (final (c, label) in [
