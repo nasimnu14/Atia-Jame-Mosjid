@@ -144,7 +144,11 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
       return;
     }
     final picked = await services.photoPicker.pick(context, maxCount: room);
-    for (final raw in picked) {
+    // More chosen than there is room for (INC-6): keep the first ones and say so.
+    if (picked.length > room && mounted) {
+      showError(context, l.photoLimit(fmt.integer(maxPhotosPerEntry)));
+    }
+    for (final raw in picked.take(room)) {
       if (!mounted) return;
       Uint8List? bytes;
       try {

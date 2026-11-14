@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 
 import '../../data/database.dart';
 import '../../data/photo_storage.dart';
+import '../../data/repositories/settings_repository.dart';
 
 /// What the desktop answers for one received entry.
 class EntryReceipt {
@@ -68,7 +69,9 @@ class SyncReceiver {
     if (sent.id.isEmpty ||
         sent.amount <= 0 ||
         sent.receiptNo < 1 ||
-        photos.length > 10) {
+        // Photos taken off the entry stay as rows (rule 4) and do not count.
+        photos.where((p) => p.row.removedAt == null).length > 10 ||
+        photos.length > 200) {
       throw SyncRejectedException('Invalid entry');
     }
     // The id and the photo names become folder and file names on this
@@ -153,18 +156,22 @@ class SyncReceiver {
     required int entries,
     required int photos,
     required int duplicates,
-  }) => _db
-      .into(_db.syncLog)
-      .insertOnConflictUpdate(
-        SyncLogCompanion.insert(
-          id: sessionId,
-          phoneName: phoneName,
-          at: startedAt,
-          entriesReceived: entries,
-          photosReceived: photos,
-          duplicates: Value(duplicates),
-        ),
-      );
+  }) async {
+    await _db
+        .into(_db.syncLog)
+        .insertOnConflictUpdate(
+          SyncLogCompanion.insert(
+            id: sessionId,
+            phoneName: phoneName,
+            at: startedAt,
+            entriesReceived: entries,
+            photosReceived: photos,
+            duplicates: Value(duplicates),
+          ),
+        );
+    // The dashboard's "Sync" status: when a phone last synced with this computer.
+    await SettingsRepository(_db).setDateTime(SettingKey.lastSyncAt, now());
+  }
 
   Future<List<SyncLogData>> history({int limit = 10}) =>
       (_db.select(_db.syncLog)

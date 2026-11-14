@@ -107,15 +107,20 @@ class BackupService {
       if (!await hasData()) {
         return const BackupResult(BackupOutcome.nothingToBackUp);
       }
-      final client = await drive.client();
+      final DriveClient? client;
+      try {
+        client = await drive.client();
+      } on DriveException catch (e) {
+        return _failedOnce(reason, e.message, offline: e.offline);
+      }
       if (client == null) {
         // An account is saved but its sign-in no longer works (access taken
         // away, token expired): say so instead of stopping silently (BAK-5).
         if (await drive.accountEmail() != null) {
-          const msg = 'Google sign-in expired. Connect the account again.';
-          await settings.set(SettingKey.lastBackupError, msg);
-          await drive.log('backup', reason, ok: false, error: msg);
-          return const BackupResult(BackupOutcome.failed, error: msg);
+          return _failedOnce(
+            reason,
+            'Google sign-in expired. Connect the account again.',
+          );
         }
         return const BackupResult(BackupOutcome.notConnected);
       }
@@ -123,6 +128,21 @@ class BackupService {
     } finally {
       _running = false;
     }
+  }
+
+  /// A failure before the backup could start. Written once: the scheduler
+  /// tries again every few minutes and must not fill (and push out) the log
+  /// with the same line.
+  Future<BackupResult> _failedOnce(
+    String reason,
+    String message, {
+    bool offline = false,
+  }) async {
+    if (await settings.get(SettingKey.lastBackupError) != message) {
+      await settings.set(SettingKey.lastBackupError, message);
+      await drive.log('backup', reason, ok: false, error: message);
+    }
+    return BackupResult(BackupOutcome.failed, error: message, offline: offline);
   }
 
   Future<BackupResult> _backup(DriveClient client, String reason) async {

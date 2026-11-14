@@ -59,6 +59,10 @@ class GoogleDriveAuth implements DriveAuth {
       final client = autoRefreshingClient(_id, creds, http.Client());
       client.credentialUpdates.listen(_save);
       return await _wrap(client);
+    } on DriveException catch (e) {
+      // No internet is not a lost sign-in: say so, so it is tried again later.
+      if (e.offline) rethrow;
+      return null;
     } catch (_) {
       return null; // revoked or expired: the user connects again
     }

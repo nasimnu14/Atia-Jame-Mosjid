@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/photo_storage.dart';
+import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
 import 'package:atia_masjid_accounts/data/tables.dart';
 import 'package:atia_masjid_accounts/features/entries/entry_service.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_client.dart';
@@ -12,6 +13,7 @@ import 'package:atia_masjid_accounts/features/sync/sync_crypto.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_offer.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_receiver.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_server.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -322,6 +324,63 @@ void main() {
         ); // the first (accounts only) too
         // And it counts in the desktop's balance like any other entry.
         expect(await r.desktop.balance.currentBalance(), 2000 - 650);
+      },
+    );
+
+    test(
+      'an entry with 10 photos and a removed one still syncs; the removed one stays on the desktop (rule 4)',
+      () async {
+        final r = await makeRig();
+        await r.sync();
+        final e = await r.phoneIncome(
+          1,
+          500,
+          photos: [
+            for (var i = 0; i < 10; i++)
+              PhotoDraft(bytes: bytes(40, i + 1), label: 'ছবি $i'),
+          ],
+        );
+        // One photo is taken off, another put on: 11 rows, 10 of them shown.
+        final rows = await r.phone.db.select(r.phone.db.photos).get();
+        await (r.phone.db.update(r.phone.db.photos)
+              ..where((x) => x.id.equals(rows.first.id)))
+            .write(PhotosCompanion(removedAt: Value(DateTime(2026, 11, 14))));
+        await PhotoStorage(
+          r.phone.photoDir,
+        ).saveAs(e.id, 'extra.jpg', bytes(30, 99));
+        await r.phone.db
+            .into(r.phone.db.photos)
+            .insert(
+              PhotosCompanion.insert(
+                id: 'px',
+                entryId: e.id,
+                fileName: 'extra.jpg',
+                label: 'নতুন',
+                position: 10,
+              ),
+            );
+        r.server.newOffer();
+        final report = await r.sync();
+        expect(report.entriesSent, 1);
+        final got = await r.desktop.db.select(r.desktop.db.photos).get();
+        expect(got, hasLength(11));
+        expect(got.where((x) => x.removedAt != null), hasLength(1));
+      },
+    );
+
+    test(
+      'the computer remembers when a phone last synced (dashboard)',
+      () async {
+        final r = await makeRig();
+        expect(
+          await r.desktop.settingsRepo.getDateTime(SettingKey.lastSyncAt),
+          isNull,
+        );
+        await r.sync();
+        expect(
+          await r.desktop.settingsRepo.getDateTime(SettingKey.lastSyncAt),
+          isNotNull,
+        );
       },
     );
 

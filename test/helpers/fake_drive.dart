@@ -154,12 +154,18 @@ class FakeDriveAuth implements DriveAuth {
   bool configured = true;
   int connectCalls = 0;
 
+  /// When set, restoring the saved sign-in fails with this (e.g. offline).
+  Object? restoreError;
+
   @override
   bool get isConfigured => configured;
 
   @override
-  Future<DriveClient?> restore() async =>
-      stored == null ? null : drive.client(stored!);
+  Future<DriveClient?> restore() async {
+    final e = restoreError;
+    if (e != null) throw e;
+    return stored == null ? null : drive.client(stored!);
+  }
 
   @override
   Future<DriveClient> connect() async {

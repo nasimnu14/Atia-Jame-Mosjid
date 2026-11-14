@@ -46,7 +46,7 @@ class _SyncScanScreenState extends State<SyncScanScreen> {
     final n = await s.syncClient.pendingCount();
     final photos = await s.db
         .customSelect(
-          'SELECT COUNT(*) AS c FROM photos WHERE entry_id IN (SELECT id FROM entries WHERE synced = 0)',
+          'SELECT COUNT(*) AS c FROM photos WHERE removed_at IS NULL AND entry_id IN (SELECT id FROM entries WHERE synced = 0)',
         )
         .getSingle();
     if (mounted) {

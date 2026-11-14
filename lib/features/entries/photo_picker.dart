@@ -35,7 +35,8 @@ class PlatformPhotoPicker implements PhotoPicker {
       final files = await picker.pickMultiImage(
         limit: maxCount >= 2 ? maxCount : null,
       );
-      return [for (final f in files.take(maxCount)) await f.readAsBytes()];
+      // One more than fits, so the form can tell the user the limit was hit.
+      return [for (final f in files.take(maxCount + 1)) await f.readAsBytes()];
     }
     const group = XTypeGroup(
       label: 'Images',
@@ -43,7 +44,7 @@ class PlatformPhotoPicker implements PhotoPicker {
       uniformTypeIdentifiers: ['public.image'],
     );
     final files = await openFiles(acceptedTypeGroups: [group]);
-    return [for (final f in files.take(maxCount)) await f.readAsBytes()];
+    return [for (final f in files.take(maxCount + 1)) await f.readAsBytes()];
   }
 }
 

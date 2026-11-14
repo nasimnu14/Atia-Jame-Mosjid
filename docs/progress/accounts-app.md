@@ -3,14 +3,14 @@
 ## RESUME HERE
 
 - **Last updated:** 2026-11-14 (Phase 6 done and committed; review cycles next)
-- **Current phase / step:** Review cycles (cycle 1 done and committed; cycle 2 next)
+- **Current phase / step:** Review cycles (cycles 1 and 2 done and committed; cycle 3 next)
 - **Exact next action:** Run at least 3 review->fix cycles over the whole code base against the requirement IDs, the 5 data-safety rules, role permissions, Bangla rendering (UI + PDFs), error handling; log each in 'Review cycles'; notify at the start and end of each; stop after a cycle that finds nothing. Things to look at: scheduler/AppState listener cleanup in `app.dart`; `context.read<ShellController>()` in SummaryScreen on the phone (provided by MobileShell); GEN-1/2/4 completeness; Windows config (cannot be built here); unused code. Then the final report (built per phase, tests, NOT verified list, manual checks) and the final notification. Do not push.
 - **Half-done / broken:** nothing broken.
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
   - `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter gen-l10n`
   - `flutter analyze` (expect: No issues found)
-  - `flutter test` (expect: all pass; 265 after review cycle 1; run `flutter test --concurrency=3`, more parallelism gets processes killed)
+  - `flutter test` (expect: all pass; 270 after review cycle 2; run `flutter test --concurrency=3`, more parallelism gets processes killed)
   - `flutter test integration_test -d macos` (2 tests: UI flow; sync over real sockets)
   - Manual phone sync without the desktop app: `dart run tool/sync_host.dart 10.0.2.2 /tmp/sync_code.txt`, then on the emulator choose 'type the code' and paste the file's text
   - run: `flutter run -d macos` / `flutter run -d emulator-5554`
@@ -226,6 +226,21 @@ Not changed (decision recorded):
 - The server listens on all network cards (the phone needs the Wi-Fi one); sealed messages protect content.
 - Raw English error text inside some Bangla messages (GEN-2, minor); 11 unused translation keys; `PeriodKind` unused.
 - A photo missing on the phone is skipped at sync (the entry still syncs).
+
+### Cycle 2 (2026-11-14): reviewer of the cycle-1 fixes + reviewer walking all 192 manual test cases against the code
+
+Fixed (each with a test):
+- Regression from cycle 1: a phone entry with 10 photos where one was taken off and another added (11 rows) was refused by the desktop for ever, blocking all later entries. The limit now counts shown photos only; the phone's pending-photo count too.
+- No internet was reported as "sign-in expired" (and logged every 2 minutes): offline is now told apart; a failure that cannot start is logged once, not at every retry.
+- Choosing more photos than fit dropped the extras silently: now says the limit is 10.
+- Dashboard "Sync" status on the computer always said "Not yet": it now records when a phone last synced.
+
+Not changed (decision recorded):
+- Moving to another menu item discards a half-filled form without a warning (TC-179). Found low; left as is.
+- Typing a receipt number in the list filters it; opening it needs Enter (TC-042, as designed).
+- Fresh installation has no approvers until an Admin adds them (the requirements list three as examples, not defaults).
+- Restore's "photos missing" count includes photos that were taken off (still downloaded; harmless).
+- No automated test for: role change while signed in, approver rename in the UI, very large (crore) amounts in list/PDF columns, phone sent to the background during camera capture (needs a device).
 
 ## Assumptions
 

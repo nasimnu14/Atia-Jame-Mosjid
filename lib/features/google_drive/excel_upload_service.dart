@@ -112,7 +112,13 @@ class ExcelUploadService {
     required String description,
     required String kind,
   }) async {
-    final client = await drive.client();
+    final DriveClient? client;
+    try {
+      client = await drive.client();
+    } on DriveException catch (e) {
+      await drive.log(kind, description, ok: false, error: e.message);
+      return ExcelResult(ok: false, error: e.message);
+    }
     if (client == null) return const ExcelResult(ok: false, notConnected: true);
     try {
       final rows = await entries.inPeriod(

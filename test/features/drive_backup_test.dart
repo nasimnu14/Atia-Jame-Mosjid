@@ -5,6 +5,7 @@ import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/db_opener.dart';
 import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
 import 'package:atia_masjid_accounts/features/google_drive/backup_service.dart';
+import 'package:atia_masjid_accounts/features/google_drive/drive_client.dart';
 import 'package:atia_masjid_accounts/features/google_drive/drive_service.dart';
 import 'package:atia_masjid_accounts/features/google_drive/restore_service.dart';
 import 'package:drift/native.dart';
@@ -229,6 +230,42 @@ void main() {
       expect(r.outcome, BackupOutcome.notConnected);
       expect(env.fakeDrive.uploadCount, 0);
     });
+  });
+
+  group('BAK-5: a sign-in that cannot be used is reported, once', () {
+    test(
+      'lost sign-in: a failure is shown and logged once, not every retry',
+      () async {
+        final env = await TestEnv.create();
+        // An account was connected earlier, but Google no longer accepts the
+        // saved sign-in (as after a restart of the app).
+        await env.settingsRepo.set(SettingKey.googleAccount, 'a@example.com');
+        env.auth.stored = null;
+        for (var i = 0; i < 3; i++) {
+          final r = await env.backup.runBackup();
+          expect(r.outcome, BackupOutcome.failed);
+          expect(r.error, contains('sign-in expired'));
+        }
+        expect(await env.backup.lastError(), contains('sign-in expired'));
+        expect(await env.driveService.recentLog(['backup']), hasLength(1));
+      },
+    );
+
+    test(
+      'no internet is reported as no internet, not as an expired sign-in',
+      () async {
+        final env = await TestEnv.create();
+        await env.settingsRepo.set(SettingKey.googleAccount, 'a@example.com');
+        env.auth.restoreError = DriveException(
+          'No internet connection',
+          offline: true,
+        );
+        final r = await env.backup.runBackup();
+        expect(r.outcome, BackupOutcome.failed);
+        expect(r.offline, isTrue);
+        expect(r.error, 'No internet connection');
+      },
+    );
   });
 
   group('BAK-8: switching Google account', () {

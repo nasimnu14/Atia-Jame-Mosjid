@@ -201,7 +201,7 @@ class FakePhotoPicker implements PhotoPicker {
   Future<List<Uint8List>> pick(
     BuildContext context, {
     required int maxCount,
-  }) async => photos.take(maxCount).toList();
+  }) async => photos.take(maxCount + 1).toList(); // like the real picker
 }
 
 bool _fontsLoaded = false;

@@ -233,6 +233,22 @@ void main() {
     );
   });
 
+  testApp('choosing more photos than fit says the limit is 10 (INC-6)', (
+    tester,
+  ) async {
+    final picker = FakePhotoPicker([for (var i = 0; i < 11; i++) png()]);
+    final c = await start(tester, picker: picker);
+    final h = c.h;
+    await h.tapText('আয়');
+    await h.tapText('+ নতুন আয়');
+    await h.tapText('+ ছবি যোগ করুন');
+    await h.settle(10);
+    expect(
+      find.text('একটি এন্ট্রিতে সর্বোচ্চ ১০টি ছবি দেওয়া যায়'),
+      findsOneWidget,
+    );
+  });
+
   testApp(
     'photos: a label is asked for; blank gets description + number (INC-6, INC-10)',
     (tester) async {
