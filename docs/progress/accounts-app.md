@@ -3,7 +3,7 @@
 ## RESUME HERE
 
 - **Last updated:** 2026-11-14 (Phase 6 done and committed; review cycles next)
-- **Current phase / step:** Review cycles (cycles 1-3 done and committed; cycle 4 = confirmation pass of the cycle-3 changes)
+- **Current phase / step:** All phases and review cycles done; final report (4 cycles done; the last found nothing real). Remaining: final report
 - **Exact next action:** Run at least 3 review->fix cycles over the whole code base against the requirement IDs, the 5 data-safety rules, role permissions, Bangla rendering (UI + PDFs), error handling; log each in 'Review cycles'; notify at the start and end of each; stop after a cycle that finds nothing. Things to look at: scheduler/AppState listener cleanup in `app.dart`; `context.read<ShellController>()` in SummaryScreen on the phone (provided by MobileShell); GEN-1/2/4 completeness; Windows config (cannot be built here); unused code. Then the final report (built per phase, tests, NOT verified list, manual checks) and the final notification. Do not push.
 - **Half-done / broken:** nothing broken.
 - **Verify commands:**
@@ -257,6 +257,11 @@ Not changed (decision recorded):
 - Entries whose photos were swapped more than ~20 times, or whose photo bytes pass 64 MB, cannot sync (removed photo rows are kept and sent).
 - Photo counts on the done screen/desktop log include removed photos (cosmetic).
 - Enter does not submit most desktop forms (only sign-in, set-up, approval, add approver).
+
+### Cycle 4 (2026-11-14): confirmation pass of the cycle-3 changes
+
+No regressions. One cosmetic counter fixed. Recorded, not changed: if a phone entry is edited in the few milliseconds between the desktop confirming it and the phone marking it synced, the phone keeps it waiting but the desktop (which never overwrites an entry it already has, so as not to undo a correction made on the computer) ignores the newer version at the next sync. Very narrow; the entry is then marked synced with the computer holding the older version.
+No further cycle needed: a cycle with no real findings was reached.
 
 ## Assumptions
 

@@ -198,6 +198,8 @@ The developer publishes every version, after the customer's feedback.
    that nothing is lost (entries, photos, users, settings, sync marks).
 6. Push the tag: `git tag -a v1.1.0 -m "## বাংলা ... ## English ..." && git push origin v1.1.0`.
    The tag message becomes the release notes: write a `## বাংলা` section and a `## English` section; the
+   **Check this on the first real release:** a reviewer believes the release action may not copy an annotated tag's message (it would then use auto-generated notes and the Bangla/English notes would not reach the app). If so, edit the release notes on GitHub by hand after the build.
+   Also check on the first real Windows update that the app reopens by itself after the installer finishes (the installer's start entry now runs in silent mode too).
    app shows the one that matches the language. GitHub Actions builds the Windows installer
    (+ checksum), the macOS test zip and the signed Android APK and attaches them to the release.
 7. Check that the release page has `Atia-Setup-<version>.exe`, its `.sha256`, `atia-<version>.apk`.

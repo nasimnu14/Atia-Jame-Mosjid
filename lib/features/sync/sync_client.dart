@@ -210,8 +210,7 @@ class SyncClient {
                 ),
               );
       if (marked == 0) {
-        report.remaining--;
-        continue;
+        continue; // still waiting: it changed while the desktop was answering
       }
       report.entriesSent++;
       report.photosSent += withData.length;
