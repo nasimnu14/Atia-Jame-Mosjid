@@ -213,3 +213,7 @@ Repository settings needed once: the secrets listed in section 2.3 and 4, and th
 - **Wi-Fi sync does not connect (Windows):** allow the app through the Windows firewall on "Private
   networks" when Windows asks. A phone hotspot can serve as the shared network.
 - **Test processes are killed (exit 137):** run `flutter test --concurrency=3`.
+
+## First sign-in (built-in Super Admin)
+
+A new computer installation creates one Super Admin by itself (no set-up screen): name `Nasim`, username `nasimnu14`, password `Sa@1234` (see `lib/app/built_in_admin.dart`). The password is stored only as a bcrypt hash in the database, **but it is written in the source code**, so anyone who can read the repository can read it. After the first sign-in, change it in Settings. To restore from a Google Drive backup on a new computer, sign in with this account, connect Google on the Backup page, then restore (the first-launch restore button is no longer shown because there is no set-up screen). A new installation holding only this account is not backed up until there is an entry, a second user or an opening balance. Phones do not create it; they get the accounts from the computer when they pair.

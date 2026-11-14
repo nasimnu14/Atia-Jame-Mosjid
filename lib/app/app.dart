@@ -20,6 +20,7 @@ class AtiaApp extends StatefulWidget {
     this.reopen,
     this.runDriveJobs = false,
     this.checkUpdates = false,
+    this.seedBuiltInAdmin = false,
   });
   final AppServices services;
 
@@ -32,13 +33,19 @@ class AtiaApp extends StatefulWidget {
   /// Check GitHub for a newer version once a day (computer and phone).
   final bool checkUpdates;
 
+  /// A new computer installation starts with the built-in Super Admin.
+  final bool seedBuiltInAdmin;
+
   @override
   State<AtiaApp> createState() => _AtiaAppState();
 }
 
 class _AtiaAppState extends State<AtiaApp> {
   late AppServices _services = widget.services;
-  late AppState _state = AppState(_services)..load();
+  late AppState _state = AppState(
+    _services,
+    seedBuiltInAdmin: widget.seedBuiltInAdmin,
+  )..load();
   bool _replacing = false;
   final _rootNavKey = GlobalKey<NavigatorState>();
   String? _signedInUserId;
@@ -112,7 +119,8 @@ class _AtiaAppState extends State<AtiaApp> {
       }
       return;
     }
-    final state = AppState(fresh)..notice = message;
+    final state = AppState(fresh, seedBuiltInAdmin: widget.seedBuiltInAdmin)
+      ..notice = message;
     await state.load();
     state.addListener(_closeOverlaysOnSignOut);
     if (!mounted) return;

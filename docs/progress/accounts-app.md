@@ -263,6 +263,10 @@ Not changed (decision recorded):
 No regressions. One cosmetic counter fixed. Recorded, not changed: if a phone entry is edited in the few milliseconds between the desktop confirming it and the phone marking it synced, the phone keeps it waiting but the desktop (which never overwrites an entry it already has, so as not to undo a correction made on the computer) ignores the newer version at the next sync. Very narrow; the entry is then marked synced with the computer holding the older version.
 No further cycle needed: a cycle with no real findings was reached.
 
+### After cycle 4 (owner request): built-in Super Admin
+
+A new computer installation now creates the Super Admin `nasimnu14` (name Nasim, password in `lib/app/built_in_admin.dart`) by itself; the set-up screen is no longer reached on the computer (code kept). The backup guard was adjusted (a database with only that one user and nothing else is still "empty"). Tests added. Risk: the password is in the source; change it in Settings.
+
 ## Assumptions
 
 - Drive backups: the requirements say keep one year (BAK-7). The task text mentions a default of 10; the requirements doc is the source of truth, so one year is used.

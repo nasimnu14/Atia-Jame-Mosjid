@@ -21,6 +21,7 @@ Future<void> main() async {
         // Backups and Excel uploads run on the computer, not the phone.
         runDriveJobs: Platform.isWindows || Platform.isMacOS,
         checkUpdates: true,
+        seedBuiltInAdmin: Platform.isWindows || Platform.isMacOS,
       ),
     );
   } catch (e) {

@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import '../data/database.dart';
 import '../data/repositories/settings_repository.dart';
 import '../shared/formatters.dart';
+import '../features/users/user_service.dart';
 import 'app_services.dart';
+import 'built_in_admin.dart';
 
 /// App-wide state: language (GEN-3) and the signed-in user (USR-1).
 class AppState extends ChangeNotifier {
-  AppState(this.services);
+  AppState(this.services, {this.seedBuiltInAdmin = false});
   final AppServices services;
+
+  /// Create the built-in Super Admin when this is a computer with no accounts.
+  final bool seedBuiltInAdmin;
 
   bool ready = false;
 
@@ -29,6 +34,19 @@ class AppState extends ChangeNotifier {
     final lang = await services.settingsRepo.get(SettingKey.language);
     bangla = lang != 'en';
     hasUsers = await services.users.hasAnyUser();
+    if (!hasUsers && seedBuiltInAdmin && !services.isPhone) {
+      // A phone never does this: its accounts come from the computer (MOB-5).
+      try {
+        await services.users.createSuperAdmin(
+          name: builtInAdminName,
+          username: builtInAdminUsername,
+          password: builtInAdminPassword,
+        );
+      } on UserException {
+        // Created a moment ago by another load(): nothing to do.
+      }
+      hasUsers = await services.users.hasAnyUser();
+    }
     ready = true;
     notifyListeners();
   }

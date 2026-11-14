@@ -97,8 +97,18 @@ class BackupService {
   /// False on a brand-new installation with no accounts yet. An empty database
   /// is never backed up: it would become the newest backup and could be
   /// restored over real data by mistake.
-  Future<bool> hasData() async =>
-      (await (db.select(db.users)..limit(1)).get()).isNotEmpty;
+  ///
+  /// A new installation holds only the built-in Super Admin (one user, nothing
+  /// else): that is still "no data". Once there are entries, more users or an
+  /// opening balance, there is something to protect.
+  Future<bool> hasData() async {
+    final users = await (db.select(db.users)..limit(2)).get();
+    if (users.isEmpty) return false;
+    if (users.length > 1) return true;
+    final entries = await (db.select(db.entries)..limit(1)).get();
+    if (entries.isNotEmpty) return true;
+    return (await settings.get(SettingKey.openingBalance)) != null;
+  }
 
   Future<BackupResult> runBackup({String reason = 'scheduled'}) async {
     if (_running) return const BackupResult(BackupOutcome.alreadyRunning);

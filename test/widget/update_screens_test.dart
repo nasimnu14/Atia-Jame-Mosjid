@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:atia_masjid_accounts/features/google_drive/drive_service.dart';
 import 'package:atia_masjid_accounts/features/updates/update_installer.dart';
 import 'package:atia_masjid_accounts/features/updates/update_service.dart';
+import 'package:atia_masjid_accounts/data/tables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -64,6 +65,14 @@ Future<(AppHarness, FakeUpdateInstaller, FakeDrive)> start(
       password: 'secret1',
     );
     await h.services.settings.addApprover(s, 'সভাপতি');
+    // A second user, so there is something worth backing up.
+    await h.services.users.addUser(
+      s,
+      name: 'User',
+      username: 'user',
+      password: 'secret3',
+      role: Role.user,
+    );
     if (connectDrive) {
       await h.services.drive.connect();
     }

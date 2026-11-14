@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/db_opener.dart';
 import 'package:atia_masjid_accounts/data/repositories/settings_repository.dart';
+import 'package:atia_masjid_accounts/data/tables.dart';
+import 'package:atia_masjid_accounts/features/entries/entry_service.dart';
 import 'package:atia_masjid_accounts/features/google_drive/backup_service.dart';
 import 'package:atia_masjid_accounts/features/google_drive/drive_client.dart';
 import 'package:atia_masjid_accounts/features/google_drive/drive_service.dart';
@@ -493,6 +495,36 @@ void main() {
 }
 
 void emptyDatabaseTests() {
+  test(
+    'a new installation with only the built-in Super Admin is not backed up until there is something to protect',
+    () async {
+      final env = await TestEnv.create(seedUsers: false, connected: true);
+      await env.users.createSuperAdmin(
+        name: 'Nasim',
+        username: 'nasimnu14',
+        password: 'Sa@1234',
+      );
+      expect(
+        (await env.backup.runBackup()).outcome,
+        BackupOutcome.nothingToBackUp,
+      );
+      expect(env.fakeDrive.uploadCount, 0);
+      // As soon as there is an entry it is protected.
+      final u = (await env.users.all()).single;
+      await env.entries.create(
+        u,
+        EntryDraft(
+          type: EntryType.income,
+          receiptNo: 1,
+          date: DateTime(2026, 11, 13),
+          name: 'দাতা',
+          amount: 500,
+        ),
+      );
+      expect((await env.backup.runBackup()).ok, isTrue);
+    },
+  );
+
   test(
     'a brand-new installation with no accounts is never backed up',
     () async {
