@@ -2952,6 +2952,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name}\'s phone'**
   String syncPhoneOf(String name);
+
+  /// No description provided for @phonePasswordNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A password changed here is replaced by the computer\'s password at the next sync. To change it for good, change it on the computer.'**
+  String get phonePasswordNote;
 }
 
 class _AppLocalizationsDelegate

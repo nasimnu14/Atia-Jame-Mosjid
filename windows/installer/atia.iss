@@ -45,4 +45,4 @@ Name: "{autodesktop}\Atia Masjid Accounts"; Filename: "{app}\atia_masjid_account
 Name: "desktopicon"; Description: "Create a desktop icon"; Flags: unchecked
 
 [Run]
-Filename: "{app}\atia_masjid_accounts.exe"; Description: "Start Atia Masjid Accounts"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\atia_masjid_accounts.exe"; Description: "Start Atia Masjid Accounts"; Flags: nowait postinstall

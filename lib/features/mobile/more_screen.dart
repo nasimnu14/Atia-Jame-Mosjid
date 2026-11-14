@@ -8,6 +8,7 @@ import '../../shared/role_text.dart';
 import '../../shared/widgets/basics.dart';
 import '../reports/pdf_report_screen.dart';
 import '../settings/settings_screen.dart';
+import '../updates/update_card.dart';
 import '../sync/sync_scan_screen.dart';
 
 /// "More" on the phone: language, own password, sync, PDF, version, sign out.
@@ -99,24 +100,30 @@ class _MoreScreenState extends State<MoreScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${roleName(l, user.role)} · ${user.username}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.muted,
+                    Text(
+                      '${roleName(l, user.role)} · ${user.username}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.muted,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -141,9 +148,16 @@ class _MoreScreenState extends State<MoreScreen> {
                     MaterialPageRoute(
                       builder: (_) => Scaffold(
                         appBar: AppBar(title: Text(l.myPassword)),
-                        body: const SingleChildScrollView(
-                          padding: EdgeInsets.all(16),
-                          child: PasswordCard(),
+                        body: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              // The desktop is the master copy of accounts (SYN-10).
+                              MessageBanner(l.phonePasswordNote),
+                              const SizedBox(height: 14),
+                              const PasswordCard(),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -168,6 +182,10 @@ class _MoreScreenState extends State<MoreScreen> {
             ),
           ),
         ),
+        const SizedBox(height: 14),
+        // UPD-1, UPD-2: the phone too is told about a new version and can
+        // install it from here.
+        const UpdateCard(),
         const SizedBox(height: 14),
         OutlinedButton(
           onPressed: context.app.signOut,

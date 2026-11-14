@@ -694,6 +694,68 @@ void main() {
     );
 
     test(
+      'two phones using the same code at the same moment: only one gets in (SYN-3)',
+      () async {
+        final r = await makeRig();
+        final o = r.server.offer;
+        final c = SyncCrypto(o.key);
+        Future<int> hello() async => (await http.post(
+          Uri.parse('http://127.0.0.1:${o.port}/hello'),
+          body: await c.sealJson({
+            'token': o.token,
+            'phoneName': 'x',
+          }, aad: 'hello'),
+        )).statusCode;
+        final codes = await Future.wait([hello(), hello()]);
+        expect(codes..sort(), [200, 401]);
+      },
+    );
+
+    test(
+      'an entry or photo name that would leave the photo folder is refused',
+      () async {
+        final r = await makeRig();
+        final o = r.server.offer;
+        final c = SyncCrypto(o.key);
+        final hello = await http.post(
+          Uri.parse('http://127.0.0.1:${o.port}/hello'),
+          body: await c.sealJson({
+            'token': o.token,
+            'phoneName': 'x',
+          }, aad: 'hello'),
+        );
+        final session =
+            (await c.openJson(hello.bodyBytes, aad: 'res:hello'))['session']
+                as String;
+        await r.sync(); // pairs a phone so it has a valid entry to copy
+        final e = await r.phoneIncome(1, 500);
+        Future<int> send(String id, String file) async => (await http.post(
+          Uri.parse('http://127.0.0.1:${o.port}/entry'),
+          headers: {'X-Session': session},
+          body: await c.sealJson({
+            'entry': {...e.toJson(), 'id': id},
+            'photos': [
+              {
+                'id': 'p1',
+                'entryId': id,
+                'fileName': file,
+                'label': 'x',
+                'position': 0,
+                'removedAt': null,
+                'data': base64.encode([1, 2, 3]),
+              },
+            ],
+          }, aad: 'entry'),
+        )).statusCode;
+        expect(await send('..', 'atia_accounts.db'), 422);
+        expect(await send('ok-1', '../x.jpg'), 422);
+        expect(await send('ok-1', '..'), 422);
+        expect(await send('a/b', 'x.jpg'), 422);
+        expect(await r.desktopEntries(), isEmpty);
+      },
+    );
+
+    test(
       'only POST, only known paths, and unknown sessions are refused',
       () async {
         final r = await makeRig();

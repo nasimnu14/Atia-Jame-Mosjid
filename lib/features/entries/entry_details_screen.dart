@@ -7,6 +7,7 @@ import '../../data/database.dart';
 import '../../data/tables.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/context_ext.dart';
+import '../../shared/error_text.dart';
 import '../../shared/formatters.dart';
 import '../../shared/permissions.dart';
 import '../../shared/role_text.dart';
@@ -79,6 +80,17 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _clearDuplicate() async {
+    final l = context.l10n;
+    final fmt = context.fmt;
+    final me = context.app.user!;
+    try {
+      await context.services.entries.clearDuplicateFlag(me, widget.entryId);
+    } catch (e) {
+      if (mounted) showError(context, errorText(l, fmt, e));
+    }
   }
 
   Future<void> _cancel(Entry e) async {
@@ -226,8 +238,7 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                  onPressed: () =>
-                      context.services.entries.clearDuplicateFlag(me, e.id),
+                  onPressed: _clearDuplicate,
                   child: Text(l.markReviewed),
                 ),
               ),

@@ -20,6 +20,7 @@ Future<void> main() async {
         reopen: () => AppServices.open(dir),
         // Backups and Excel uploads run on the computer, not the phone.
         runDriveJobs: Platform.isWindows || Platform.isMacOS,
+        checkUpdates: true,
       ),
     );
   } catch (e) {

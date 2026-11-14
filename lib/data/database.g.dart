@@ -1775,6 +1775,17 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _removedAtMeta = const VerificationMeta(
+    'removedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> removedAt = GeneratedColumn<DateTime>(
+    'removed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1782,6 +1793,7 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
     fileName,
     label,
     position,
+    removedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1832,6 +1844,12 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
     } else if (isInserting) {
       context.missing(_positionMeta);
     }
+    if (data.containsKey('removed_at')) {
+      context.handle(
+        _removedAtMeta,
+        removedAt.isAcceptableOrUnknown(data['removed_at']!, _removedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -1861,6 +1879,10 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
         DriftSqlType.int,
         data['${effectivePrefix}position'],
       )!,
+      removedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}removed_at'],
+      ),
     );
   }
 
@@ -1876,12 +1898,17 @@ class Photo extends DataClass implements Insertable<Photo> {
   final String fileName;
   final String label;
   final int position;
+
+  /// Set when a photo is taken off an entry. The row and the file stay (plan
+  /// rule 4: nothing is ever deleted); the photo is just no longer shown.
+  final DateTime? removedAt;
   const Photo({
     required this.id,
     required this.entryId,
     required this.fileName,
     required this.label,
     required this.position,
+    this.removedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1891,6 +1918,9 @@ class Photo extends DataClass implements Insertable<Photo> {
     map['file_name'] = Variable<String>(fileName);
     map['label'] = Variable<String>(label);
     map['position'] = Variable<int>(position);
+    if (!nullToAbsent || removedAt != null) {
+      map['removed_at'] = Variable<DateTime>(removedAt);
+    }
     return map;
   }
 
@@ -1901,6 +1931,9 @@ class Photo extends DataClass implements Insertable<Photo> {
       fileName: Value(fileName),
       label: Value(label),
       position: Value(position),
+      removedAt: removedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(removedAt),
     );
   }
 
@@ -1915,6 +1948,7 @@ class Photo extends DataClass implements Insertable<Photo> {
       fileName: serializer.fromJson<String>(json['fileName']),
       label: serializer.fromJson<String>(json['label']),
       position: serializer.fromJson<int>(json['position']),
+      removedAt: serializer.fromJson<DateTime?>(json['removedAt']),
     );
   }
   @override
@@ -1926,6 +1960,7 @@ class Photo extends DataClass implements Insertable<Photo> {
       'fileName': serializer.toJson<String>(fileName),
       'label': serializer.toJson<String>(label),
       'position': serializer.toJson<int>(position),
+      'removedAt': serializer.toJson<DateTime?>(removedAt),
     };
   }
 
@@ -1935,12 +1970,14 @@ class Photo extends DataClass implements Insertable<Photo> {
     String? fileName,
     String? label,
     int? position,
+    Value<DateTime?> removedAt = const Value.absent(),
   }) => Photo(
     id: id ?? this.id,
     entryId: entryId ?? this.entryId,
     fileName: fileName ?? this.fileName,
     label: label ?? this.label,
     position: position ?? this.position,
+    removedAt: removedAt.present ? removedAt.value : this.removedAt,
   );
   Photo copyWithCompanion(PhotosCompanion data) {
     return Photo(
@@ -1949,6 +1986,7 @@ class Photo extends DataClass implements Insertable<Photo> {
       fileName: data.fileName.present ? data.fileName.value : this.fileName,
       label: data.label.present ? data.label.value : this.label,
       position: data.position.present ? data.position.value : this.position,
+      removedAt: data.removedAt.present ? data.removedAt.value : this.removedAt,
     );
   }
 
@@ -1959,13 +1997,15 @@ class Photo extends DataClass implements Insertable<Photo> {
           ..write('entryId: $entryId, ')
           ..write('fileName: $fileName, ')
           ..write('label: $label, ')
-          ..write('position: $position')
+          ..write('position: $position, ')
+          ..write('removedAt: $removedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, entryId, fileName, label, position);
+  int get hashCode =>
+      Object.hash(id, entryId, fileName, label, position, removedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1974,7 +2014,8 @@ class Photo extends DataClass implements Insertable<Photo> {
           other.entryId == this.entryId &&
           other.fileName == this.fileName &&
           other.label == this.label &&
-          other.position == this.position);
+          other.position == this.position &&
+          other.removedAt == this.removedAt);
 }
 
 class PhotosCompanion extends UpdateCompanion<Photo> {
@@ -1983,6 +2024,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
   final Value<String> fileName;
   final Value<String> label;
   final Value<int> position;
+  final Value<DateTime?> removedAt;
   final Value<int> rowid;
   const PhotosCompanion({
     this.id = const Value.absent(),
@@ -1990,6 +2032,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     this.fileName = const Value.absent(),
     this.label = const Value.absent(),
     this.position = const Value.absent(),
+    this.removedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PhotosCompanion.insert({
@@ -1998,6 +2041,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     required String fileName,
     required String label,
     required int position,
+    this.removedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        entryId = Value(entryId),
@@ -2010,6 +2054,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     Expression<String>? fileName,
     Expression<String>? label,
     Expression<int>? position,
+    Expression<DateTime>? removedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2018,6 +2063,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
       if (fileName != null) 'file_name': fileName,
       if (label != null) 'label': label,
       if (position != null) 'position': position,
+      if (removedAt != null) 'removed_at': removedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2028,6 +2074,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     Value<String>? fileName,
     Value<String>? label,
     Value<int>? position,
+    Value<DateTime?>? removedAt,
     Value<int>? rowid,
   }) {
     return PhotosCompanion(
@@ -2036,6 +2083,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
       fileName: fileName ?? this.fileName,
       label: label ?? this.label,
       position: position ?? this.position,
+      removedAt: removedAt ?? this.removedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2058,6 +2106,9 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     if (position.present) {
       map['position'] = Variable<int>(position.value);
     }
+    if (removedAt.present) {
+      map['removed_at'] = Variable<DateTime>(removedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2072,6 +2123,7 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
           ..write('fileName: $fileName, ')
           ..write('label: $label, ')
           ..write('position: $position, ')
+          ..write('removedAt: $removedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4651,6 +4703,7 @@ typedef $$PhotosTableCreateCompanionBuilder =
       required String fileName,
       required String label,
       required int position,
+      Value<DateTime?> removedAt,
       Value<int> rowid,
     });
 typedef $$PhotosTableUpdateCompanionBuilder =
@@ -4660,6 +4713,7 @@ typedef $$PhotosTableUpdateCompanionBuilder =
       Value<String> fileName,
       Value<String> label,
       Value<int> position,
+      Value<DateTime?> removedAt,
       Value<int> rowid,
     });
 
@@ -4711,6 +4765,11 @@ class $$PhotosTableFilterComposer
 
   ColumnFilters<int> get position => $composableBuilder(
     column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get removedAt => $composableBuilder(
+    column: $table.removedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4767,6 +4826,11 @@ class $$PhotosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get removedAt => $composableBuilder(
+    column: $table.removedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$EntriesTableOrderingComposer get entryId {
     final $$EntriesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4811,6 +4875,9 @@ class $$PhotosTableAnnotationComposer
 
   GeneratedColumn<int> get position =>
       $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get removedAt =>
+      $composableBuilder(column: $table.removedAt, builder: (column) => column);
 
   $$EntriesTableAnnotationComposer get entryId {
     final $$EntriesTableAnnotationComposer composer = $composerBuilder(
@@ -4869,6 +4936,7 @@ class $$PhotosTableTableManager
                 Value<String> fileName = const Value.absent(),
                 Value<String> label = const Value.absent(),
                 Value<int> position = const Value.absent(),
+                Value<DateTime?> removedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PhotosCompanion(
                 id: id,
@@ -4876,6 +4944,7 @@ class $$PhotosTableTableManager
                 fileName: fileName,
                 label: label,
                 position: position,
+                removedAt: removedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4885,6 +4954,7 @@ class $$PhotosTableTableManager
                 required String fileName,
                 required String label,
                 required int position,
+                Value<DateTime?> removedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PhotosCompanion.insert(
                 id: id,
@@ -4892,6 +4962,7 @@ class $$PhotosTableTableManager
                 fileName: fileName,
                 label: label,
                 position: position,
+                removedAt: removedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

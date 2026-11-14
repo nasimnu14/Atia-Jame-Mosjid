@@ -9,6 +9,7 @@ import '../../shared/context_ext.dart';
 import '../../shared/formatters.dart';
 import '../../shared/period.dart';
 import '../../shared/widgets/basics.dart';
+import '../updates/update_banner.dart';
 import '../entries/entry_details_screen.dart';
 import '../entries/entry_form_screen.dart';
 import '../entries/entry_text.dart';
@@ -48,7 +49,9 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
 
   Future<void> _load() async {
     final s = context.services;
-    final sum = await s.balance.summary(Period(DateTime(2000), DateTime(2200)));
+    final sum = await s.balance.summary(
+      Period(DateTime(1900), DateTime(2999, 12, 31)),
+    );
     final pending = await s.syncClient.pendingCount();
     final last = await s.syncClient.lastSync();
     final recent = await s.entries.recent(limit: 6);
@@ -75,6 +78,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        const UpdateBanner(),
         MessageBanner(l.phoneOnlyNote, kind: BannerKind.warn),
         const SizedBox(height: 14),
         Container(

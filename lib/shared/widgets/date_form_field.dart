@@ -109,8 +109,8 @@ class DateFormFieldState extends State<DateFormField> {
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
-      firstDate: widget.firstDate ?? DateTime(1990),
-      lastDate: widget.lastDate ?? DateTime(2100),
+      firstDate: widget.firstDate ?? DateTime(1900),
+      lastDate: widget.lastDate ?? DateTime(2200),
       helpText: widget.label,
     );
     if (picked != null) {

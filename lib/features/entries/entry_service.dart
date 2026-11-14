@@ -393,16 +393,16 @@ class EntryService {
             editedAt: Value(now()),
           ),
         );
-        // Removing a photo only removes its row; the file stays on disk.
+        // Taking a photo off only marks it (plan rule 4: nothing is deleted);
+        // its row and file stay, so backups and restores still have it.
         final keep = {
           for (final p in draft.photos)
             if (p.existingId != null) p.existingId!,
         };
         for (final p in current) {
           if (!keep.contains(p.id)) {
-            await (_db.delete(
-              _db.photos,
-            )..where((x) => x.id.equals(p.id))).go();
+            await (_db.update(_db.photos)..where((x) => x.id.equals(p.id)))
+                .write(PhotosCompanion(removedAt: Value(now())));
           }
         }
         for (var i = 0; i < draft.photos.length; i++) {
@@ -492,7 +492,7 @@ class EntryService {
 
   Future<List<Photo>> photosOf(String entryId) =>
       (_db.select(_db.photos)
-            ..where((p) => p.entryId.equals(entryId))
+            ..where((p) => p.entryId.equals(entryId) & p.removedAt.isNull())
             ..orderBy([(p) => OrderingTerm.asc(p.position)]))
           .get();
 
@@ -533,7 +533,10 @@ class EntryService {
       final pc = _db.photos.id.count();
       final pq = _db.selectOnly(_db.photos)
         ..addColumns([_db.photos.entryId, pc])
-        ..where(_db.photos.entryId.isIn(rows.map((r) => r.id)))
+        ..where(
+          _db.photos.entryId.isIn(rows.map((r) => r.id)) &
+              _db.photos.removedAt.isNull(),
+        )
         ..groupBy([_db.photos.entryId]);
       for (final r in await pq.get()) {
         photoCounts[r.read(_db.photos.entryId)!] = r.read(pc)!;

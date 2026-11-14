@@ -108,7 +108,17 @@ class BackupService {
         return const BackupResult(BackupOutcome.nothingToBackUp);
       }
       final client = await drive.client();
-      if (client == null) return const BackupResult(BackupOutcome.notConnected);
+      if (client == null) {
+        // An account is saved but its sign-in no longer works (access taken
+        // away, token expired): say so instead of stopping silently (BAK-5).
+        if (await drive.accountEmail() != null) {
+          const msg = 'Google sign-in expired. Connect the account again.';
+          await settings.set(SettingKey.lastBackupError, msg);
+          await drive.log('backup', reason, ok: false, error: msg);
+          return const BackupResult(BackupOutcome.failed, error: msg);
+        }
+        return const BackupResult(BackupOutcome.notConnected);
+      }
       return await _backup(client, reason);
     } finally {
       _running = false;

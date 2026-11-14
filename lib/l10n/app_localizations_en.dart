@@ -1684,4 +1684,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String syncPhoneOf(String name) {
     return '$name\'s phone';
   }
+
+  @override
+  String get phonePasswordNote =>
+      'A password changed here is replaced by the computer\'s password at the next sync. To change it for good, change it on the computer.';
 }

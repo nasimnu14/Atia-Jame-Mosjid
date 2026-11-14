@@ -168,7 +168,21 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     builder: (_) => const _PhotoLabelDialog(),
   );
 
+  bool _saving = false;
+
+  /// One save at a time: a second click while the first is still checking must
+  /// not create a second entry.
   Future<void> _save() async {
+    if (_saving) return;
+    _saving = true;
+    try {
+      await _saveNow();
+    } finally {
+      _saving = false;
+    }
+  }
+
+  Future<void> _saveNow() async {
     final l = context.l10n;
     final fmt = context.fmt;
     final services = context.services;

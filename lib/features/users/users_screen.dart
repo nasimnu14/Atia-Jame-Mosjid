@@ -334,6 +334,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
         password: _pass.text,
         role: _role,
       );
+      if (!mounted) return;
       nav.pop();
       messenger.showSnackBar(SnackBar(content: Text(l.userAdded)));
     } catch (e) {
@@ -481,20 +482,28 @@ class _ChangeRoleDialog extends StatefulWidget {
 class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
   late Role _role = widget.user.role;
   String? _error;
+  bool _busy = false;
 
   Future<void> _save() async {
+    if (_busy) return;
     final l = context.l10n;
     final fmt = context.fmt;
     final nav = Navigator.of(context);
+    setState(() => _busy = true);
     try {
       await context.services.users.changeRole(
         context.app.user!,
         widget.user.id,
         _role,
       );
+      if (!mounted) return;
       nav.pop();
     } catch (e) {
-      setState(() => _error = errorText(l, fmt, e));
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _error = errorText(l, fmt, e);
+      });
     }
   }
 
@@ -521,7 +530,7 @@ class _ChangeRoleDialogState extends State<_ChangeRoleDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l.back),
         ),
-        FilledButton(onPressed: _save, child: Text(l.save)),
+        FilledButton(onPressed: _busy ? null : _save, child: Text(l.save)),
       ],
     );
   }
@@ -548,22 +557,30 @@ class _ResetPasswordDialogState extends State<_ResetPasswordDialog> {
     super.dispose();
   }
 
+  bool _busy = false;
+
   Future<void> _save() async {
-    if (!_form.currentState!.validate()) return;
+    if (_busy || !_form.currentState!.validate()) return;
     final l = context.l10n;
     final fmt = context.fmt;
     final nav = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
     try {
       await context.services.users.resetPassword(
         context.app.user!,
         widget.user.id,
         _pass.text,
       );
+      if (!mounted) return;
       nav.pop();
       messenger.showSnackBar(SnackBar(content: Text(l.passwordChanged)));
     } catch (e) {
-      setState(() => _error = errorText(l, fmt, e));
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _error = errorText(l, fmt, e);
+      });
     }
   }
 
@@ -616,7 +633,10 @@ class _ResetPasswordDialogState extends State<_ResetPasswordDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l.back),
         ),
-        FilledButton(onPressed: _save, child: Text(l.resetPassword)),
+        FilledButton(
+          onPressed: _busy ? null : _save,
+          child: Text(l.resetPassword),
+        ),
       ],
     );
   }

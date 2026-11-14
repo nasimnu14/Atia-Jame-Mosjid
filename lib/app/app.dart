@@ -19,6 +19,7 @@ class AtiaApp extends StatefulWidget {
     required this.services,
     this.reopen,
     this.runDriveJobs = false,
+    this.checkUpdates = false,
   });
   final AppServices services;
 
@@ -27,6 +28,9 @@ class AtiaApp extends StatefulWidget {
 
   /// Run the automatic Google Drive jobs (desktop only).
   final bool runDriveJobs;
+
+  /// Check GitHub for a newer version once a day (computer and phone).
+  final bool checkUpdates;
 
   @override
   State<AtiaApp> createState() => _AtiaAppState();
@@ -38,6 +42,7 @@ class _AtiaAppState extends State<AtiaApp> {
   bool _replacing = false;
   final _rootNavKey = GlobalKey<NavigatorState>();
   String? _signedInUserId;
+  String? _reopenError;
 
   /// When the user signs out (or is signed out by a sync), close every dialog
   /// and full-screen page opened above the app, so nothing is left showing
@@ -58,9 +63,9 @@ class _AtiaAppState extends State<AtiaApp> {
     _state.addListener(_closeOverlaysOnSignOut);
     if (widget.runDriveJobs) {
       _services.scheduler.start();
-      // Once a day, quietly: a failed check is not shown.
-      _services.updates.checkIfDue();
     }
+    // Once a day, quietly: a failed check is not shown.
+    if (widget.checkUpdates) _services.updates.checkIfDue();
   }
 
   @override
@@ -87,7 +92,26 @@ class _AtiaAppState extends State<AtiaApp> {
     }
     old.scheduler.stop();
     await old.db.close();
-    final fresh = await reopen();
+    await _reopen(message);
+  }
+
+  /// Opens the data again after a restore. If that fails (for example the
+  /// restored file cannot be upgraded) the app shows the problem with a
+  /// "try again" button instead of a spinner that never ends.
+  Future<void> _reopen(String? message) async {
+    final reopen = widget.reopen!;
+    final AppServices fresh;
+    try {
+      fresh = await reopen();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _replacing = false;
+          _reopenError = '$e';
+        });
+      }
+      return;
+    }
     final state = AppState(fresh)..notice = message;
     await state.load();
     state.addListener(_closeOverlaysOnSignOut);
@@ -95,13 +119,51 @@ class _AtiaAppState extends State<AtiaApp> {
     setState(() {
       _services = fresh;
       _state = state;
+      _signedInUserId = null;
       _replacing = false;
+      _reopenError = null;
     });
     if (widget.runDriveJobs) fresh.scheduler.start();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_reopenError != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: buildTheme(),
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'তথ্য খোলা যায়নি / The data could not be opened',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(_reopenError!, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () {
+                      setState(() {
+                        _reopenError = null;
+                        _replacing = true;
+                      });
+                      _reopen(null);
+                    },
+                    child: const Text('আবার চেষ্টা করুন / Try again'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     if (_replacing) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,

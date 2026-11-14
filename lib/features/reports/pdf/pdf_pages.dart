@@ -303,7 +303,13 @@ List<List<PdfBlock>> paginate(List<PdfBlock> blocks) {
   for (var i = 0; i < blocks.length; i++) {
     final b = blocks[i];
     var need = b.height;
-    if (b.keepWithNext && i + 1 < blocks.length) need += blocks[i + 1].height;
+    if (b.keepWithNext && i + 1 < blocks.length) {
+      need += blocks[i + 1].height;
+      // A heading above a table must also stay with the table's first row.
+      if (blocks[i + 1].isTableHeader && i + 2 < blocks.length) {
+        need += blocks[i + 2].height;
+      }
+    }
     if (b.isTableHeader && i + 1 < blocks.length) need += blocks[i + 1].height;
     final empty = pages.last.isEmpty;
     if (!empty && used + need > PageSpec.contentHeight) {

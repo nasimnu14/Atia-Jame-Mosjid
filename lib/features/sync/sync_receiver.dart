@@ -43,6 +43,7 @@ class SyncRejectedException implements Exception {
 /// phone the accounts. Separate from the network so it can be tested alone.
 class SyncReceiver {
   SyncReceiver(this._db, this._photos, {this.now = DateTime.now});
+  static final _plainName = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$');
   final AppDatabase _db;
   final PhotoStorage _photos;
   final DateTime Function() now;
@@ -70,9 +71,13 @@ class SyncReceiver {
         photos.length > 10) {
       throw SyncRejectedException('Invalid entry');
     }
+    // The id and the photo names become folder and file names on this
+    // computer: only plain names are accepted (no '..', no separators).
+    if (!_plainName.hasMatch(sent.id)) {
+      throw SyncRejectedException('Invalid entry');
+    }
     if (photos.any(
-      (p) =>
-          p.row.entryId != sent.id || p.row.fileName.contains(RegExp(r'[/\\]')),
+      (p) => p.row.entryId != sent.id || !_plainName.hasMatch(p.row.fileName),
     )) {
       throw SyncRejectedException('Invalid photo');
     }

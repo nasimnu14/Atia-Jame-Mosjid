@@ -166,6 +166,11 @@ class SyncServer implements SyncHost {
       return Response(405);
     }
     final path = req.url.path;
+    // Refuse a huge body before reading it (nothing is trusted yet).
+    final declared = req.contentLength;
+    if (declared != null && declared > _maxBody) {
+      return Response(413);
+    }
     final Uint8List body;
     try {
       body = await _readBody(req);
@@ -247,6 +252,12 @@ class SyncServer implements SyncHost {
     if (msg['token'] != o.token) {
       return Response(401);
     }
+    // Spend the code at once, before anything else is awaited: a second phone
+    // that used the same code at the same moment must be refused (SYN-3).
+    if (!identical(_offer, o)) {
+      return Response(401);
+    }
+    newOffer();
     final id = _newId();
     final phone = '${msg['phoneName'] ?? ''}'.trim();
     final session = _Session(
@@ -258,8 +269,6 @@ class SyncServer implements SyncHost {
     _sessions[id] = session;
     await _record(session);
     _events.add(PhoneConnected(session.phoneName));
-    // The token is spent: the next phone needs a new code.
-    newOffer();
     return _reply(session, 'hello', {'session': id, 'desktop': desktopName});
   }
 

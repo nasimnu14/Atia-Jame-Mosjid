@@ -349,33 +349,45 @@ void main() {
         expect(u.entry.editedBy, env.admin.id);
       },
     );
-    test('removing a photo drops its row; labels may not be blank', () async {
-      final r = await env.addIncome(
-        photos: [TestEnv.photo('এক'), TestEnv.photo('দুই')],
-      );
-      final keep = r.photos.first;
-      final d = EntryDraft(
-        type: EntryType.income,
-        receiptNo: 1,
-        date: DateTime(2026, 11, 13),
-        name: 'দাতা',
-        amount: 1000,
-        photos: [
-          PhotoDraft(
-            existingId: keep.id,
-            existingFileName: keep.fileName,
-            label: 'নতুন নাম',
-          ),
-        ],
-      );
-      final u = await env.entries.update(env.admin, r.entry.id, d);
-      expect(u.photos.map((p) => p.label), ['নতুন নাম']);
-      d.photos = [TestEnv.photo('  ')];
-      await expectLater(
-        env.entries.update(env.admin, r.entry.id, d),
-        invalid(EntryField.photos, EntryProblem.blankLabel),
-      );
-    });
+    test(
+      'removing a photo only marks it: row and file stay (rule 4); labels may not be blank',
+      () async {
+        final r = await env.addIncome(
+          photos: [TestEnv.photo('এক'), TestEnv.photo('দুই')],
+        );
+        final keep = r.photos.first;
+        final d = EntryDraft(
+          type: EntryType.income,
+          receiptNo: 1,
+          date: DateTime(2026, 11, 13),
+          name: 'দাতা',
+          amount: 1000,
+          photos: [
+            PhotoDraft(
+              existingId: keep.id,
+              existingFileName: keep.fileName,
+              label: 'নতুন নাম',
+            ),
+          ],
+        );
+        final u = await env.entries.update(env.admin, r.entry.id, d);
+        expect(u.photos.map((p) => p.label), ['নতুন নাম']);
+        // The removed photo is hidden, not deleted: row and file are still there.
+        final gone = r.photos.last;
+        final rows = await env.db.select(env.db.photos).get();
+        expect(rows, hasLength(2));
+        expect(rows.singleWhere((x) => x.id == gone.id).removedAt, isNotNull);
+        expect(
+          env.entries.photoStorage.exists(r.entry.id, gone.fileName),
+          isTrue,
+        );
+        d.photos = [TestEnv.photo('  ')];
+        await expectLater(
+          env.entries.update(env.admin, r.entry.id, d),
+          invalid(EntryField.photos, EntryProblem.blankLabel),
+        );
+      },
+    );
     test('blank labels default to the description plus a number (INC-10)', () {
       final d = EntryDraft(
         type: EntryType.expense,

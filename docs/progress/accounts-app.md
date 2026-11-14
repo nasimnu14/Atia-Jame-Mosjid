@@ -3,14 +3,14 @@
 ## RESUME HERE
 
 - **Last updated:** 2026-11-14 (Phase 6 done and committed; review cycles next)
-- **Current phase / step:** Review cycles (none run yet)
+- **Current phase / step:** Review cycles (cycle 1 done and committed; cycle 2 next)
 - **Exact next action:** Run at least 3 review->fix cycles over the whole code base against the requirement IDs, the 5 data-safety rules, role permissions, Bangla rendering (UI + PDFs), error handling; log each in 'Review cycles'; notify at the start and end of each; stop after a cycle that finds nothing. Things to look at: scheduler/AppState listener cleanup in `app.dart`; `context.read<ShellController>()` in SummaryScreen on the phone (provided by MobileShell); GEN-1/2/4 completeness; Windows config (cannot be built here); unused code. Then the final report (built per phase, tests, NOT verified list, manual checks) and the final notification. Do not push.
 - **Half-done / broken:** nothing broken.
 - **Verify commands:**
   - `cd /Users/nasim/Documents/Projects/Personal/AtiaJameMasjid`
   - `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter gen-l10n`
   - `flutter analyze` (expect: No issues found)
-  - `flutter test` (expect: all pass; 261 at end of Phase 6; run `flutter test --concurrency=3`, more parallelism gets processes killed)
+  - `flutter test` (expect: all pass; 265 after review cycle 1; run `flutter test --concurrency=3`, more parallelism gets processes killed)
   - `flutter test integration_test -d macos` (2 tests: UI flow; sync over real sockets)
   - Manual phone sync without the desktop app: `dart run tool/sync_host.dart 10.0.2.2 /tmp/sync_code.txt`, then on the emulator choose 'type the code' and paste the file's text
   - run: `flutter run -d macos` / `flutter run -d emulator-5554`
@@ -201,7 +201,31 @@ Source: design artifact https://claude.ai/artifact/RTKSQa6taiYR82S5cRzDgX (47 bo
 
 ## Review cycles
 
-(none yet)
+### Cycle 1 (2026-11-14): three independent read-only reviewers (data safety / roles+errors / UI+Bangla+build)
+
+Fixed (each with a test unless noted):
+- Sync could write files outside the photo folder (entry id or photo name with `..`): now plain names only.
+- Two phones using one code at the same moment both got in: the code is now spent before anything is awaited.
+- Sync server read a huge body before checking anything: refuses by Content-Length first.
+- Restore: if reopening the data failed, a spinner never ended: now an error page with "try again" (no test; needs a failing reopen).
+- Removing a photo deleted its database row (data rule 4): now marked `removedAt` (schema v3, migration test 2->3, file and row stay and are still backed up).
+- Backups stopped silently when the Google sign-in stopped working: now recorded as a failure and shown on the Backup page.
+- Double click on Save could create two entries (guard added).
+- Dialogs: Back during a check closed the wrong page; double click on Change role / Reset password; unhandled error on "mark reviewed"; approving an edit counted as a sign-in.
+- Phone: a password changed on the phone was silently replaced at the next sync: a note now says so.
+- The phone never checked for updates and had no update screen (UPD-1/2): daily check on every platform; update card on More; banner on Home.
+- Windows in-app update did not reopen the app (installer `skipifsilent` removed; not run, Windows).
+- PDF: a heading could be left alone at the foot of a page; "Cancelled" wrapped in English (column wider).
+- More screen: long names overflowed on a phone.
+- Excel daily file and phone balance cut off entries dated before 2000; date picker range now matches the parser (1900 to 2200).
+- Removed unused `printing` dependency (its Windows build step downloads binaries).
+
+Not changed (decision recorded):
+- Backup/restore/update actions are hidden by role in the UI but not checked inside the services (the screens are the only callers; the requirements give updates to every user).
+- The sync server trusts a paired phone's `createdBy`/status fields; a paired phone is trusted by design (QR code). Pairing key is one-time.
+- The server listens on all network cards (the phone needs the Wi-Fi one); sealed messages protect content.
+- Raw English error text inside some Bangla messages (GEN-2, minor); 11 unused translation keys; `PeriodKind` unused.
+- A photo missing on the phone is skipped at sync (the entry still syncs).
 
 ## Assumptions
 

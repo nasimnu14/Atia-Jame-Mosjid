@@ -79,6 +79,10 @@ class Photos extends Table {
   TextColumn get label => text()();
   IntColumn get position => integer()();
 
+  /// Set when a photo is taken off an entry. The row and the file stay (plan
+  /// rule 4: nothing is ever deleted); the photo is just no longer shown.
+  DateTimeColumn get removedAt => dateTime().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

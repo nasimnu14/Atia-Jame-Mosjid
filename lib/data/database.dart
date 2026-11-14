@@ -21,7 +21,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Bump this and add a step to [migration] whenever a table changes.
   /// Add a test in test/data/migration_test.dart for every step.
-  static const currentSchemaVersion = 2;
+  static const currentSchemaVersion = 3;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -50,6 +50,10 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           'CREATE INDEX idx_drive_log_at ON drive_log (at)',
         );
+      }
+      // Schema 2 -> 3: a photo taken off an entry is marked, not deleted.
+      if (from < 3) {
+        await m.addColumn(photos, photos.removedAt);
       }
     },
     beforeOpen: (details) async {

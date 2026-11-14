@@ -63,6 +63,7 @@ class _CancelDialogState extends State<_CancelDialog> {
         _reason.text,
         approver: widget.approver,
       );
+      if (!mounted) return;
       nav.pop(true);
     } on EntryActionException catch (e) {
       if (!mounted) return;

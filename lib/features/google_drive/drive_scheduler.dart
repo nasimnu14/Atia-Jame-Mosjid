@@ -55,7 +55,9 @@ class DriveScheduler {
     _checking = true;
     try {
       // No Google account connected, or nothing to protect yet (first launch).
-      if (await drive.client() == null || !await backup.hasData()) {
+      // An account whose sign-in stopped working still goes on: the backup
+      // then records the failure so the Backup page can show it (BAK-5).
+      if (await drive.accountEmail() == null || !await backup.hasData()) {
         return;
       }
       if (await backup.isDue() && _cooledDown(_backupFailedAt)) {

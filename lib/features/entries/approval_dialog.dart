@@ -67,6 +67,9 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
     });
     try {
       final approver = await svc.authorizeApprover(_user.text, _pass.text);
+      // The dialog may have been closed with Back while the password was
+      // being checked: do not close some other page instead.
+      if (!mounted) return;
       nav.pop(approver);
     } catch (e) {
       if (!mounted) return;

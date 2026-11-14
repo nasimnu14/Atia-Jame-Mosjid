@@ -1677,4 +1677,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String syncPhoneOf(String name) {
     return '$name-এর ফোন';
   }
+
+  @override
+  String get phonePasswordNote =>
+      'এখানে পাসওয়ার্ড বদলালে পরের সিঙ্কে কম্পিউটারের পাসওয়ার্ডই ফিরে আসবে। স্থায়ীভাবে বদলাতে কম্পিউটারে বদলান।';
 }

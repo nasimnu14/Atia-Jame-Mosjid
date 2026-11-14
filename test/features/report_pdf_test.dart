@@ -196,6 +196,25 @@ void main() {
     );
   });
 
+  test('a heading is never left alone at the foot of a page', () {
+    final blocks = <PdfBlock>[
+      _Fake(PageSpec.contentHeight - 30), // page nearly full
+      _Fake(20, keepWithNext: true, debugText: 'HEADING'),
+      _Fake(20, isTableHeader: true, debugText: 'HDR'),
+      _Fake(20, isTableRow: true, debugText: 'row1'),
+      _Fake(20, isTableRow: true, debugText: 'row2'),
+    ];
+    final pages = paginate(blocks);
+    expect(pages.length, 2);
+    expect(pages.first.last.debugText, isNot('HEADING'));
+    expect(pages.last.map((b) => b.debugText), [
+      'HEADING',
+      'HDR',
+      'row1',
+      'row2',
+    ]);
+  });
+
   test(
     'a long report runs over several pages and repeats the table header',
     () async {
@@ -363,4 +382,26 @@ extension on TestEnv {
     periodName: periodName,
     content: ReportContent.both,
   );
+}
+
+class _Fake extends PdfBlock {
+  _Fake(
+    this.height, {
+    this.keepWithNext = false,
+    this.isTableHeader = false,
+    this.isTableRow = false,
+    this.debugText = '',
+  });
+  @override
+  final double height;
+  @override
+  final bool keepWithNext;
+  @override
+  final bool isTableHeader;
+  @override
+  final bool isTableRow;
+  @override
+  final String debugText;
+  @override
+  void paint(Canvas canvas, Offset origin) {}
 }

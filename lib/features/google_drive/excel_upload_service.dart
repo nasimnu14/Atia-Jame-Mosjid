@@ -65,7 +65,7 @@ class ExcelUploadService {
     final today = dayKey(now());
     final result = await _upload(
       l: l,
-      period: Period(DateTime(2000), DateTime(2200)),
+      period: Period(DateTime(1900), DateTime(2999, 12, 31)),
       content: ExcelContent.both,
       baseName: '${l.excelFilePrefix}_$today',
       description: l.logExcelDaily,

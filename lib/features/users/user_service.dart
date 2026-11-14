@@ -142,7 +142,11 @@ class UserService {
 
   /// Sign in with username and password (USR-1). A disabled user cannot
   /// sign in (USR-6).
-  Future<User> signIn(String username, String password) async {
+  Future<User> signIn(
+    String username,
+    String password, {
+    bool recordSignIn = true,
+  }) async {
     final user =
         await (_db.select(_db.users)
               ..where((u) => u.username.equals(normaliseUsername(username))))
@@ -157,6 +161,8 @@ class UserService {
       throw UserException(UserProblem.invalidCredentials);
     }
     if (!user.isActive) throw UserException(UserProblem.accountDisabled);
+    // Approving someone else's edit is not a sign-in.
+    if (!recordSignIn) return user;
     final at = now();
     await (_db.update(_db.users)..where((u) => u.id.equals(user.id))).write(
       UsersCompanion(lastSignInAt: Value(at)),
@@ -167,7 +173,7 @@ class UserService {
   /// An Admin or Super Admin approves an edit or cancel on the spot with their
   /// own username and password (EDT-2). Returns that approver.
   Future<User> authorizeApprover(String username, String password) async {
-    final user = await signIn(username, password);
+    final user = await signIn(username, password, recordSignIn: false);
     if (!can(user.role, Permission.editEntry)) {
       throw UserException(UserProblem.notAnApprover);
     }

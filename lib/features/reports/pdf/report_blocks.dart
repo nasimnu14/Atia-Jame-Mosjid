@@ -88,7 +88,7 @@ List<PdfBlock> buildPeriodReport({
             PdfCol.fixed(40),
             PdfCol.flex(1),
             PdfCol.fixed(72),
-            PdfCol.fixed(40),
+            PdfCol.fixed(54),
           ]
         : const [
             PdfCol.fixed(60),
@@ -96,7 +96,7 @@ List<PdfBlock> buildPeriodReport({
             PdfCol.flex(1),
             PdfCol.flex(1.2),
             PdfCol.fixed(72),
-            PdfCol.fixed(40),
+            PdfCol.fixed(54),
           ];
     RowBlock row(
       List<String> cells, {

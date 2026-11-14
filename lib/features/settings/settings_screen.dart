@@ -409,12 +409,14 @@ class PasswordCardState extends State<PasswordCard> {
         _cur.text,
         _new.text,
       );
+      if (!mounted) return;
       for (final c in [_cur, _new, _new2]) {
         c.clear();
       }
       setState(() => _error = null);
       messenger.showSnackBar(SnackBar(content: Text(l.passwordChanged)));
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = errorText(l, fmt, e));
     }
   }

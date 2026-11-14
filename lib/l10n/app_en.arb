@@ -1235,5 +1235,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "phonePasswordNote": "A password changed here is replaced by the computer's password at the next sync. To change it for good, change it on the computer."
 }
