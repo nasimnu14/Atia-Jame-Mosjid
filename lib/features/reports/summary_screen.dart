@@ -85,13 +85,26 @@ class _SummaryScreenState extends State<SummaryScreen> {
       String note, {
       Color? color,
       bool strong = false,
+
+      /// Green (default) or red: the card's background colour.
+      bool? positive,
     }) => Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: strong ? AppColors.primary : Colors.white,
+        color: strong
+            ? (positive == false ? AppColors.cancelledText : AppColors.primary)
+            : positive == null
+            ? Colors.white
+            : (positive ? AppColors.incomeSoft : AppColors.cancelledBg),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: strong ? AppColors.primary : AppColors.border,
+          color: strong
+              ? (positive == false
+                    ? AppColors.cancelledText
+                    : AppColors.primary)
+              : positive == null
+              ? AppColors.border
+              : (positive ? AppColors.income : AppColors.cancelledText),
         ),
       ),
       child: Column(
@@ -195,6 +208,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         fmt.signedMoney(s.net),
                         s.net >= 0 ? l.surplusNote : l.deficitNote,
                         strong: true,
+                        positive: s.net >= 0,
                       ),
                     ),
                   ],
@@ -202,8 +216,17 @@ class _SummaryScreenState extends State<SummaryScreen> {
               },
             ),
             const SizedBox(height: 14),
+            // The balance is for today, whatever period is chosen above.
+            card(
+              l.currentTotalBalance,
+              fmt.money(_balance),
+              l.balanceFormula,
+              color: _balance < 0 ? AppColors.cancelledText : AppColors.income,
+              positive: _balance >= 0,
+            ),
+            const SizedBox(height: 14),
             Text(
-              l.summaryNote(fmt.money(_balance)),
+              l.summaryNote,
               style: const TextStyle(fontSize: 14, color: AppColors.muted),
             ),
             const SizedBox(height: 18),

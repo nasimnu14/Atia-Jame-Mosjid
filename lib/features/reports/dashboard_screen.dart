@@ -85,6 +85,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _load() async {
     final s = context.services;
+    final seeCancelled = can(
+      context.app.user!.role,
+      Permission.viewCancelledEntries,
+    );
     final today = dateOnly(s.now());
     final ob = await s.settings.openingBalance();
     final data = _DashData(
@@ -93,7 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       openingDate: ob?.date,
       today: await s.balance.summary(Period.day(today)),
       month: await s.balance.summary(Period.monthOf(today)),
-      recent: await s.entries.recent(limit: 5),
+      recent: await s.entries.recent(limit: 5, includeCancelled: seeCancelled),
       backupAt: await s.settingsRepo.getDateTime(SettingKey.lastBackupAt),
       backupError: await s.settingsRepo.get(SettingKey.lastBackupError),
       excelAt: await s.settingsRepo.getDateTime(SettingKey.lastExcelUploadAt),
@@ -205,26 +209,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
       title: l.navDashboard,
       subtitle: fmt.longDate(today),
       actions: [
-        FilledButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const EntryFormScreen(type: EntryType.income),
+        if (can(role, Permission.addEntry)) ...[
+          FilledButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const EntryFormScreen(type: EntryType.income),
+              ),
             ),
+            child: Text(l.newIncome),
           ),
-          child: Text(l.newIncome),
-        ),
-        OutlinedButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const EntryFormScreen(type: EntryType.expense),
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const EntryFormScreen(type: EntryType.expense),
+              ),
             ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.expense,
+              side: const BorderSide(color: AppColors.expenseBorder),
+            ),
+            child: Text(l.newExpense),
           ),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.expense,
-            side: const BorderSide(color: AppColors.expenseBorder),
-          ),
-          child: Text(l.newExpense),
-        ),
+        ],
       ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

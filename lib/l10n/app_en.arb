@@ -95,8 +95,8 @@
   "enableUser": "Enable",
   "usersNeverDeleted": "Users are never deleted. A disabled user can no longer sign in, but their name stays on the entries they added. Changes reach phones at the phone's next sync.",
   "roleSuperAdminCan": "Everything, and only they can add users, change roles, disable users, reset passwords and restore a backup.",
-  "roleAdminCan": "Edit and cancel entries, opening balance, Google account, backup and settings.",
-  "roleUserCan": "Add entries, search, view details, make PDFs and Excel, sync a phone, change own password.",
+  "roleAdminCan": "Add, edit and cancel entries, opening balance, Google account, backup and settings.",
+  "roleUserCan": "Search, view details, make PDFs and Excel, sync a phone, change own password.",
   "addUserTitle": "Add a new user",
   "addUserNote": "Only the Super Admin can add users. There is only one Super Admin.",
   "newPassword": "New password",
@@ -195,7 +195,7 @@
   "donorNameOptional": "Donor's name (optional)",
   "payeeNameForm": "Name (who was paid)",
   "payeeName": "Name (payee)",
-  "purposeLabel": "Purpose (খরচ বাবদ)",
+  "purposeLabel": "Purpose (বিবরণ)",
   "approvedBy": "Approved by",
   "addressLabel": "Address",
   "addressOptional": "Address (optional)",
@@ -638,14 +638,7 @@
   "incomeMinusExpense": "Income − expense",
   "surplusNote": "Surplus for this period",
   "deficitNote": "Deficit for this period",
-  "summaryNote": "Cancelled entries are not counted in any total. Current balance today: {balance}",
-  "@summaryNote": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
+  "summaryNote": "Cancelled entries are not counted in any total.",
   "breakdownDays": "By day · {period}",
   "@breakdownDays": {
     "placeholders": {
@@ -1236,5 +1229,12 @@
       }
     }
   },
-  "phonePasswordNote": "A password changed here is replaced by the computer's password at the next sync. To change it for good, change it on the computer."
+  "phonePasswordNote": "A password changed here is replaced by the computer's password at the next sync. To change it for good, change it on the computer.",
+  "currentTotalBalance": "Current total balance",
+  "deleteEntryForever": "Delete forever",
+  "deleteForeverTitle": "Delete this entry forever?",
+  "deleteForeverBody": "The entry and its photos are removed for good. This cannot be undone.",
+  "entryDeleted": "Entry deleted",
+  "entryNotCancelled": "Only a cancelled entry can be deleted.",
+  "showCancelledEntries": "Show cancelled entries"
 }

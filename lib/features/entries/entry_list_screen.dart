@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/bangla.dart';
 import '../../shared/context_ext.dart';
 import '../../shared/formatters.dart';
+import '../../shared/permissions.dart';
 import '../../shared/period_choice.dart';
 import '../../shared/widgets/basics.dart';
 import '../../shared/widgets/period_selector.dart';
@@ -43,6 +44,13 @@ class _EntryListScreenState extends State<EntryListScreen> {
 
   bool get _isIncome => widget.type == EntryType.income;
 
+  /// A User never sees cancelled entries.
+  bool get _canSeeCancelled =>
+      can(context.app.user!.role, Permission.viewCancelledEntries);
+
+  /// An Admin can hide cancelled entries from the list and show them again.
+  bool _showCancelled = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -64,6 +72,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
 
   Future<void> _load() async {
     final svc = context.services.entries;
+    final showCancelled = _canSeeCancelled && _showCancelled;
     final period = _choice.resolve(_today);
     final gen = ++_generation;
     final dupes = await svc.duplicateCount(widget.type);
@@ -78,6 +87,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
           period: period,
           text: _search.text,
           onlyDuplicates: _onlyDuplicates,
+          includeCancelled: showCancelled,
         ),
         limit: _pageSize,
         offset: _pageIndex * _pageSize,
@@ -108,7 +118,11 @@ class _EntryListScreenState extends State<EntryListScreen> {
     final no = int.tryParse(toEnglishDigits(text.trim()));
     if (no == null) return;
     final svc = context.services.entries;
-    final matches = await svc.findByReceipt(widget.type, no);
+    final matches = await svc.findByReceipt(
+      widget.type,
+      no,
+      includeCancelled: _canSeeCancelled,
+    );
     if (!mounted) return;
     if (matches.isEmpty) {
       showInfo(context, l.entryNotFoundByNumber(context.fmt.integer(no)));
@@ -134,6 +148,10 @@ class _EntryListScreenState extends State<EntryListScreen> {
     }
   }
 
+  void _openForm() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (_) => EntryFormScreen(type: widget.type)));
+
   void _open(Entry e) {
     // FND-9: selecting an entry opens its details.
     Navigator.of(context).push(
@@ -146,20 +164,25 @@ class _EntryListScreenState extends State<EntryListScreen> {
     final l = context.l10n;
     final fmt = context.fmt;
     final period = _choice.resolve(_today);
+    final canAdd = can(context.appWatch.user!.role, Permission.addEntry);
     final page = _page;
     final from = _pageIndex * _pageSize;
 
     return PageScaffold(
       title: entryTitle(l, widget.type),
       actions: [
-        FilledButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => EntryFormScreen(type: widget.type),
+        // Same buttons as the Dashboard: filled for income, outlined for expense.
+        if (canAdd && _isIncome)
+          FilledButton(onPressed: _openForm, child: Text(l.newIncome))
+        else if (canAdd)
+          OutlinedButton(
+            onPressed: _openForm,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.expense,
+              side: const BorderSide(color: AppColors.expenseBorder),
             ),
+            child: Text(l.newExpense),
           ),
-          child: Text(_isIncome ? l.newIncome : l.newExpense),
-        ),
       ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +261,29 @@ class _EntryListScreenState extends State<EntryListScreen> {
                     textInputAction: TextInputAction.search,
                   ),
                 ),
+                if (_canSeeCancelled)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Switch(
+                          value: _showCancelled,
+                          onChanged: (v) {
+                            setState(() => _showCancelled = v);
+                            _reset();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            l.showCancelledEntries,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -278,15 +324,16 @@ class _EntryListScreenState extends State<EntryListScreen> {
                     ),
                     style: const TextStyle(fontSize: 15),
                   ),
-                  Text(
-                    page.cancelledCount > 0
-                        ? '${l.cancelledNotCounted} (${fmt.integer(page.cancelledCount)})'
-                        : l.cancelledNotCounted,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.muted,
+                  if (_canSeeCancelled)
+                    Text(
+                      page.cancelledCount > 0
+                          ? '${l.cancelledNotCounted} (${fmt.integer(page.cancelledCount)})'
+                          : l.cancelledNotCounted,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.muted,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

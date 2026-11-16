@@ -88,14 +88,16 @@ void main() {
 
   group('role permissions (USR-2 table)', () {
     const user = {
-      Permission.addEntry,
       Permission.viewEntries,
       Permission.syncPhone,
       Permission.changeOwnPassword,
     };
     const adminExtra = {
+      Permission.addEntry,
       Permission.editEntry,
       Permission.cancelEntry,
+      Permission.viewCancelledEntries,
+      Permission.deleteEntry,
       Permission.setOpeningBalance,
       Permission.manageApprovers,
       Permission.manageBackupAndSettings,

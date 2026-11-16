@@ -231,8 +231,14 @@ class SyncServer implements SyncHost {
       }
     } on SyncRejectedException catch (e) {
       return Response(422, body: e.message);
-    } catch (_) {
-      return Response(500);
+    } catch (e, st) {
+      // Say what went wrong, here and to the phone, instead of a bare 500.
+      stderr.writeln('Sync: ${req.url.path} failed: $e\n$st');
+      final text = '$e'.replaceAll('\n', ' ');
+      return Response(
+        500,
+        body: text.length > 200 ? text.substring(0, 200) : text,
+      );
     }
   }
 

@@ -56,6 +56,10 @@ List<PdfBlock> buildPeriodReport({
   required ReportContent content,
   required String periodName,
   required List<Entry> entries,
+
+  /// The current total balance (opening balance + all income − all expense,
+  /// as of today, not only this period). Null leaves the line out.
+  int? currentBalance,
 }) {
   final title = switch (content) {
     ReportContent.income => l.pdfReportTitleIncome,
@@ -215,9 +219,35 @@ List<PdfBlock> buildPeriodReport({
           PdfCell(l.incomeMinusExpense, style: s(true)),
           PdfCell(fmt.signedMoney(net), align: TextAlign.right, style: s(true)),
         ],
-        background: AppColors.incomeSoft,
+        // Green when income is at least expense, red when it is less.
+        background: net < 0 ? AppColors.cancelledBg : AppColors.incomeSoft,
         rowLine: false,
       ),
+      SpacerBlock(8),
+    ]);
+  }
+  if (currentBalance != null) {
+    blocks.addAll([
+      RowBlock(
+        const [PdfCol.flex(1), PdfCol.fixed(130)],
+        [
+          PdfCell(
+            l.currentTotalBalance,
+            style: pdfStyle(size: 12, weight: FontWeight.w700),
+          ),
+          PdfCell(
+            fmt.money(currentBalance),
+            align: TextAlign.right,
+            style: pdfStyle(size: 12, weight: FontWeight.w700),
+          ),
+        ],
+        background: currentBalance < 0
+            ? AppColors.cancelledBg
+            : AppColors.incomeSoft,
+        topRule: true,
+        rowLine: false,
+      ),
+      TextBlock(l.balanceFormula, style: pdfStyle(size: 9, color: _muted)),
       SpacerBlock(8),
     ]);
   }

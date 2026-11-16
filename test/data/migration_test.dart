@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/db_opener.dart';
+import 'package:atia_masjid_accounts/data/tables.dart';
 import 'package:drift/drift.dart'
     show
         OpeningDetails,
@@ -127,6 +128,43 @@ void main() {
     await db.close();
   });
 
+  test(
+    'a database that lacks entries.synced_at (made by an early build) is repaired when opened',
+    () async {
+      final dir = Directory.systemTemp.createTempSync('atia_repair_');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final file = File(p.join(dir.path, 'x.db'));
+      // A database at the newest number...
+      final first = AppDatabase(NativeDatabase(file));
+      await first.customSelect('select 1').get();
+      await first.close();
+      // ...but made without the column (as the early builds did).
+      final raw = NativeDatabase(file);
+      await raw.ensureOpen(_NoUser(AppDatabase.currentSchemaVersion));
+      await raw.runCustom('ALTER TABLE entries DROP COLUMN synced_at');
+      await raw.close();
+
+      final db = AppDatabase(NativeDatabase(file));
+      await db
+          .into(db.entries)
+          .insert(
+            EntriesCompanion.insert(
+              id: 'e1',
+              type: EntryType.income,
+              receiptNo: 1,
+              entryDate: '2026-11-13',
+              amount: 500,
+              createdBy: 'u1',
+              createdAt: DateTime(2026, 11, 13),
+              deviceId: 'd',
+              syncedAt: Value(DateTime(2026, 11, 14)),
+            ),
+          );
+      expect((await db.select(db.entries).getSingle()).syncedAt, isNotNull);
+      await db.close();
+    },
+  );
+
   test('a fresh database is created directly at the newest schema', () async {
     final db = AppDatabase(NativeDatabase.memory());
     await db.customSelect('select 1').get();
@@ -195,8 +233,10 @@ void main() {
 }
 
 class _NoUser extends QueryExecutorUser {
+  _NoUser([this.version = 1]);
+  final int version;
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => version;
   @override
   Future<void> beforeOpen(
     QueryExecutor executor,

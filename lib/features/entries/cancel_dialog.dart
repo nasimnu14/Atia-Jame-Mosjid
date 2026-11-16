@@ -73,6 +73,7 @@ class _CancelDialogState extends State<_CancelDialog> {
           EntryActionProblem.alreadyCancelled => l.entryAlreadyCancelled,
           EntryActionProblem.notFound => l.entryNotFound,
           EntryActionProblem.reasonRequired => l.cancelReasonRequired,
+          EntryActionProblem.notCancelled => l.entryNotCancelled,
           EntryActionProblem.syncedReadOnly => l.syncedReadOnlyNote,
         };
       });

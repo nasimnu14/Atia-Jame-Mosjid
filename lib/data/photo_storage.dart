@@ -44,6 +44,13 @@ class PhotoStorage {
     return f.existsSync() ? f.readAsBytes() : null;
   }
 
+  /// Removes every photo file of an entry (used when the entry is deleted for
+  /// good).
+  Future<void> deleteEntry(String entryId) async {
+    final folder = Directory(p.join(dir.path, entryId));
+    if (folder.existsSync()) await folder.delete(recursive: true);
+  }
+
   bool exists(String entryId, String fileName) =>
       fileFor(entryId, fileName).existsSync();
 }

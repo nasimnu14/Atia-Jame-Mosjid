@@ -1,6 +1,7 @@
 import 'package:atia_masjid_accounts/data/database.dart';
 import 'package:atia_masjid_accounts/data/tables.dart';
 import 'package:atia_masjid_accounts/features/entries/entry_service.dart';
+import 'package:atia_masjid_accounts/shared/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -156,6 +157,12 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('সপ্তাহ অনুযায়ী'), findsOneWidget);
+      // The current total balance is on the page, whatever the period is.
+      expect(find.text('বর্তমান মোট ব্যালেন্স'), findsOneWidget);
+      final balance = await tester.runAsync(
+        () => c.h.services.balance.currentBalance(),
+      );
+      expect(find.text(const Fmt.bn().money(balance!)), findsWidgets);
       // October is not in the November summary.
       expect(find.text('৳ ২,০০০'), findsNothing);
     },

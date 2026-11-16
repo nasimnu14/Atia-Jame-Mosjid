@@ -68,7 +68,7 @@ class Rig {
   Future<SyncReport> sync([SyncOffer? offer]) =>
       client.sync(offer ?? server.offer, phoneName: 'রাশেদের ফোন');
 
-  Future<User> phoneUser([String username = 'user']) async =>
+  Future<User> phoneUser([String username = 'admin']) async =>
       (await phone.users.all()).firstWhere((u) => u.username == username);
 
   Future<Entry> phoneIncome(

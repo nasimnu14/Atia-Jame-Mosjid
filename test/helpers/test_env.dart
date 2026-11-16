@@ -171,7 +171,7 @@ class TestEnv {
     User? by,
     List<PhotoDraft> photos = const [],
   }) => entries.create(
-    by ?? user,
+    by ?? admin,
     EntryDraft(
       type: EntryType.income,
       receiptNo: receipt,
@@ -191,7 +191,7 @@ class TestEnv {
     DateTime? date,
     User? by,
   }) => entries.create(
-    by ?? user,
+    by ?? admin,
     EntryDraft(
       type: EntryType.expense,
       receiptNo: receipt,

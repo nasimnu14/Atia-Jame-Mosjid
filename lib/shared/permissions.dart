@@ -8,6 +8,8 @@ enum Permission {
   changeOwnPassword,
   editEntry,
   cancelEntry,
+  viewCancelledEntries, // cancelled entries are hidden from a User
+  deleteEntry, // remove a cancelled entry for good
   setOpeningBalance,
   manageApprovers,
   manageBackupAndSettings,
@@ -16,7 +18,6 @@ enum Permission {
 }
 
 const _userPerms = {
-  Permission.addEntry,
   Permission.viewEntries,
   Permission.syncPhone,
   Permission.changeOwnPassword,
@@ -24,8 +25,11 @@ const _userPerms = {
 
 const _adminPerms = {
   ..._userPerms,
+  Permission.addEntry,
   Permission.editEntry,
   Permission.cancelEntry,
+  Permission.viewCancelledEntries,
+  Permission.deleteEntry,
   Permission.setOpeningBalance,
   Permission.manageApprovers,
   Permission.manageBackupAndSettings,

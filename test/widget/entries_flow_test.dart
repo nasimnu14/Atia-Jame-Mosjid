@@ -74,7 +74,7 @@ Future<void> seedIncome(
 }) async {
   await c.h.tester.runAsync(
     () => c.h.services.entries.create(
-      c.user,
+      c.admin,
       EntryDraft(
         type: EntryType.income,
         receiptNo: no,
@@ -124,9 +124,11 @@ void main() {
       await h.tapText('সংরক্ষণ করুন');
       await h.settle(8);
 
-      expect(find.text('আয়ের বিস্তারিত'), findsOneWidget);
-      expect(find.text('অজ্ঞাত'), findsOneWidget);
-      expect(find.text('৳ ২,০০০'), findsOneWidget);
+      // A new entry lands on the income list, not on its details.
+      expect(find.byType(EntryFormScreen), findsNothing);
+      expect(find.byType(EntryDetailsScreen), findsNothing);
+      expect(find.byType(EntryListScreen), findsOneWidget);
+      expect(find.text('অজ্ঞাত'), findsWidgets);
       expect(find.text('৬৬৮৬'), findsWidgets);
       final saved = (await tester.runAsync(
         () => h.services.entries.findByReceipt(EntryType.income, 6686),
@@ -223,7 +225,9 @@ void main() {
     await h.settle(2);
     await h.tapText('সংরক্ষণ করুন');
     await h.settle(8);
-    expect(find.text('ব্যয়ের বিস্তারিত'), findsOneWidget);
+    expect(find.byType(EntryFormScreen), findsNothing);
+    expect(find.byType(EntryDetailsScreen), findsNothing);
+    expect(find.byType(EntryListScreen), findsOneWidget);
     final e = (await tester.runAsync(
       () => h.services.entries.findByReceipt(EntryType.expense, 1),
     ))!.single;
@@ -278,6 +282,9 @@ void main() {
 
       await h.tapText('সংরক্ষণ করুন');
       await h.settle(10);
+      expect(find.byType(EntryListScreen), findsOneWidget);
+      await h.tapText('ডাব বিক্রি'); // open the new entry from the list
+      await h.settle(6);
       expect(find.text('ছবি (২টি)'), findsOneWidget);
       expect(
         find.descendant(
@@ -430,7 +437,7 @@ void main() {
       ))!.single;
       expect(e.amount, 2500);
       expect(e.editedBy, c.admin.id); // the Admin who approved
-      expect(e.createdBy, c.user.id);
+      expect(e.createdBy, c.admin.id);
       expect(find.text('৳ ২,৫০০'), findsOneWidget);
     },
   );
@@ -453,6 +460,112 @@ void main() {
     },
   );
 
+  testApp('a User has no add buttons on the dashboard or the lists', (
+    tester,
+  ) async {
+    final c = await start(tester, as: 'usr', pass: 'secret3');
+    final h = c.h;
+    expect(find.text('+ নতুন আয়'), findsNothing);
+    expect(find.text('+ নতুন ব্যয়'), findsNothing);
+    await h.tapText('আয়');
+    expect(find.text('+ নতুন আয়'), findsNothing);
+    await h.tapText('ব্যয়');
+    expect(find.text('+ নতুন ব্যয়'), findsNothing);
+  });
+
+  testApp('a User does not see cancelled entries; an Admin does', (
+    tester,
+  ) async {
+    final c = await start(tester, as: 'usr', pass: 'secret3');
+    final h = c.h;
+    await seedIncome(c, no: 1, amount: 1000, name: 'রহিম');
+    await seedIncome(c, no: 2, amount: 2000, name: 'করিম');
+    final cancelled = (await tester.runAsync(
+      () => h.services.entries.findByReceipt(EntryType.income, 2),
+    ))!.single;
+    await tester.runAsync(
+      () => h.services.entries.cancel(c.admin, cancelled.id, 'ভুল'),
+    );
+    await h.settle(3);
+    await h.tapText('আয়');
+    await h.settle(4);
+    expect(find.text('রহিম'), findsOneWidget);
+    expect(find.text('করিম'), findsNothing);
+    expect(find.text('১টি এন্ট্রি'), findsOneWidget);
+    expect(find.text('বাতিল এন্ট্রি দেখান'), findsNothing);
+  });
+
+  testApp(
+    'an Admin can hide and show cancelled entries; a User has no switch',
+    (tester) async {
+      final c = await start(tester, as: 'adm', pass: 'secret2');
+      final h = c.h;
+      await seedIncome(c, no: 1, amount: 1000, name: 'রহিম');
+      await seedIncome(c, no: 2, amount: 2000, name: 'করিম');
+      final cancelled = (await tester.runAsync(
+        () => h.services.entries.findByReceipt(EntryType.income, 2),
+      ))!.single;
+      await tester.runAsync(
+        () => h.services.entries.cancel(c.admin, cancelled.id, 'ভুল'),
+      );
+      await h.settle(3);
+      await h.tapText('আয়');
+      await h.settle(4);
+      expect(find.text('বাতিল এন্ট্রি দেখান'), findsOneWidget);
+      expect(find.text('করিম'), findsOneWidget); // shown, marked cancelled
+      await tester.tap(find.byType(Switch));
+      await h.settle(4);
+      expect(find.text('করিম'), findsNothing); // hidden
+      expect(find.text('রহিম'), findsOneWidget);
+      await tester.tap(find.byType(Switch));
+      await h.settle(4);
+      expect(find.text('করিম'), findsOneWidget); // and back again
+    },
+  );
+
+  testApp('an Admin deletes a cancelled entry for good (button + sure?)', (
+    tester,
+  ) async {
+    final c = await start(tester, as: 'adm', pass: 'secret2');
+    final h = c.h;
+    await seedIncome(c, no: 1, amount: 1000, name: 'রহিম');
+    await seedIncome(c, no: 2, amount: 2000, name: 'করিম');
+    final cancelled = (await tester.runAsync(
+      () => h.services.entries.findByReceipt(EntryType.income, 2),
+    ))!.single;
+    await h.tapText('আয়');
+    // An active entry has no delete button.
+    await h.tapText('রহিম');
+    expect(find.text('চিরতরে মুছুন'), findsNothing);
+    await h.tapText('আয়');
+    await tester.runAsync(
+      () => h.services.entries.cancel(c.admin, cancelled.id, 'ভুল'),
+    );
+    await h.settle(3);
+
+    await h.tapText('করিম');
+    expect(find.text('চিরতরে মুছুন'), findsOneWidget);
+    await h.tapText('চিরতরে মুছুন');
+    expect(find.text('এই এন্ট্রি কি চিরতরে মুছে ফেলবেন?'), findsOneWidget);
+    await h.tapText('ফিরে যান'); // changed my mind: nothing is deleted
+    expect(
+      await tester.runAsync(() => h.services.entries.getById(cancelled.id)),
+      isNotNull,
+    );
+
+    await h.tapText('চিরতরে মুছুন');
+    await tester.tap(find.text('চিরতরে মুছুন').last); // the dialog button
+    await h.settle(20);
+    expect(find.byType(EntryListScreen), findsOneWidget);
+    expect(find.byType(EntryDetailsScreen), findsNothing);
+    expect(
+      await tester.runAsync(() => h.services.entries.getById(cancelled.id)),
+      isNull,
+    );
+    expect(find.text('করিম'), findsNothing);
+    expect(find.text('রহিম'), findsOneWidget);
+  });
+
   testApp(
     'photo viewer: full size, label shown, next and previous (INC-7, INC-10)',
     (tester) async {
@@ -460,7 +573,7 @@ void main() {
       final h = c.h;
       await tester.runAsync(
         () => h.services.entries.create(
-          c.user,
+          c.admin,
           EntryDraft(
             type: EntryType.income,
             receiptNo: 6681,

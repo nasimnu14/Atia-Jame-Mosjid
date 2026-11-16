@@ -93,6 +93,45 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
     }
   }
 
+  /// Removes a cancelled entry for good, after a confirmation, then goes back
+  /// to the list.
+  Future<void> _deleteForever() async {
+    final l = context.l10n;
+    final fmt = context.fmt;
+    final svc = context.services.entries;
+    final me = context.app.user!;
+    final nav = Navigator.of(context);
+    final sure = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.deleteForeverTitle),
+        content: Text(l.deleteForeverBody),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.back),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFA1272C),
+            ),
+            child: Text(l.deleteEntryForever),
+          ),
+        ],
+      ),
+    );
+    if (sure != true || !mounted) return;
+    try {
+      await svc.deleteForever(me, widget.entryId);
+      if (!mounted) return;
+      showInfo(context, l.entryDeleted);
+      nav.pop();
+    } catch (e) {
+      if (mounted) showError(context, errorText(l, fmt, e));
+    }
+  }
+
   Future<void> _cancel(Entry e) async {
     final auth = await requireAuthority(context, e, Permission.cancelEntry);
     if (auth == null || !mounted) return;
@@ -164,6 +203,15 @@ class _EntryDetailsScreenState extends State<EntryDetailsScreen> {
             child: Text(l.cancelEntry),
           ),
         ],
+        if (cancelled && !lockedHere && can(me.role, Permission.deleteEntry))
+          OutlinedButton(
+            onPressed: _deleteForever,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.cancelledText,
+              side: const BorderSide(color: Color(0xFFE5B3B5)),
+            ),
+            child: Text(l.deleteEntryForever),
+          ),
       ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

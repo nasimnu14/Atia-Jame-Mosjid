@@ -34,6 +34,9 @@ enum EntryActionProblem {
   alreadyCancelled,
   reasonRequired,
 
+  /// Only a cancelled entry can be deleted for good.
+  notCancelled,
+
   /// An entry already synced to the desktop can no longer be changed on the
   /// phone; corrections are made on the desktop (SYN-7).
   syncedReadOnly,
@@ -108,8 +111,12 @@ class EntryQuery {
     this.period,
     this.text = '',
     this.onlyDuplicates = false,
+    this.includeCancelled = true,
   });
   final EntryType type;
+
+  /// A User never sees cancelled entries; only an Admin or the Super Admin do.
+  final bool includeCancelled;
   final Period? period;
 
   /// Only entries flagged as duplicate receipt numbers (SYN-8).
@@ -199,9 +206,18 @@ class EntryService {
   }
 
   /// FND-1: entries with this receipt number (normally one).
-  Future<List<Entry>> findByReceipt(EntryType type, int receiptNo) =>
+  Future<List<Entry>> findByReceipt(
+    EntryType type,
+    int receiptNo, {
+    bool includeCancelled = true,
+  }) =>
       (_db.select(_db.entries)..where(
-            (e) => e.type.equalsValue(type) & e.receiptNo.equals(receiptNo),
+            (e) =>
+                e.type.equalsValue(type) &
+                e.receiptNo.equals(receiptNo) &
+                (includeCancelled
+                    ? const Constant(true)
+                    : e.status.equalsValue(EntryStatus.active)),
           ))
           .get();
 
@@ -264,7 +280,7 @@ class EntryService {
 
   // ------------------------------------------------------------------ create
 
-  /// GEN-6: any signed-in user can add an entry (INC-1, EXP-1).
+  /// Only an Admin or the Super Admin can add an entry (INC-1, EXP-1).
   Future<EntryWithPhotos> create(User actor, EntryDraft draft) async {
     final live = await _liveActor(actor);
     requirePermission(live.role, Permission.addEntry);
@@ -474,6 +490,30 @@ class EntryService {
     return _entry(entryId);
   }
 
+  /// Deletes a cancelled entry for good, with its photos (rows and files).
+  /// Only an Admin or the Super Admin may. This is the one place anything is
+  /// really removed, so an entry must be cancelled first. Its receipt number
+  /// is not kept: if it was the highest, the next new entry can take it.
+  Future<void> deleteForever(User actor, String entryId) async {
+    final live = await _liveActor(actor);
+    requirePermission(live.role, Permission.deleteEntry);
+    final existing = await _entry(entryId);
+    _requireEditableHere(existing);
+    if (existing.status != EntryStatus.cancelled) {
+      throw EntryActionException(EntryActionProblem.notCancelled);
+    }
+    await _db.transaction(() async {
+      await (_db.delete(
+        _db.photos,
+      )..where((p) => p.entryId.equals(entryId))).go();
+      await (_db.delete(
+        _db.driveUploadedPhotos,
+      )..where((p) => p.entryId.equals(entryId))).go();
+      await (_db.delete(_db.entries)..where((e) => e.id.equals(entryId))).go();
+    });
+    await _photos.deleteEntry(entryId);
+  }
+
   /// SYN-8: an Admin clears the "duplicate receipt number" mark after
   /// checking the entry.
   Future<void> clearDuplicateFlag(User actor, String entryId) async {
@@ -564,6 +604,9 @@ class EntryService {
           e.entryDate.isSmallerOrEqualValue(dayKey(p.to));
     }
     if (q.onlyDuplicates) cond = cond & e.isDuplicate.equals(true);
+    if (!q.includeCancelled) {
+      cond = cond & e.status.equalsValue(EntryStatus.active);
+    }
     final text = q.text.trim();
     if (text.isNotEmpty) {
       final asNumber = int.tryParse(toEnglishDigits(text));
@@ -576,8 +619,13 @@ class EntryService {
   }
 
   /// The newest entries of both types, for the dashboard.
-  Future<List<Entry>> recent({int limit = 5}) {
+  Future<List<Entry>> recent({int limit = 5, bool includeCancelled = true}) {
     final q = _db.select(_db.entries)
+      ..where(
+        (e) => includeCancelled
+            ? const Constant(true)
+            : e.status.equalsValue(EntryStatus.active),
+      )
       ..orderBy([
         (e) => OrderingTerm.desc(e.entryDate),
         (e) => OrderingTerm.desc(e.createdAt),
@@ -588,13 +636,20 @@ class EntryService {
 
   /// All entries (any status) inside a period, both types; used by reports
   /// and Excel. Oldest first.
-  Future<List<Entry>> inPeriod(Period period, {EntryType? type}) {
+  Future<List<Entry>> inPeriod(
+    Period period, {
+    EntryType? type,
+    bool includeCancelled = true,
+  }) {
     final q = _db.select(_db.entries)
       ..where(
         (e) =>
             e.entryDate.isBiggerOrEqualValue(dayKey(period.from)) &
             e.entryDate.isSmallerOrEqualValue(dayKey(period.to)) &
-            (type == null ? const Constant(true) : e.type.equalsValue(type)),
+            (type == null ? const Constant(true) : e.type.equalsValue(type)) &
+            (includeCancelled
+                ? const Constant(true)
+                : e.status.equalsValue(EntryStatus.active)),
       )
       ..orderBy([
         (e) => OrderingTerm.asc(e.entryDate),

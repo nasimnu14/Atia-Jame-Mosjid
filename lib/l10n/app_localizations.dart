@@ -587,13 +587,13 @@ abstract class AppLocalizations {
   /// No description provided for @roleAdminCan.
   ///
   /// In en, this message translates to:
-  /// **'Edit and cancel entries, opening balance, Google account, backup and settings.'**
+  /// **'Add, edit and cancel entries, opening balance, Google account, backup and settings.'**
   String get roleAdminCan;
 
   /// No description provided for @roleUserCan.
   ///
   /// In en, this message translates to:
-  /// **'Add entries, search, view details, make PDFs and Excel, sync a phone, change own password.'**
+  /// **'Search, view details, make PDFs and Excel, sync a phone, change own password.'**
   String get roleUserCan;
 
   /// No description provided for @addUserTitle.
@@ -941,7 +941,7 @@ abstract class AppLocalizations {
   /// No description provided for @purposeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Purpose (খরচ বাবদ)'**
+  /// **'Purpose (বিবরণ)'**
   String get purposeLabel;
 
   /// No description provided for @approvedBy.
@@ -1822,8 +1822,8 @@ abstract class AppLocalizations {
   /// No description provided for @summaryNote.
   ///
   /// In en, this message translates to:
-  /// **'Cancelled entries are not counted in any total. Current balance today: {balance}'**
-  String summaryNote(String balance);
+  /// **'Cancelled entries are not counted in any total.'**
+  String get summaryNote;
 
   /// No description provided for @breakdownDays.
   ///
@@ -2958,6 +2958,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A password changed here is replaced by the computer\'s password at the next sync. To change it for good, change it on the computer.'**
   String get phonePasswordNote;
+
+  /// No description provided for @currentTotalBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current total balance'**
+  String get currentTotalBalance;
+
+  /// No description provided for @deleteEntryForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete forever'**
+  String get deleteEntryForever;
+
+  /// No description provided for @deleteForeverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this entry forever?'**
+  String get deleteForeverTitle;
+
+  /// No description provided for @deleteForeverBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The entry and its photos are removed for good. This cannot be undone.'**
+  String get deleteForeverBody;
+
+  /// No description provided for @entryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry deleted'**
+  String get entryDeleted;
+
+  /// No description provided for @entryNotCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a cancelled entry can be deleted.'**
+  String get entryNotCancelled;
+
+  /// No description provided for @showCancelledEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Show cancelled entries'**
+  String get showCancelledEntries;
 }
 
 class _AppLocalizationsDelegate

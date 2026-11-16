@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:atia_masjid_accounts/data/photo_storage.dart';
 import 'package:atia_masjid_accounts/data/tables.dart';
+import 'package:atia_masjid_accounts/features/entries/entry_list_screen.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_client.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_receiver.dart';
 import 'package:atia_masjid_accounts/features/sync/sync_server.dart';
@@ -304,7 +305,7 @@ void main() {
         await syncWith(h, tester, d.code);
         await h.tapText('হোমে ফিরে যান');
         await h.settle(6);
-        await signIn(h, 'user', 'secret3');
+        await signIn(h, 'admin', 'secret2');
 
         // New income with a photo.
         await h.tapText('+ নতুন আয়');
@@ -323,6 +324,10 @@ void main() {
         await h.settle(6);
         await h.tapText('সংরক্ষণ করুন');
         await h.settle(12);
+        // The new entry lands on the income list; open it from there.
+        expect(find.byType(EntryListScreen), findsOneWidget);
+        await h.tapText('আব্দুল করিম');
+        await h.settle(6);
         expect(find.text('আয়ের বিস্তারিত'), findsOneWidget);
         // Made on this phone, so it says "from phone", not "from computer".
         expect(find.textContaining('ফোন থেকে'), findsOneWidget);

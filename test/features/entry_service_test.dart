@@ -69,7 +69,7 @@ void main() {
     );
     test('a failed save writes nothing', () async {
       await expectLater(
-        env.entries.create(env.user, EntryDraft(type: EntryType.income)),
+        env.entries.create(env.admin, EntryDraft(type: EntryType.income)),
         throwsA(isA<EntryValidationException>()),
       );
       expect(
@@ -138,17 +138,26 @@ void main() {
   group('who and when (USR-8)', () {
     test('records the creator and time', () async {
       final r = await env.addIncome();
-      expect(r.entry.createdBy, env.user.id);
+      expect(r.entry.createdBy, env.admin.id);
       expect(r.entry.createdAt, env.clock);
       expect(r.entry.deviceId, 'desktop-1');
     });
-    test('GEN-6: any role can add', () async {
-      for (final u in [env.user, env.admin, env.superAdmin]) {
+    test('only an Admin or the Super Admin can add; a User cannot', () async {
+      for (final u in [env.admin, env.superAdmin]) {
         await env.addIncome(receipt: u.name.length + 100, by: u);
+        await env.addExpense(receipt: u.name.length + 100, by: u);
       }
+      await expectLater(
+        env.addIncome(receipt: 7, by: env.user),
+        throwsA(isA<PermissionDeniedException>()),
+      );
+      await expectLater(
+        env.addExpense(receipt: 7, by: env.user),
+        throwsA(isA<PermissionDeniedException>()),
+      );
     });
-    test('a disabled user cannot add', () async {
-      await env.users.setActive(env.superAdmin, env.user.id, false);
+    test('a disabled admin cannot add', () async {
+      await env.users.setActive(env.superAdmin, env.admin.id, false);
       await expectLater(env.addIncome(), throwsA(anything));
     });
   });
@@ -189,7 +198,7 @@ void main() {
       expect(u.entry.amount, 2000);
       expect(u.entry.editedBy, env.admin.id);
       expect(u.entry.editedAt, env.clock);
-      expect(u.entry.createdBy, env.user.id); // creator unchanged
+      expect(u.entry.createdBy, env.admin.id); // creator unchanged
     });
     test('a User with an Admin approving on the spot can edit', () async {
       final r = await env.addIncome();
@@ -301,6 +310,106 @@ void main() {
       );
     });
   });
+
+  group(
+    'cancelled entries: hidden from a User, deleted for good by an Admin',
+    () {
+      test(
+        'a User query leaves cancelled entries out; an Admin one keeps them',
+        () async {
+          final a = await env.addIncome(receipt: 1);
+          final b = await env.addIncome(receipt: 2);
+          await env.entries.cancel(env.admin, b.entry.id, 'ভুল');
+
+          final all = await env.entries.list(
+            EntryQuery(type: EntryType.income),
+          );
+          expect(
+            all.rows.map((e) => e.id),
+            containsAll([a.entry.id, b.entry.id]),
+          );
+          expect(all.cancelledCount, 1);
+
+          final shown = await env.entries.list(
+            EntryQuery(type: EntryType.income, includeCancelled: false),
+          );
+          expect(shown.rows.map((e) => e.id), [a.entry.id]);
+          expect(shown.count, 1);
+          expect(shown.cancelledCount, 0);
+
+          expect(
+            await env.entries.findByReceipt(EntryType.income, 2),
+            hasLength(1),
+          );
+          expect(
+            await env.entries.findByReceipt(
+              EntryType.income,
+              2,
+              includeCancelled: false,
+            ),
+            isEmpty,
+          );
+          expect(
+            (await env.entries.recent(
+              includeCancelled: false,
+            )).map((e) => e.id),
+            [a.entry.id],
+          );
+          final period = Period(DateTime(2026, 11, 1), DateTime(2026, 11, 30));
+          expect(
+            await env.entries.inPeriod(period, includeCancelled: false),
+            hasLength(1),
+          );
+          expect(await env.entries.inPeriod(period), hasLength(2));
+        },
+      );
+
+      test('a cancelled entry is deleted for good with its photos', () async {
+        final r = await env.addIncome(photos: [TestEnv.photo()]);
+        final file = r.photos.single.fileName;
+        expect(env.entries.photoStorage.exists(r.entry.id, file), isTrue);
+        await env.entries.cancel(env.admin, r.entry.id, 'ভুল');
+
+        await env.entries.deleteForever(env.admin, r.entry.id);
+
+        expect(await env.entries.getById(r.entry.id), isNull);
+        expect(await env.db.select(env.db.photos).get(), isEmpty);
+        expect(env.entries.photoStorage.exists(r.entry.id, file), isFalse);
+      });
+
+      test('the Super Admin can delete too', () async {
+        final r = await env.addIncome();
+        await env.entries.cancel(env.admin, r.entry.id, 'ভুল');
+        await env.entries.deleteForever(env.superAdmin, r.entry.id);
+        expect(await env.entries.getById(r.entry.id), isNull);
+      });
+
+      test(
+        'a User cannot delete, and an active entry cannot be deleted',
+        () async {
+          final r = await env.addIncome();
+          await env.entries.cancel(env.admin, r.entry.id, 'ভুল');
+          await expectLater(
+            env.entries.deleteForever(env.user, r.entry.id),
+            throwsA(isA<PermissionDeniedException>()),
+          );
+          final active = await env.addIncome(receipt: 2);
+          await expectLater(
+            env.entries.deleteForever(env.admin, active.entry.id),
+            throwsA(
+              isA<EntryActionException>().having(
+                (e) => e.problem,
+                'problem',
+                EntryActionProblem.notCancelled,
+              ),
+            ),
+          );
+          expect(await env.entries.getById(r.entry.id), isNotNull);
+          expect(await env.entries.getById(active.entry.id), isNotNull);
+        },
+      );
+    },
+  );
 
   group('photos (INC-6, INC-8, INC-10)', () {
     test('up to 10 photos; an 11th is refused', () async {

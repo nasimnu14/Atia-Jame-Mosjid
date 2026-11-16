@@ -267,11 +267,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get roleAdminCan =>
-      'এন্ট্রি সম্পাদনা ও বাতিল, প্রারম্ভিক ব্যালেন্স, গুগল অ্যাকাউন্ট, ব্যাকআপ ও সেটিংস।';
+      'এন্ট্রি যোগ, সম্পাদনা ও বাতিল, প্রারম্ভিক ব্যালেন্স, গুগল অ্যাকাউন্ট, ব্যাকআপ ও সেটিংস।';
 
   @override
   String get roleUserCan =>
-      'এন্ট্রি যোগ, খোঁজা, বিস্তারিত দেখা, পিডিএফ ও এক্সেল, ফোন সিঙ্ক এবং নিজের পাসওয়ার্ড বদল।';
+      'খোঁজা, বিস্তারিত দেখা, পিডিএফ ও এক্সেল, ফোন সিঙ্ক এবং নিজের পাসওয়ার্ড বদল।';
 
   @override
   String get addUserTitle => 'নতুন ব্যবহারকারী যোগ করুন';
@@ -459,7 +459,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get payeeName => 'নাম (প্রাপক)';
 
   @override
-  String get purposeLabel => 'খরচ বাবদ';
+  String get purposeLabel => 'বিবরণ';
 
   @override
   String get approvedBy => 'অনুমোদনকারী';
@@ -719,7 +719,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get colAmount => 'টাকা';
 
   @override
-  String get colPurpose => 'খরচ বাবদ';
+  String get colPurpose => 'বিবরণ';
 
   @override
   String get colApprover => 'অনুমোদনকারী';
@@ -955,7 +955,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get colType => 'ধরন';
 
   @override
-  String get colNameOrPurpose => 'নাম / খরচ বাবদ';
+  String get colNameOrPurpose => 'নাম / বিবরণ';
 
   @override
   String get makePdf => 'পিডিএফ তৈরি করুন';
@@ -979,9 +979,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get deficitNote => 'এই সময়ে ঘাটতি';
 
   @override
-  String summaryNote(String balance) {
-    return 'বাতিল এন্ট্রি কোনো মোটে ধরা হয়নি। আজকের বর্তমান ব্যালেন্স: $balance';
-  }
+  String get summaryNote => 'বাতিল এন্ট্রি কোনো মোটে ধরা হয়নি।';
 
   @override
   String breakdownDays(String period) {
@@ -1681,4 +1679,26 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get phonePasswordNote =>
       'এখানে পাসওয়ার্ড বদলালে পরের সিঙ্কে কম্পিউটারের পাসওয়ার্ডই ফিরে আসবে। স্থায়ীভাবে বদলাতে কম্পিউটারে বদলান।';
+
+  @override
+  String get currentTotalBalance => 'বর্তমান মোট ব্যালেন্স';
+
+  @override
+  String get deleteEntryForever => 'চিরতরে মুছুন';
+
+  @override
+  String get deleteForeverTitle => 'এই এন্ট্রি কি চিরতরে মুছে ফেলবেন?';
+
+  @override
+  String get deleteForeverBody =>
+      'এন্ট্রি ও এর ছবিগুলো চিরতরে মুছে যাবে। এটি আর ফেরানো যাবে না।';
+
+  @override
+  String get entryDeleted => 'এন্ট্রি মুছে ফেলা হয়েছে';
+
+  @override
+  String get entryNotCancelled => 'শুধু বাতিল করা এন্ট্রি মুছে ফেলা যায়।';
+
+  @override
+  String get showCancelledEntries => 'বাতিল এন্ট্রি দেখান';
 }

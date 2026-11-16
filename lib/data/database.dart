@@ -58,6 +58,24 @@ class AppDatabase extends _$AppDatabase {
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      await _addColumnsEarlyBuildsLacked();
     },
   );
+
+  /// Columns that databases made by early builds of the app never got, because
+  /// they were added to the tables without a schema number of their own. A
+  /// database at the newest number can still lack them, so this checks every
+  /// time the file is opened. Adding a nullable column changes no data.
+  Future<void> _addColumnsEarlyBuildsLacked() async {
+    const missing = [
+      // When a phone entry reached the computer (shown on the phone's entry).
+      ('entries', 'synced_at', 'INTEGER NULL'),
+    ];
+    for (final (table, column, type) in missing) {
+      final cols = await customSelect('PRAGMA table_info($table)').get();
+      if (!cols.any((r) => r.read<String>('name') == column)) {
+        await customStatement('ALTER TABLE $table ADD COLUMN $column $type');
+      }
+    }
+  }
 }

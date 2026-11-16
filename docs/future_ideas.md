@@ -1,0 +1,4 @@
+- Add the drive materials.
+- Test android app and sync with computer.
+- Add the background of the app using the mosque image.
+- Add a new tab with collection. There will be multiple album with description. Multiple image will be add on each collection.

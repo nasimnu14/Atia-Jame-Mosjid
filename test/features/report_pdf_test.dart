@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:atia_masjid_accounts/app/theme.dart';
 import 'package:atia_masjid_accounts/data/tables.dart';
 import 'package:atia_masjid_accounts/features/entries/entry_service.dart';
 import 'package:atia_masjid_accounts/features/reports/pdf/pdf_pages.dart';
 import 'package:atia_masjid_accounts/features/reports/pdf/report_blocks.dart';
+import 'package:atia_masjid_accounts/features/reports/balance_service.dart';
 import 'package:atia_masjid_accounts/features/reports/report_pdf_service.dart';
 import 'package:atia_masjid_accounts/l10n/app_localizations.dart';
 import 'package:atia_masjid_accounts/shared/formatters.dart';
@@ -196,6 +198,83 @@ void main() {
     );
   });
 
+  test('every period report ends with the current total balance', () async {
+    final env = await seeded();
+    final l = await loadL('bn');
+    final rows = await env.entries.inPeriod(november);
+    for (final c in ReportContent.values) {
+      final withBalance = allText(
+        buildPeriodReport(
+          l: l,
+          fmt: const Fmt.bn(),
+          content: c,
+          periodName: novemberFull,
+          entries: rows,
+          currentBalance: 123456,
+        ),
+      );
+      expect(
+        withBalance,
+        contains('বর্তমান মোট ব্যালেন্স | ৳ ১,২৩,৪৫৬'),
+        reason: '$c',
+      );
+      // The service puts the real balance in (not just the period's figures).
+      final pdf = await env.pdfService.periodReport(
+        l,
+        const Fmt.bn(),
+        period: november,
+        periodName: novemberFull,
+        content: c,
+      );
+      expect(pdf.pageCount, greaterThanOrEqualTo(1));
+    }
+    final without = allText(
+      buildPeriodReport(
+        l: l,
+        fmt: const Fmt.bn(),
+        content: ReportContent.both,
+        periodName: novemberFull,
+        entries: rows,
+      ),
+    );
+    expect(without, isNot(contains('বর্তমান মোট ব্যালেন্স')));
+  });
+
+  test(
+    'the net and balance rows are red when negative and green when not',
+    () async {
+      final env = await seeded();
+      final l = await loadL('bn');
+      final rows = await env.entries.inPeriod(november);
+      Color? bg(List<PdfBlock> blocks, String label) =>
+          (blocks.firstWhere((b) => b.debugText.startsWith('$label |'))
+                  as RowBlock)
+              .background;
+      // November has more expense than income: both rows red.
+      final neg = buildPeriodReport(
+        l: l,
+        fmt: const Fmt.bn(),
+        content: ReportContent.both,
+        periodName: novemberFull,
+        entries: rows,
+        currentBalance: -500,
+      );
+      expect(bg(neg, l.incomeMinusExpense), AppColors.cancelledBg);
+      expect(bg(neg, l.currentTotalBalance), AppColors.cancelledBg);
+      // Only income: net and balance positive, both green.
+      final pos = buildPeriodReport(
+        l: l,
+        fmt: const Fmt.bn(),
+        content: ReportContent.both,
+        periodName: novemberFull,
+        entries: rows.where((e) => e.type == EntryType.income).toList(),
+        currentBalance: 500,
+      );
+      expect(bg(pos, l.incomeMinusExpense), AppColors.incomeSoft);
+      expect(bg(pos, l.currentTotalBalance), AppColors.incomeSoft);
+    },
+  );
+
   test('a heading is never left alone at the foot of a page', () {
     final blocks = <PdfBlock>[
       _Fake(PageSpec.contentHeight - 30), // page nearly full
@@ -304,7 +383,7 @@ void main() {
           ),
         );
         final saved = await env.entries.create(
-          env.user,
+          env.admin,
           EntryDraft(
             type: EntryType.expense,
             receiptNo: 594,
@@ -368,8 +447,12 @@ void main() {
 }
 
 extension on TestEnv {
-  ReportPdfService get pdfService =>
-      ReportPdfService(entries, users, () => clock);
+  ReportPdfService get pdfService => ReportPdfService(
+    entries,
+    users,
+    () => clock,
+    BalanceService(db, settings, isPhone: false),
+  );
 
   Future<RenderedPdf> periodPdf(
     AppLocalizations l,

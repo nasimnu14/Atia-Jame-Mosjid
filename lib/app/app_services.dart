@@ -156,6 +156,7 @@ class AppServices {
     final settings = SettingsService(db, repo);
     final users = UserService(db, hasher: hasher, now: now);
     final phone = isPhone ?? Platform.isAndroid;
+    final balance = BalanceService(db, settings, isPhone: phone);
     final receiver = SyncReceiver(db, photos, now: now);
     final entries = EntryService(
       db,
@@ -191,14 +192,14 @@ class AppServices {
       users: users,
       settings: settings,
       entries: entries,
-      balance: BalanceService(db, settings, isPhone: phone),
+      balance: balance,
       photos: photos,
       deviceId: deviceId,
       now: now,
       photoPicker: photoPicker,
       photoShrinker: photoShrinker,
       fileSaver: fileSaver,
-      reports: ReportPdfService(entries, users, now),
+      reports: ReportPdfService(entries, users, now, balance),
       drive: drive,
       backup: backup,
       excel: excel,

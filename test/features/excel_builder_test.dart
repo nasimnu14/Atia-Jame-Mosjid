@@ -128,7 +128,7 @@ void main() {
     );
     expect(
       row(bn['ব্যয়'], 0).map((c) => c.toString()),
-      containsAll(['ভাউচার নং', 'খরচ বাবদ', 'অনুমোদনকারী']),
+      containsAll(['ভাউচার নং', 'বিবরণ', 'অনুমোদনকারী']),
     );
     final (en, _) = await build('en', ExcelContent.both);
     expect(
@@ -152,7 +152,7 @@ void main() {
     final (x, _) = await build('en', ExcelContent.income);
     final head = row(x['Income'], 0).map((c) => c.toString()).toList();
     expect(head, isNot(contains('Photos')));
-    expect(row(x['Income'], 1)[7].toString(), 'User'); // added by
+    expect(row(x['Income'], 1)[7].toString(), 'Admin'); // added by
     expect(head.length, row(x['Income'], 1).length);
     expect(EntryType.income, isNotNull);
   });

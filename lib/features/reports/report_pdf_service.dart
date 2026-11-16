@@ -8,6 +8,7 @@ import '../../shared/period.dart';
 import '../../shared/role_text.dart';
 import '../entries/entry_service.dart';
 import '../users/user_service.dart';
+import 'balance_service.dart';
 import 'pdf/pdf_pages.dart';
 import 'pdf/report_blocks.dart';
 
@@ -15,8 +16,9 @@ import 'pdf/report_blocks.dart';
 /// with its photos (DET-2, DET-3). The language is the one the app is in
 /// (PDF-4).
 class ReportPdfService {
-  ReportPdfService(this._entries, this._users, this._now);
+  ReportPdfService(this._entries, this._users, this._now, this._balance);
   final EntryService _entries;
+  final BalanceService _balance;
   final UserService _users;
   final DateTime Function() _now;
 
@@ -26,9 +28,11 @@ class ReportPdfService {
     required Period period,
     required String periodName,
     required ReportContent content,
+    bool includeCancelled = true,
   }) async {
     final rows = await _entries.inPeriod(
       period,
+      includeCancelled: includeCancelled,
       type: switch (content) {
         ReportContent.income => EntryType.income,
         ReportContent.expense => EntryType.expense,
@@ -42,6 +46,7 @@ class ReportPdfService {
         content: content,
         periodName: periodName,
         entries: rows,
+        currentBalance: await _balance.currentBalance(),
       ),
       title: '${l.appName} — $periodName',
       footerLeft: l.pdfGeneratedOn(fmt.dateTime(_now())),

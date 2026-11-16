@@ -38,7 +38,7 @@ class Entries extends Table {
   /// Donor (income) or payee (expense). Empty = unknown (INC-3).
   TextColumn get name => text().withDefault(const Constant(''))();
 
-  /// Expense only: what the money was for (খরচ বাবদ).
+  /// Expense only: what the money was for (বিবরণ).
   TextColumn get purpose => text().nullable()();
 
   /// Expense only: copied as text so later list edits don't change it (EXP-8).

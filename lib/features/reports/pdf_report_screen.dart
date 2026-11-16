@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme.dart';
 import '../../shared/context_ext.dart';
+import '../../shared/permissions.dart';
 import '../../shared/formatters.dart';
 import '../../shared/period_choice.dart';
 import '../../shared/widgets/basics.dart';
@@ -45,6 +46,10 @@ class _PdfReportScreenState extends State<PdfReportScreen> {
         period: period,
         periodName: name,
         content: _content,
+        includeCancelled: can(
+          context.app.user!.role,
+          Permission.viewCancelledEntries,
+        ),
       );
       if (!mounted) return;
       setState(() => _last = pdf);

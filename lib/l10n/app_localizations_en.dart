@@ -267,11 +267,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roleAdminCan =>
-      'Edit and cancel entries, opening balance, Google account, backup and settings.';
+      'Add, edit and cancel entries, opening balance, Google account, backup and settings.';
 
   @override
   String get roleUserCan =>
-      'Add entries, search, view details, make PDFs and Excel, sync a phone, change own password.';
+      'Search, view details, make PDFs and Excel, sync a phone, change own password.';
 
   @override
   String get addUserTitle => 'Add a new user';
@@ -460,7 +460,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payeeName => 'Name (payee)';
 
   @override
-  String get purposeLabel => 'Purpose (খরচ বাবদ)';
+  String get purposeLabel => 'Purpose (বিবরণ)';
 
   @override
   String get approvedBy => 'Approved by';
@@ -982,9 +982,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deficitNote => 'Deficit for this period';
 
   @override
-  String summaryNote(String balance) {
-    return 'Cancelled entries are not counted in any total. Current balance today: $balance';
-  }
+  String get summaryNote => 'Cancelled entries are not counted in any total.';
 
   @override
   String breakdownDays(String period) {
@@ -1688,4 +1686,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get phonePasswordNote =>
       'A password changed here is replaced by the computer\'s password at the next sync. To change it for good, change it on the computer.';
+
+  @override
+  String get currentTotalBalance => 'Current total balance';
+
+  @override
+  String get deleteEntryForever => 'Delete forever';
+
+  @override
+  String get deleteForeverTitle => 'Delete this entry forever?';
+
+  @override
+  String get deleteForeverBody =>
+      'The entry and its photos are removed for good. This cannot be undone.';
+
+  @override
+  String get entryDeleted => 'Entry deleted';
+
+  @override
+  String get entryNotCancelled => 'Only a cancelled entry can be deleted.';
+
+  @override
+  String get showCancelledEntries => 'Show cancelled entries';
 }

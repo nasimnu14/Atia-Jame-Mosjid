@@ -7,6 +7,7 @@ import '../../data/database.dart';
 import '../../data/tables.dart';
 import '../../shared/context_ext.dart';
 import '../../shared/formatters.dart';
+import '../../shared/permissions.dart';
 import '../../shared/period.dart';
 import '../../shared/widgets/basics.dart';
 import '../updates/update_banner.dart';
@@ -49,12 +50,19 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
 
   Future<void> _load() async {
     final s = context.services;
+    final seeCancelled = can(
+      context.app.user!.role,
+      Permission.viewCancelledEntries,
+    );
     final sum = await s.balance.summary(
       Period(DateTime(1900), DateTime(2999, 12, 31)),
     );
     final pending = await s.syncClient.pendingCount();
     final last = await s.syncClient.lastSync();
-    final recent = await s.entries.recent(limit: 6);
+    final recent = await s.entries.recent(
+      limit: 6,
+      includeCancelled: seeCancelled,
+    );
     if (!mounted) {
       return;
     }
@@ -158,27 +166,29 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
           ),
         ),
         const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: _bigButton(
-                l.newIncome,
-                AppColors.incomeSoft,
-                AppColors.income,
-                () => _open(const EntryFormScreen(type: EntryType.income)),
+        if (can(context.appWatch.user!.role, Permission.addEntry)) ...[
+          Row(
+            children: [
+              Expanded(
+                child: _bigButton(
+                  l.newIncome,
+                  AppColors.incomeSoft,
+                  AppColors.income,
+                  () => _open(const EntryFormScreen(type: EntryType.income)),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _bigButton(
-                l.newExpense,
-                AppColors.expenseSoft,
-                AppColors.expense,
-                () => _open(const EntryFormScreen(type: EntryType.expense)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _bigButton(
+                  l.newExpense,
+                  AppColors.expenseSoft,
+                  AppColors.expense,
+                  () => _open(const EntryFormScreen(type: EntryType.expense)),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
         const SizedBox(height: 18),
         Text(
           l.recentEntries,

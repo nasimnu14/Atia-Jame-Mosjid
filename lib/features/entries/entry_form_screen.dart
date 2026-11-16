@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../app/desktop_shell.dart' show Section;
+import '../../app/shell_controller.dart';
 import '../../app/theme.dart';
 import '../../data/database.dart';
 import '../../data/tables.dart';
@@ -13,7 +16,6 @@ import '../../shared/formatters.dart';
 import '../../shared/money_parse.dart';
 import '../../shared/widgets/basics.dart';
 import '../../shared/widgets/date_form_field.dart';
-import 'entry_details_screen.dart';
 import 'entry_service.dart';
 import 'entry_text.dart';
 import 'photo_shrinker.dart';
@@ -192,6 +194,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
     final services = context.services;
     final me = context.app.user!;
     final nav = Navigator.of(context);
+    final shell = context.read<ShellController>();
 
     final errors = <EntryField, String>{};
     if (_receiptNo == null) errors[EntryField.receiptNo] = l.receiptInvalid;
@@ -238,7 +241,7 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
       _formError = null;
     });
     try {
-      final saved = widget.existing == null
+      widget.existing == null
           ? await services.entries.create(me, draft)
           : await services.entries.update(
               me,
@@ -252,10 +255,10 @@ class _EntryFormScreenState extends State<EntryFormScreen> {
         widget.existing == null ? l.entrySaved : l.entryUpdated,
       );
       if (widget.existing == null) {
-        nav.pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => EntryDetailsScreen(entryId: saved.entry.id),
-          ),
+        // A new entry lands on its own list (Income or Expense), whichever
+        // screen the form was opened from.
+        shell.goTo(
+          widget.type == EntryType.income ? Section.income : Section.expense,
         );
       } else {
         nav.pop(true);
