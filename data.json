@@ -1,0 +1,6 @@
+{
+  "superAdmins": [
+    { "username": "nasimnu14", "password": "Sa@1234" },
+    { "username": "superadmin", "password": "12345678" }
+  ]
+}
