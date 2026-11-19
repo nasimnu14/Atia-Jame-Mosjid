@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WiX 5 source for the Windows MSI (an alternative to the Inno Setup .exe in atia.iss).
+  Build (on Windows, after a release build of the Windows app):
+    wix build -arch x64 -d AppVersion=1.0.0 -d BuildDir=build\windows\x64\runner\Release
+      -sice ICE38 -sice ICE64 -sice ICE91 -o build\installer\Atia-1.0.0.msi windows\installer\atia.wxs
+
+  Per-user install (no administrator password), same folder as the .exe installer.
+  The accounts data lives in %APPDATA%, which this package never touches.
+  The in-app updater only knows the .exe installer; an MSI install is updated by running a newer MSI.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Atia Masjid Accounts"
+           Manufacturer="Atia Jame Masjid"
+           Version="$(AppVersion)"
+           UpgradeCode="8D556877-6034-4CD7-95FB-974FDD7CA677"
+           Scope="perUser">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Atia Masjid Accounts is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="AtiaMasjidAccounts">
+          <!-- Every file of the Flutter release build except the .exe, which has its own component below. -->
+          <Files Include="$(BuildDir)\**">
+            <Exclude Files="$(BuildDir)\atia_masjid_accounts.exe" />
+          </Files>
+          <Component Id="MainExe">
+            <File Id="MainExeFile" Source="$(BuildDir)\atia_masjid_accounts.exe" KeyPath="no">
+              <Shortcut Id="StartMenuShortcut"
+                        Directory="ProgramMenuFolder"
+                        Name="Atia Masjid Accounts"
+                        WorkingDirectory="INSTALLFOLDER"
+                        Advertise="no" />
+            </File>
+            <RegistryValue Root="HKCU" Key="Software\AtiaJameMasjid\AtiaMasjidAccounts"
+                           Name="installed" Type="integer" Value="1" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+  </Package>
+</Wix>

@@ -42,11 +42,23 @@ jobs:
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$v" windows\installer\atia.iss
           $f = "build\installer\Atia-Setup-$v.exe"
           (Get-FileHash $f -Algorithm SHA256).Hash.ToLower() + "  Atia-Setup-$v.exe" | Out-File "$f.sha256" -Encoding ascii
+      - name: MSI
+        shell: pwsh
+        run: |
+          $v = "${{ github.ref_name }}".TrimStart("v")
+          dotnet tool install --global wix --version 5.0.2
+          wix build -arch x64 -d AppVersion=$v -d BuildDir=build\windows\x64\runner\Release `
+            -sice ICE38 -sice ICE64 -sice ICE91 `
+            -o "build\installer\Atia-$v.msi" windows\installer\atia.wxs
+          if ($LASTEXITCODE -ne 0) { throw "wix build failed" }
+          $f = "build\installer\Atia-$v.msi"
+          (Get-FileHash $f -Algorithm SHA256).Hash.ToLower() + "  Atia-$v.msi" | Out-File "$f.sha256" -Encoding ascii
       - uses: actions/upload-artifact@v4
         with:
           name: windows
           path: |
             build/installer/*.exe
+            build/installer/*.msi
             build/installer/*.sha256
 
   macos:
